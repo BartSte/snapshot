@@ -16,9 +16,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 add_executable( 
     snapshot
     main.cpp
-    app.cpp
-    app.h
+    mainwindow.cpp
     mainwindow.h
+    ui_mainwindow.h
     viewer.h
     viewer.cpp
     )
