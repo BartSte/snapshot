@@ -1,5 +1,8 @@
+#pragma once
+
+#include "mainwindow.h"
+#include "viewer.h"
 #include <QMainWindow>
-#include "./mainwindow.h"
 
 class AppWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT

@@ -19,6 +19,8 @@ add_executable(
     app.cpp
     app.h
     mainwindow.h
+    viewer.h
+    viewer.cpp
     )
 
 target_link_libraries(snapshot Qt6::Widgets)
