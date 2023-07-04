@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-uic ./src/mainwindow.ui -g cpp -o ./src/mainwindow.h

@@ -1,26 +1,25 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(snapshot VERSION 0.1 LANGUAGES CXX)
+project(snapshot VERSION 0.0.0 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
-find_package(QT NAMES Qt6 Qt5untitled REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 add_executable( 
     snapshot
     main.cpp
     mainwindow.cpp
     mainwindow.h
-    ui_mainwindow.h
     viewer.h
     viewer.cpp
+    mainwindow.ui
     )
 
 target_link_libraries(snapshot Qt6::Widgets)

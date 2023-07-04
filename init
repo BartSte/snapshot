@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-cmake -G "Ninja" -S ./src -B ./build --fresh
+rm -rf ./build 2> /dev/null
+cmake -G "Ninja" -S ./src -B ./build --fresh -D CMAKE_BUILD_TYPE=Debug
