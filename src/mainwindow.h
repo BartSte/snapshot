@@ -1,12 +1,15 @@
 #pragma once
 
-#include "ui_mainwindow.h"
+#include "./ui_mainwindow.h"
+#include "./viewer.h"
 #include <QMainWindow>
 
-class AppWindow : public QMainWindow, public Ui::MainWindow {
-    Q_OBJECT
+class MainWindow : public QMainWindow, public Ui::MainWindow {
+  Q_OBJECT
 
-public:
-    AppWindow(QWidget *parent = nullptr);
-    ~AppWindow();
+ public:
+  explicit MainWindow(QWidget *parent = nullptr);
+  VideoViewer viewer;
+
+  ~MainWindow();
 };

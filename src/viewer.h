@@ -4,9 +4,12 @@
 #include <QObject>
 
 class VideoViewer : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    VideoViewer(QGraphicsView *parent);
-    ~VideoViewer();
+ public:
+  explicit VideoViewer(QGraphicsView *parent);
+
+  void displayImage(QImage image);
+
+  ~VideoViewer();
 };

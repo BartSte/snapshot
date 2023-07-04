@@ -1,8 +1,10 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "./mainwindow.h"
+#include "./ui_mainwindow.h"
+#include "./viewer.h"
 
-AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent), Ui::MainWindow() {
-    setupUi(this);
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), Ui::MainWindow(), viewer(this->graphicsView) {
+  setupUi(this);
 }
 
-AppWindow::~AppWindow() {}
+MainWindow::~MainWindow() {}

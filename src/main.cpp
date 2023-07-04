@@ -1,13 +1,10 @@
-#include "mainwindow.h"
-#include "viewer.h"
+#include "./mainwindow.h"
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-    AppWindow window;
-    VideoViewer viewer(window.graphicsView);
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  MainWindow window;
 
-    window.show();
-    return app.exec();
+  window.show();
+  return app.exec();
 }
