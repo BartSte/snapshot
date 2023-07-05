@@ -1,4 +1,4 @@
-#include "./viewer.h"
+#include "../src/viewer.h"
 #include <QGraphicsView>
 #include <QObject>
 #include <iostream>
