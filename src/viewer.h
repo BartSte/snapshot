@@ -2,15 +2,13 @@
 
 #include <QGraphicsView>
 #include <QObject>
+#include <qwidget.h>
 
-class VideoViewer : public QObject {
-  Q_OBJECT
-
+class VideoViewer {
  public:
-  int x = 0;
+  QGraphicsView *graphicsView;
+  QGraphicsScene *scene;
 
-  explicit VideoViewer(QGraphicsView *parent);
-  void displayImage(QImage image);
-
+  explicit VideoViewer(QWidget *mainWindow, QGraphicsView *graphicsView);
   ~VideoViewer();
 };

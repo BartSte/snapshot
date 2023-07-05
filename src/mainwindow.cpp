@@ -3,7 +3,8 @@
 #include "./viewer.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), Ui::MainWindow(), viewer(this->graphicsView) {
+    : QMainWindow(parent), Ui::MainWindow(),
+      viewer(new VideoViewer(this, this->graphicsView)) {
   setupUi(this);
 }
 

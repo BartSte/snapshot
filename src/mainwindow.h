@@ -8,8 +8,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(QWidget *parent = nullptr);
-  VideoViewer viewer;
+  VideoViewer *viewer;
 
+  explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 };

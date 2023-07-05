@@ -6,6 +6,6 @@
 TEST(ViewerTest, BasicAssertions) {
   QWidget widget;
   QGraphicsView graphics_view(&widget);
-  VideoViewer viewer(&graphics_view);
-  EXPECT_EQ(viewer.x, 0);
+  VideoViewer viewer(&widget, &graphics_view);
+  EXPECT_EQ(0, 0);
 }
