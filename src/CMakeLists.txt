@@ -2,8 +2,8 @@ add_library(
     LibSnapshot
     mainwindow.cpp
     mainwindow.h
-    viewer.h
-    viewer.cpp
+    videoscene.h
+    videoscene.cpp
     mainwindow.ui)
 
 add_executable( 

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "./ui_mainwindow.h"
-#include "./viewer.h"
+#include "./videoscene.h"
 #include <QMainWindow>
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
   Q_OBJECT
 
  public:
-  VideoViewer *viewer;
+  VideoScene *scene;
 
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();

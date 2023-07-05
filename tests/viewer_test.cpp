@@ -1,11 +1,11 @@
-#include <viewer.h>
+#include <videoscene.h>
 #include <gtest/gtest.h>
 #include <qgraphicsview.h>
 #include <qwidget.h>
 
-TEST(ViewerTest, BasicAssertions) {
+TEST(VideoSceneTest, BasicAssertions) {
   QWidget widget;
   QGraphicsView graphics_view(&widget);
-  VideoViewer viewer(&widget, &graphics_view);
+  VideoScene viewer(&widget);
   EXPECT_EQ(0, 0);
 }
