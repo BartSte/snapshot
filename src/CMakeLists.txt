@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+include(gtest.cmake)
 
 add_executable( 
     snapshot
@@ -23,3 +24,4 @@ add_executable(
     )
 
 target_link_libraries(snapshot Qt6::Widgets)
+
