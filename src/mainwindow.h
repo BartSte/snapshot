@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./ui_mainwindow.h"
 #include "./videoscene.h"
+#include "ui_mainwindow.h"
 #include <QMainWindow>
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
