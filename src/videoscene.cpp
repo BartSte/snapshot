@@ -3,6 +3,11 @@
 #include <qgraphicsscene.h>
 #include <qwidget.h>
 
+const float constRatio = 0.8;
+const float textOffset = 10;
+const float textFontSize = 16;
+const QString textFont = "Arial";
+
 /**
  * @brief VideoScene::VideoScene
  *
@@ -10,11 +15,6 @@
  */
 VideoScene::VideoScene(QWidget *mainWindow)
     : QGraphicsScene(mainWindow),
-
-      constRatio(0.8),
-      textOffset(10),
-      textFontSize(16),
-      textFont("Arial"),
 
       pixmapItem(new QGraphicsPixmapItem()),
       textItem(new QGraphicsTextItem()) {

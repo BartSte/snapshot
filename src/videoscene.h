@@ -5,12 +5,13 @@
 #include <qsize.h>
 #include <string>
 
+/**
+ * @class VideoScene
+ * @brief The VideoScene class is a QGraphicsScene that displays a video
+ * stream. If the stream is disconnected, it displays a disconnected image with
+ * a text.
+ */
 class VideoScene : public QGraphicsScene {
-  const float constRatio;
-  const float textOffset;
-  const float textFontSize;
-
-  const QString textFont;
 
  public:
   QGraphicsTextItem *textItem;
