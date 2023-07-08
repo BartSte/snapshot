@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>static/disconnected.png</file>
+        <file>images/disconnected.png</file>
     </qresource>
 </RCC>

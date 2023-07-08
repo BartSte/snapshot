@@ -16,13 +16,14 @@ set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 # Gui
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-add_library(gui src/mainwindow.cpp src/mainwindow.ui
-                src/videoscene.h src/videoscene.cpp)
-target_include_directories(gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include)
+add_library(gui src/mainwindow.cpp src/mainwindow.ui src/videoscene.h
+                src/videoscene.cpp)
+target_include_directories(
+  gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include)
 target_link_libraries(gui Qt6::Widgets)
 
 # Snapshot
-add_executable(snapshot src/main.cpp)
+add_executable(snapshot src/main.cpp resources/resources.qrc)
 target_link_libraries(snapshot gui)
 
 # Tests
