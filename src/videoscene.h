@@ -5,13 +5,16 @@
 #include <string>
 
 class VideoScene : public QGraphicsScene {
- public:
-  const std::string pathImageDisconnected =
-      "/home/barts/code/snapshot/src/static/disconnected.png";
+  const float constRatio;
 
+ public:
   QGraphicsTextItem *textItem;
   QGraphicsPixmapItem *pixmapItem;
 
   explicit VideoScene(QWidget *mainWindow);
+  void setPixmap(std::string path);
+  void scalePixmap();
+  void centerPixmap();
+  void setText(std::string text);
   ~VideoScene();
 };

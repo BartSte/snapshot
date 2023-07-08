@@ -1,7 +1,7 @@
 #pragma once
 
+#include "./ui_mainwindow.h"
 #include "./videoscene.h"
-#include "ui_mainwindow.h"
 #include <QMainWindow>
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
@@ -12,4 +12,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
+
+ protected:
+  void resizeEvent(QResizeEvent *event);
+
 };
