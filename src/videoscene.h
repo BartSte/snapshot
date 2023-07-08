@@ -2,10 +2,15 @@
 
 #include <QGraphicsPixmapItem>
 #include <qgraphicsscene.h>
+#include <qsize.h>
 #include <string>
 
 class VideoScene : public QGraphicsScene {
   const float constRatio;
+  const float textOffset;
+  const float textFontSize;
+
+  const QString textFont;
 
  public:
   QGraphicsTextItem *textItem;
@@ -16,5 +21,7 @@ class VideoScene : public QGraphicsScene {
   void scalePixmap();
   void centerPixmap();
   void setText(std::string text);
+  void setPosText();
+
   ~VideoScene();
 };

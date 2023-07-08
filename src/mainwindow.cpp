@@ -19,6 +19,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   scene->setSceneRect(viewRect);
   scene->scalePixmap();
   scene->centerPixmap();
+  scene->setPosText();
 }
 
 MainWindow::~MainWindow() { delete scene; }
