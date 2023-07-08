@@ -1,4 +1,5 @@
 .cache
+.null-ls*
 build
 Session.vim
 nvim.shada
