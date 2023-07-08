@@ -6,6 +6,7 @@ project(
 
 # Variables
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -29,7 +30,7 @@ FetchContent_MakeAvailable(googletest)
 
 # Libs
 add_library(gui src/mainwindow.cpp src/mainwindow.h src/mainwindow.ui
-                src/videoscene.h src/videoscene.cpp)
+                src/videoscene.h src/videoscene.cpp static.qrc)
 target_link_libraries(gui Qt6::Widgets)
 
 # Snapshot
