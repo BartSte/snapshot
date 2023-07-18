@@ -4,15 +4,16 @@
 class ArgParse {
 
  public:
-  cxxopts::Options options;
-
   ArgParse(int argc, char *argv[]);
-  void parse();
+  cxxopts::ParseResult parse();
+  std::string help();
 
   ~ArgParse();
 
  private:
   int argc;
   char **argv;
-  std::string title;
+  std::string program;
+  std::string description;
+  cxxopts::Options options;
 };
