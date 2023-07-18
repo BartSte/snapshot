@@ -15,12 +15,12 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 # Gui
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 add_library(gui src/mainwindow.cpp src/mainwindow.ui src/videoscene.h
                 src/videoscene.cpp src/argparse.cpp src/argparse.h)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include)
-target_link_libraries(gui Qt6::Widgets)
+target_link_libraries(gui Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
 # Snapshot
 add_executable(snapshot src/main.cpp resources/resources.qrc)

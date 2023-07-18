@@ -1,5 +1,10 @@
 #include "./videoscene.h"
+#include <QCamera>
+#include <QGraphicsVideoItem>
+#include <QMediaDevices>
+#include <cctype>
 #include <iostream>
+#include <qcamera.h>
 #include <qgraphicsscene.h>
 #include <qwidget.h>
 
@@ -15,12 +20,17 @@ const QString textFont = "Arial";
  */
 VideoScene::VideoScene(QWidget *mainWindow)
     : QGraphicsScene(mainWindow),
-
       pixmapItem(new QGraphicsPixmapItem()),
-      textItem(new QGraphicsTextItem()) {
+      textItem(new QGraphicsTextItem()),
+      videoItem(new QGraphicsVideoItem()) {
 
-  setPixmap(":/images/disconnected.png");
-  setText("Disconnected");
+  if (camerasAvailable()) {
+    const QCameraDevice device = getCameraDevice();
+    setCamera(device);
+  } else {
+    setPixmap(":/images/disconnected.png");
+    setText("No camera available");
+  }
 }
 
 /**
@@ -99,6 +109,36 @@ void VideoScene::setPosText() {
   float y = (sceneRect().height() - heightImage) / 2 + heightImage;
 
   textItem->setPos(x, y + textOffset);
+}
+
+/**
+ * @brief VideoScene::setCamera
+ *
+ * @param camera The camera to be displayed.
+ *
+ */
+void VideoScene::setCamera(const QCameraDevice &device) {
+  camera.reset(new QCamera(device));
+  session.setCamera(camera.data());
+  session.setVideoOutput(videoItem);
+  camera->start();
+  addItem(videoItem);
+}
+
+/**
+ * @brief VideoScene::getCamera
+ *
+ * @return The camera displayed in the scene.
+ */
+const QCameraDevice &VideoScene::getCameraDevice() {
+  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+  const QCameraDevice &r_camera = cameras[0];
+  return r_camera;
+}
+
+bool VideoScene::camerasAvailable() {
+  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+  return cameras.size() > 0;
 }
 
 /**
