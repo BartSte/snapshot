@@ -2,6 +2,8 @@
 #include <QCamera>
 #include <QGraphicsVideoItem>
 #include <QMediaDevices>
+#include <boost/optional.hpp>
+#include <boost/optional/optional.hpp>
 #include <cctype>
 #include <iostream>
 #include <qcamera.h>
@@ -20,13 +22,15 @@ const QString textFont = "Arial";
  */
 VideoScene::VideoScene(QWidget *mainWindow)
     : QGraphicsScene(mainWindow),
+      camera(new QCamera(mainWindow)),
       pixmapItem(new QGraphicsPixmapItem()),
+      session(new QMediaCaptureSession(mainWindow)),
       textItem(new QGraphicsTextItem()),
       videoItem(new QGraphicsVideoItem()) {
 
-  if (camerasAvailable()) {
-    const QCameraDevice device = getCameraDevice();
-    setCamera(device);
+  boost::optional<const QCameraDevice> device = getCameraDevice();
+  if (device) {
+    setCamera(device.get());
   } else {
     setPixmap(":/images/disconnected.png");
     setText("No camera available");
@@ -112,33 +116,40 @@ void VideoScene::setPosText() {
 }
 
 /**
+ * @brief TODO
+ *
+ * @param device 
+ */
+void VideoScene::setVideo(const QCameraDevice &device) {
+  setCamera(device);
+}
+
+/**
  * @brief VideoScene::setCamera
  *
  * @param camera The camera to be displayed.
  *
  */
 void VideoScene::setCamera(const QCameraDevice &device) {
-  camera.reset(new QCamera(device));
-  session.setCamera(camera.data());
-  session.setVideoOutput(videoItem);
+  camera->setCameraDevice(device);
+  session->setCamera(camera);
+  session->setVideoOutput(videoItem);
   camera->start();
   addItem(videoItem);
 }
 
 /**
- * @brief VideoScene::getCamera
+ * @brief VideoScene::getCameraDevice
  *
- * @return The camera displayed in the scene.
+ * @return The first camera available.
  */
-const QCameraDevice &VideoScene::getCameraDevice() {
+boost::optional<const QCameraDevice> VideoScene::getCameraDevice() {
   const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-  const QCameraDevice &r_camera = cameras[0];
-  return r_camera;
-}
-
-bool VideoScene::camerasAvailable() {
-  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-  return cameras.size() > 0;
+  if (cameras.size() > 0) {
+    return cameras[0];
+  } else {
+    return boost::none;
+  }
 }
 
 /**
@@ -148,4 +159,7 @@ bool VideoScene::camerasAvailable() {
 VideoScene::~VideoScene() {
   delete pixmapItem;
   delete textItem;
+  delete videoItem;
+  delete session;
+  delete camera;
 }
