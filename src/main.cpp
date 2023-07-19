@@ -3,10 +3,12 @@
 #include <QApplication>
 #include <cxxopts.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 int main(int argc, char *argv[]) {
   ArgParse parser(argc, argv);
   cxxopts::ParseResult args = parser.parse();
+  spdlog::set_level(spdlog::level::debug);
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;

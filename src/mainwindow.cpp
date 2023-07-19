@@ -22,9 +22,14 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   QRect viewRect = graphicsView->rect();
 
   scene.setSceneRect(viewRect);
+
   scene.scalePixmap();
   scene.centerPixmap();
+
   scene.centerText();
+
+  scene.scaleVideo();
+  scene.centerVideo();
 }
 
 /**

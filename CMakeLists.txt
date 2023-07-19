@@ -15,6 +15,7 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 # Gui
+find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 add_library(gui src/mainwindow.cpp src/mainwindow.ui src/videoscene.h
@@ -23,7 +24,7 @@ target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})
 target_link_libraries(gui Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets
-                      ${Boost_LIBRARIES})
+                      ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
 # Snapshot
 add_executable(snapshot src/main.cpp resources/resources.qrc)

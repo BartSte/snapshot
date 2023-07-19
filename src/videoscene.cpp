@@ -5,6 +5,7 @@
 #include <QMediaDevices>
 #include <QWidget>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 const float constRatio = 0.8;
 const float textOffset = 10;
@@ -41,21 +42,6 @@ void VideoScene::setPixmap(std::string path) {
 }
 
 /**
- * @brief VideoScene::setText
- *
- * @param text The text to be displayed.
- * Set the text to be displayed in the scene.
- */
-void VideoScene::setText(std::string text) {
-  QString qtext = QString::fromStdString(text);
-  QFont font(textFont, textFontSize);
-
-  textItem.setPlainText(qtext);
-  textItem.setFont(font);
-  addItem(&textItem);
-}
-
-/**
  * @brief VideoScene::resizeEvent
  * @param event The resize event.
  * Resize the QGraphicsPixmapItem and the QGraphicsTextItem when the scene is
@@ -89,6 +75,21 @@ void VideoScene::centerPixmap() {
 }
 
 /**
+ * @brief VideoScene::setText
+ *
+ * @param text The text to be displayed.
+ * Set the text to be displayed in the scene.
+ */
+void VideoScene::setText(std::string text) {
+  QString qtext = QString::fromStdString(text);
+  QFont font(textFont, textFontSize);
+
+  textItem.setPlainText(qtext);
+  textItem.setFont(font);
+  addItem(&textItem);
+}
+
+/**
  * @brief VideoScene::positionText
  * Position the text below the QGraphicsPixmapItem, in the center of the scene.
  */
@@ -114,6 +115,34 @@ void VideoScene::setVideo(const QCameraDevice &device) {
   pixmapItem.setVisible(false);
   textItem.setVisible(false);
   setCamera(device);
+}
+
+/**
+ * @brief VideoScene::scaleVideo
+ * Scale the QGraphicsVideoItem while preserving the aspect ratio. The video
+ * should never be cropped.
+ */
+void VideoScene::scaleVideo() {
+  float widthRatio = sceneRect().width() / videoItem.size().width();
+  float heightRatio = sceneRect().height() / videoItem.size().height();
+  float aspectRatio = std::min(widthRatio, heightRatio);
+
+  spdlog::debug("aspectRatio: {}", aspectRatio);
+  videoItem.setScale(aspectRatio);
+}
+
+/**
+ * @brief VideoScene::centerVideo
+ * Center the QGraphicsVideoItem in the scene.
+ */
+void VideoScene::centerVideo() {
+  float scale = videoItem.scale();
+  float widthVideo = videoItem.size().width() * scale;
+  float heightVideo = videoItem.size().height() * scale;
+  float x = (sceneRect().width() - widthVideo) / 2;
+  float y = (sceneRect().height() - heightVideo) / 2;
+
+  videoItem.setPos(x, y);
 }
 
 /**

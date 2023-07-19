@@ -33,8 +33,8 @@ class VideoScene : public QGraphicsScene {
   void centerText();
 
   void setVideo(const QCameraDevice &device);
-  /* void scaleVideo(); */
-  /* void centerVideo(); */
+  void scaleVideo();
+  void centerVideo();
 
   virtual ~VideoScene();
 
