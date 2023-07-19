@@ -5,6 +5,7 @@
 #include <QMediaDevices>
 #include <QWidget>
 #include <iostream>
+#include <qcameradevice.h>
 #include <spdlog/spdlog.h>
 
 const float constRatio = 0.8;
@@ -115,6 +116,27 @@ void VideoScene::setVideo(const QCameraDevice &device) {
   pixmapItem.setVisible(false);
   textItem.setVisible(false);
   setCamera(device);
+}
+
+/**
+ * @brief VideoScene::updateResolution
+ * Select the highest resolution available for the camera.
+ */
+void VideoScene::updateResolution() {
+  QList<QCameraFormat> formats = camera.cameraDevice().videoFormats();
+  spdlog::debug("formats: {}", formats.size());
+
+  QSize max_reso(0, 0);
+  QCameraFormat selected;
+  for (QCameraFormat format : formats) {
+    QSize reso = format.resolution();
+    if (reso.width() > max_reso.width() && reso.height() > max_reso.height()) {
+      max_reso = reso;
+      selected = format;
+      spdlog::debug("resolution: {}x{}", reso.width(), reso.height());
+    }
+  }
+  camera.setCameraFormat(selected);
 }
 
 /**

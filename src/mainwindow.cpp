@@ -28,6 +28,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
   scene.centerText();
 
+  scene.updateResolution();
   scene.scaleVideo();
   scene.centerVideo();
 }
