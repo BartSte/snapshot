@@ -4,6 +4,7 @@
 #include <QMediaDevices>
 #include <boost/optional.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
@@ -13,13 +14,23 @@ MainWindow::MainWindow(QWidget *parent)
   if (cameraDevice) {
     scene.setVideo(cameraDevice.get());
   }
+  graphicsView->setGeometry(rect());
   graphicsView->setScene(&scene);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QMainWindow::resizeEvent(event);
+  updateScene();
+}
 
+/**
+ * @brief MainWindow::updateScene
+ *
+ * Update the scene and its elements.
+ */
+void MainWindow::updateScene() {
   QRect viewRect = graphicsView->rect();
+  spdlog::info("View rect: {}x{}", viewRect.width(), viewRect.height());
 
   scene.setSceneRect(viewRect);
 
@@ -32,6 +43,8 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   scene.scaleVideo();
   scene.centerVideo();
 }
+
+MainWindow::~MainWindow() {}
 
 /**
  * @brief VideoScene::getCameraDevice

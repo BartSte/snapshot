@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <iostream>
 #include <qcameradevice.h>
+#include <qobject.h>
 #include <spdlog/spdlog.h>
 
 const float constRatio = 0.8;
@@ -18,11 +19,11 @@ const QString textFont = "Arial";
  *
  * @param mainWindow A pointer to a QWidget.
  */
-VideoScene::VideoScene(QWidget *mainWindow)
-    : QGraphicsScene(mainWindow),
-      camera(mainWindow),
+VideoScene::VideoScene(QObject *parent)
+    : QGraphicsScene(parent),
+      camera(parent),
       pixmapItem(),
-      session(mainWindow),
+      session(parent),
       textItem(),
       videoItem() {
   setPixmap(":/images/disconnected.png");

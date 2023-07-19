@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
 #include <QMediaCaptureSession>
+#include <qobject.h>
 #include <string>
 
 /**
@@ -23,7 +24,7 @@ class VideoScene : public QGraphicsScene {
   QGraphicsPixmapItem pixmapItem;
   QMediaCaptureSession session;
 
-  explicit VideoScene(QWidget *mainWindow);
+  explicit VideoScene(QObject *parent = nullptr);
 
   void setPixmap(std::string path);
   void scalePixmap();
