@@ -3,7 +3,6 @@
 #include <QGraphicsVideoItem>
 #include <QMediaDevices>
 #include <boost/optional.hpp>
-#include <boost/optional/optional.hpp>
 #include <cctype>
 #include <iostream>
 #include <qcamera.h>
@@ -22,19 +21,13 @@ const QString textFont = "Arial";
  */
 VideoScene::VideoScene(QWidget *mainWindow)
     : QGraphicsScene(mainWindow),
-      camera(new QCamera(mainWindow)),
-      pixmapItem(new QGraphicsPixmapItem()),
-      session(new QMediaCaptureSession(mainWindow)),
-      textItem(new QGraphicsTextItem()),
-      videoItem(new QGraphicsVideoItem()) {
-
-  boost::optional<const QCameraDevice> device = getCameraDevice();
-  if (device) {
-    setCamera(device.get());
-  } else {
-    setPixmap(":/images/disconnected.png");
-    setText("No camera available");
-  }
+      camera(mainWindow),
+      pixmapItem(),
+      session(mainWindow),
+      textItem(),
+      videoItem() {
+  setPixmap(":/images/disconnected.png");
+  setText("No camera available");
 }
 
 /**
@@ -46,8 +39,8 @@ VideoScene::VideoScene(QWidget *mainWindow)
 void VideoScene::setPixmap(std::string path) {
   QString qpath = QString::fromStdString(path);
   QPixmap pixmap(qpath);
-  pixmapItem->setPixmap(pixmap);
-  addItem(pixmapItem);
+  pixmapItem.setPixmap(pixmap);
+  addItem(&pixmapItem);
 }
 
 /**
@@ -60,9 +53,9 @@ void VideoScene::setText(std::string text) {
   QString qtext = QString::fromStdString(text);
   QFont font(textFont, textFontSize);
 
-  textItem->setPlainText(qtext);
-  textItem->setFont(font);
-  addItem(textItem);
+  textItem.setPlainText(qtext);
+  textItem.setFont(font);
+  addItem(&textItem);
 }
 
 /**
@@ -72,14 +65,14 @@ void VideoScene::setText(std::string text) {
  * resized.
  */
 void VideoScene::scalePixmap() {
-  QPixmap image = pixmapItem->pixmap();
+  QPixmap image = pixmapItem.pixmap();
 
   float widthRatio = sceneRect().width() / image.size().width();
   float heightRatio = sceneRect().height() / image.size().height();
   float aspectRatio = std::min(widthRatio, heightRatio);
   float clippedRatio = std::min(aspectRatio, 1.0f);
 
-  pixmapItem->setScale(clippedRatio * constRatio);
+  pixmapItem.setScale(clippedRatio * constRatio);
 }
 
 /**
@@ -87,40 +80,42 @@ void VideoScene::scalePixmap() {
  * Center the QGraphicsPixmapItem in the scene.
  */
 void VideoScene::centerPixmap() {
-  float scale = pixmapItem->scale();
-  QPixmap image = pixmapItem->pixmap();
+  float scale = pixmapItem.scale();
+  QPixmap image = pixmapItem.pixmap();
 
   float widthImage = image.size().width() * scale;
   float heightImage = image.size().height() * scale;
   float x = (sceneRect().width() - widthImage) / 2;
   float y = (sceneRect().height() - heightImage) / 2;
 
-  pixmapItem->setPos(x, y);
+  pixmapItem.setPos(x, y);
 }
 
 /**
  * @brief VideoScene::positionText
  * Position the text below the QGraphicsPixmapItem, in the center of the scene.
  */
-void VideoScene::setPosText() {
-  float scale = pixmapItem->scale();
-  QPixmap image = pixmapItem->pixmap();
+void VideoScene::centerText() {
+  float scale = pixmapItem.scale();
+  QPixmap image = pixmapItem.pixmap();
 
-  float widthText = textItem->boundingRect().width();
+  float widthText = textItem.boundingRect().width();
   float heightImage = image.size().height() * scale;
 
   float x = (sceneRect().width() / 2) - (widthText / 2);
   float y = (sceneRect().height() - heightImage) / 2 + heightImage;
 
-  textItem->setPos(x, y + textOffset);
+  textItem.setPos(x, y + textOffset);
 }
 
 /**
  * @brief TODO
  *
- * @param device 
+ * @param device
  */
 void VideoScene::setVideo(const QCameraDevice &device) {
+  pixmapItem.setVisible(false);
+  textItem.setVisible(false);
   setCamera(device);
 }
 
@@ -131,35 +126,15 @@ void VideoScene::setVideo(const QCameraDevice &device) {
  *
  */
 void VideoScene::setCamera(const QCameraDevice &device) {
-  camera->setCameraDevice(device);
-  session->setCamera(camera);
-  session->setVideoOutput(videoItem);
-  camera->start();
-  addItem(videoItem);
-}
-
-/**
- * @brief VideoScene::getCameraDevice
- *
- * @return The first camera available.
- */
-boost::optional<const QCameraDevice> VideoScene::getCameraDevice() {
-  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-  if (cameras.size() > 0) {
-    return cameras[0];
-  } else {
-    return boost::none;
-  }
+  camera.setCameraDevice(device);
+  session.setCamera(&camera);
+  session.setVideoOutput(&videoItem);
+  camera.start();
+  addItem(&videoItem);
 }
 
 /**
  * @brief VideoScene::~VideoScene
  * Destructor.
  */
-VideoScene::~VideoScene() {
-  delete pixmapItem;
-  delete textItem;
-  delete videoItem;
-  delete session;
-  delete camera;
-}
+VideoScene::~VideoScene() { camera.stop(); }

@@ -1,14 +1,21 @@
 #include "./mainwindow.h"
 #include "./videoscene.h"
 #include <QMainWindow>
+#include <QMediaDevices>
+#include <boost/optional.hpp>
+#include <boost/optional/optional.hpp>
 #include <iostream>
 #include <qnamespace.h>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), Ui::MainWindow(), scene(new VideoScene(this)) {
+    : QMainWindow(parent), Ui::MainWindow(), scene(this) {
 
   setupUi(this);
-  graphicsView->setScene(scene);
+  boost::optional<const QCameraDevice> cameraDevice = getCameraDevice();
+  if (cameraDevice) {
+    scene.setVideo(cameraDevice.get());
+  }
+  graphicsView->setScene(&scene);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
@@ -16,10 +23,22 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
   QRect viewRect = graphicsView->rect();
 
-  scene->setSceneRect(viewRect);
-  scene->scalePixmap();
-  scene->centerPixmap();
-  scene->setPosText();
+  scene.setSceneRect(viewRect);
+  scene.scalePixmap();
+  scene.centerPixmap();
+  scene.centerText();
 }
 
-MainWindow::~MainWindow() { delete scene; }
+/**
+ * @brief VideoScene::getCameraDevice
+ *
+ * @return The first camera available.
+ */
+boost::optional<const QCameraDevice> getCameraDevice() {
+  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+  if (cameras.size() > 0) {
+    return cameras[0];
+  } else {
+    return boost::none;
+  }
+}
