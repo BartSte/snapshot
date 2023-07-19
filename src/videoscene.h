@@ -1,15 +1,11 @@
 #pragma once
 
 #include <QCamera>
+#include <QCameraDevice>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
 #include <QGraphicsVideoItem>
 #include <QMediaCaptureSession>
-#include <boost/optional.hpp>
-#include <memory>
-#include <qcameradevice.h>
-#include <qgraphicsscene.h>
-#include <qscopedpointer.h>
-#include <qsize.h>
 #include <string>
 
 /**

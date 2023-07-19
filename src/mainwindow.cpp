@@ -3,9 +3,7 @@
 #include <QMainWindow>
 #include <QMediaDevices>
 #include <boost/optional.hpp>
-#include <boost/optional/optional.hpp>
 #include <iostream>
-#include <qnamespace.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {

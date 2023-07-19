@@ -1,13 +1,10 @@
 #include "./videoscene.h"
 #include <QCamera>
+#include <QGraphicsScene>
 #include <QGraphicsVideoItem>
 #include <QMediaDevices>
-#include <boost/optional.hpp>
-#include <cctype>
+#include <QWidget>
 #include <iostream>
-#include <qcamera.h>
-#include <qgraphicsscene.h>
-#include <qwidget.h>
 
 const float constRatio = 0.8;
 const float textOffset = 10;
