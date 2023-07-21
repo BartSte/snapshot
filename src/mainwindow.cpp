@@ -30,7 +30,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
  */
 void MainWindow::updateScene() {
   QRect viewRect = graphicsView->rect();
-  spdlog::info("View rect: {}x{}", viewRect.width(), viewRect.height());
+  SPDLOG_INFO("View rect: {}x{}", viewRect.width(), viewRect.height());
 
   scene.setSceneRect(viewRect);
 

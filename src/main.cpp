@@ -1,4 +1,5 @@
 #include "./argparse.h"
+#include "./logger.h"
 #include "./mainwindow.h"
 #include <QApplication>
 #include <cxxopts.hpp>
@@ -8,8 +9,10 @@
 int main(int argc, char *argv[]) {
   ArgParse parser(argc, argv);
   cxxopts::ParseResult args = parser.parse();
-  spdlog::set_level(spdlog::level::debug);
-  spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^---%L---%$] [thread %t] %v");
+
+  std::string loglevel = args["loglevel"].as<std::string>();
+  std::string pattern = args["pattern"].as<std::string>();
+  setLogger(loglevel, pattern);
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;

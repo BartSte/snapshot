@@ -125,7 +125,7 @@ void VideoScene::setVideo(const QCameraDevice &device) {
  */
 void VideoScene::updateResolution() {
   QList<QCameraFormat> formats = camera.cameraDevice().videoFormats();
-  spdlog::debug("formats: {}", formats.size());
+  SPDLOG_DEBUG("formats: {}", formats.size());
 
   QSize max_reso(0, 0);
   QCameraFormat selected;
@@ -134,7 +134,7 @@ void VideoScene::updateResolution() {
     if (reso.width() > max_reso.width() && reso.height() > max_reso.height()) {
       max_reso = reso;
       selected = format;
-      spdlog::debug("resolution: {}x{}", reso.width(), reso.height());
+      SPDLOG_DEBUG("resolution: {}x{}", reso.width(), reso.height());
     }
   }
   camera.setCameraFormat(selected);
@@ -150,7 +150,7 @@ void VideoScene::scaleVideo() {
   float heightRatio = sceneRect().height() / videoItem.size().height();
   float aspectRatio = std::min(widthRatio, heightRatio);
 
-  spdlog::debug("aspectRatio: {}", aspectRatio);
+  SPDLOG_DEBUG("aspectRatio: {}", aspectRatio);
   videoItem.setScale(aspectRatio);
 }
 

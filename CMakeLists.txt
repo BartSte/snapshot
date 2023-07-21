@@ -18,8 +18,16 @@ set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
-add_library(gui src/mainwindow.cpp src/mainwindow.ui src/videoscene.h
-                src/videoscene.cpp src/argparse.cpp src/argparse.h)
+add_library(
+  gui
+  src/mainwindow.cpp
+  src/mainwindow.ui
+  src/videoscene.h
+  src/videoscene.cpp
+  src/argparse.cpp
+  src/argparse.h
+  src/logger.h
+  src/logger.cpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})
