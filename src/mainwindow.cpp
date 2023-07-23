@@ -1,4 +1,6 @@
 #include "./mainwindow.hpp"
+#include "./camera.hpp"
+#include "./list.hpp"
 #include "./videoscene.hpp"
 #include <QMainWindow>
 #include <QMediaDevices>
@@ -10,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
 
   setupUi(this);
-  boost::optional<const QCameraDevice> cameraDevice = getCameraDevice();
+  QList<QCameraDevice> devices = QMediaDevices::videoInputs();
+  boost::optional<const QCameraDevice> cameraDevice = selectCamera(devices);
   if (cameraDevice) {
     scene.setVideo(cameraDevice.get());
   }
@@ -45,17 +48,3 @@ void MainWindow::updateScene() {
 }
 
 MainWindow::~MainWindow() {}
-
-/**
- * @brief VideoScene::getCameraDevice
- *
- * @return The first camera available.
- */
-boost::optional<const QCameraDevice> getCameraDevice() {
-  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-  if (cameras.size() > 0) {
-    return cameras[0];
-  } else {
-    return boost::none;
-  }
-}

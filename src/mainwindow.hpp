@@ -18,5 +18,3 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
  protected:
   virtual void resizeEvent(QResizeEvent *event);
 };
-
-boost::optional<const QCameraDevice> getCameraDevice();

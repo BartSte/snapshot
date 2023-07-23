@@ -19,6 +19,7 @@ ArgParse::ArgParse(int argc, char *argv[])
   options.add_options()
     ("h,help", "Print help")
     ("g,gui", "Start the GUI")
+    ("l,list", "List available cameras")
     ("loglevel", "Set the loglevel to CRITICAL, ERROR, WARNING, INFO, or DEBUG",
     cxxopts::value<std::string>()->default_value("INFO"))
     ("pattern", "Set the log pattern",

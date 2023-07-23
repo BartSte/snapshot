@@ -1,6 +1,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "./argparse.hpp"
+#include "./list.hpp"
 #include "./logger.hpp"
 #include "./mainwindow.hpp"
 #include <QApplication>
@@ -36,6 +37,20 @@ int showHelp(cxxopts::ParseResult args) {
 }
 
 /**
+ * @brief printAvailableCameras
+ *
+ * Print the available cameras that are found by Qt's QMediaDevices module to
+ * stdout.
+ *
+ * @return exit code
+ */
+int printAvailableCameras(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  std::cout << listCameras() << std::endl;
+  return 0;
+}
+
+/**
  * @brief showGui
  *
  * Show the GUI.
@@ -61,6 +76,10 @@ int main(int argc, char *argv[]) {
 
   if (args.count("help")) {
     return showHelp(args);
+
+  } else if (args.count("list")) {
+    return printAvailableCameras(argc, argv);
+
   } else if (args.count("gui")) {
     return showGui(argc, argv);
   }

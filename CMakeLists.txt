@@ -20,14 +20,18 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 add_library(
   gui
-  src/mainwindow.cpp
-  src/mainwindow.ui
-  src/videoscene.hpp
-  src/videoscene.cpp
+  src/camera.hpp
   src/argparse.cpp
   src/argparse.hpp
+  src/camera.cpp
+  src/list.cpp
+  src/list.hpp
+  src/logger.cpp
   src/logger.hpp
-  src/logger.cpp)
+  src/mainwindow.cpp
+  src/mainwindow.ui
+  src/videoscene.cpp
+  src/videoscene.hpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})
@@ -48,5 +52,5 @@ FetchContent_Declare(
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
 FetchContent_MakeAvailable(googletest)
-add_executable(tests tests/main.cpp tests/argparse_test.cpp)
+add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp)
 target_link_libraries(tests gtest gui)
