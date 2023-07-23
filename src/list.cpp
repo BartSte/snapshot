@@ -2,9 +2,10 @@
 #include <QCameraDevice>
 #include <QMediaDevices>
 #include <iostream>
-#include <qcameradevice.h>
 #include <string>
 #include <vector>
+
+using Table = std::vector<std::vector<std::string>>;
 
 /**
  * @brief VideoScene::getCameraDevice
@@ -17,25 +18,36 @@
  */
 std::string listCameras() {
   const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-  return qlistToString(cameras);
+  Table table = qlistToTable(cameras);
+  return tableToString(table);
 }
 
-/**
- * @brief qlistToString
- *
- * Converts a QList of QCameraDevices to a std::string.
- *
- * @param cameras A QList of QCameraDevices.
- * @return the QCameraDevice objects as a std::string in the following format:
- * 0: <description of camera 0>
- * 1: <description of camera 1>
- * etc.
- */
-std::string qlistToString(QList<QCameraDevice> cameras) {
-  std::string result = "";
+Table qlistToTable(QList<QCameraDevice> cameras) {
+  std::vector<std::string> headers = {"Index", "id", "isDefault",
+                                      "Description"};
+  std::vector<std::vector<std::string>> rows;
+  rows.push_back(headers);
   for (int i = 0; i < cameras.size(); i++) {
-    std::string description = cameras[i].description().toStdString();
-    result += std::to_string(i) + ": " + description + "\n";
+    QCameraDevice camera = cameras.at(i);
+    std::vector<std::string> row;
+    row.push_back(std::to_string(i));
+    row.push_back(camera.id().toStdString());
+    row.push_back(std::to_string(camera.isDefault()));
+    row.push_back(camera.description().toStdString());
+    rows.push_back(row);
+  }
+  return rows;
+}
+std::string tableToString(Table table) {
+  std::string result = "";
+  result += "\n";
+  for (int i = 0; i < table.size(); i++) {
+    std::vector<std::string> row = table.at(i);
+    for (int j = 0; j < row.size(); j++) {
+      result += row.at(j);
+      result += "\t";
+    }
+    result += "\n";
   }
   return result;
 }
