@@ -1,5 +1,5 @@
-#include "./mainwindow.h"
-#include "./videoscene.h"
+#include "./mainwindow.hpp"
+#include "./videoscene.hpp"
 #include <QMainWindow>
 #include <QMediaDevices>
 #include <boost/optional.hpp>

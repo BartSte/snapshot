@@ -3,7 +3,7 @@
 
 #define private public
 
-#include <argparse.h>
+#include <argparse.hpp>
 
 /**
  * @brief Tests the ArgParse::parse() function.

@@ -22,11 +22,11 @@ add_library(
   gui
   src/mainwindow.cpp
   src/mainwindow.ui
-  src/videoscene.h
+  src/videoscene.hpp
   src/videoscene.cpp
   src/argparse.cpp
-  src/argparse.h
-  src/logger.h
+  src/argparse.hpp
+  src/logger.hpp
   src/logger.cpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include

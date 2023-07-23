@@ -1,4 +1,4 @@
-#include "./argparse.h"
+#include "./argparse.hpp"
 #include <cxxopts.hpp>
 #include <iostream>
 

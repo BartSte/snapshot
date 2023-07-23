@@ -1,4 +1,4 @@
-#include "./videoscene.h"
+#include "./videoscene.hpp"
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>

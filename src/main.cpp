@@ -1,24 +1,50 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "./argparse.h"
-#include "./logger.h"
-#include "./mainwindow.h"
+#include "./argparse.hpp"
+#include "./logger.hpp"
+#include "./mainwindow.hpp"
 #include <QApplication>
 #include <cxxopts.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 
+/**
+ * @brief initLogger
+ *
+ * Initialize the logger.
+ *
+ * @param args The cli arguments
+ */
 void initLogger(cxxopts::ParseResult args) {
   std::string loglevel = args["loglevel"].as<std::string>();
   std::string pattern = args["pattern"].as<std::string>();
   setLogger(loglevel, pattern);
 }
 
+/**
+ * @brief showHelp
+ *
+ * Show the help string.
+ *
+ * @param args The cli arguments
+ *
+ * @return exit code
+ */
 int showHelp(cxxopts::ParseResult args) {
   std::cout << args["help"].as<std::string>() << std::endl;
   return 0;
 }
 
+/**
+ * @brief showGui
+ *
+ * Show the GUI.
+ *
+ * @param argc The number of arguments
+ * @param argv The cli arguments
+ *
+ * @return exit code
+ */
 int showGui(int argc, char *argv[]) {
   QApplication app(argc, argv);
   MainWindow window;

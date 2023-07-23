@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./ui_mainwindow.h"
-#include "./videoscene.h"
+#include "./videoscene.hpp"
 #include <QMainWindow>
 #include <boost/optional.hpp>
 
