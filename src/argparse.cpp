@@ -20,9 +20,11 @@ ArgParse::ArgParse(int argc, char *argv[])
     ("h,help", "Print help")
     ("g,gui", "Start the GUI")
     ("l,list", "List available cameras")
+    ("c,config", "Path to the config file",
+    cxxopts::value<std::string>()->default_value("$HOME/.config/config.json"))
     ("loglevel", "Set the loglevel to CRITICAL, ERROR, WARNING, INFO, or DEBUG",
     cxxopts::value<std::string>()->default_value("INFO"))
-    ("pattern", "Set the log pattern",
+    ("pattern", "Set the log pattern (see spdlog docs for details)",
     cxxopts::value<std::string>()->default_value("[%Y-%m-%d %H:%M:%S.%e] " \
                                                  "[%l] [%s:%# @ %!] %v"));
   // clang-format on

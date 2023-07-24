@@ -23,17 +23,14 @@ void initLogger(cxxopts::ParseResult args) {
 }
 
 /**
- * @brief showHelp
+ * @brief readConfig
  *
- * Show the help string.
+ * Read the config file.
  *
- * @param args The cli arguments
- *
- * @return exit code
+ * @param path The path to the config file
  */
-int showHelp(cxxopts::ParseResult args) {
-  std::cout << args["help"].as<std::string>() << std::endl;
-  return 0;
+void readConfig(std::string path) {
+  SPDLOG_DEBUG("Reading config file from {}", path);
 }
 
 /**
@@ -73,9 +70,11 @@ int main(int argc, char *argv[]) {
   cxxopts::ParseResult args = parser.parse();
 
   initLogger(args);
+  readConfig(args["config"].as<std::string>());
 
   if (args.count("help")) {
-    return showHelp(args);
+    std::cout << parser.help() << std::endl;
+    return 0;
 
   } else if (args.count("list")) {
     return printAvailableCameras(argc, argv);
