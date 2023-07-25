@@ -31,7 +31,9 @@ add_library(
   src/mainwindow.cpp
   src/mainwindow.ui
   src/videoscene.cpp
-  src/videoscene.hpp)
+  src/videoscene.hpp
+  src/config.cpp
+  src/config.hpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})
@@ -52,5 +54,6 @@ FetchContent_Declare(
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
 FetchContent_MakeAvailable(googletest)
-add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp)
+add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp
+                     tests/config_test.cpp)
 target_link_libraries(tests gtest gui)

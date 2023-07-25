@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QCameraDevice>
 #include <boost/optional.hpp>
 
