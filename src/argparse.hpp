@@ -18,4 +18,6 @@ class ArgParse {
   std::string program;
   std::string description;
   cxxopts::Options options;
+
+  std::string getHome();
 };

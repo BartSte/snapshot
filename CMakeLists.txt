@@ -15,8 +15,10 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 # Gui
+#TODO: split the GUI from the non-gui (e.g. list)
+file(COPY ${CMAKE_SOURCE_DIR}/static DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 find_package(spdlog REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 add_library(
   gui
@@ -55,5 +57,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp
-                     tests/config_test.cpp)
+                     tests/config_test.cpp resources/resources.qrc)
 target_link_libraries(tests gtest gui)

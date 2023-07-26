@@ -1,6 +1,5 @@
 #include "./mainwindow.hpp"
 #include "./camera.hpp"
-#include "./list.hpp"
 #include "./videoscene.hpp"
 #include <QMainWindow>
 #include <QMediaDevices>

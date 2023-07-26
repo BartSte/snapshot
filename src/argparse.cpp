@@ -1,6 +1,11 @@
 #include "./argparse.hpp"
+#include <boost/filesystem.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
+
+#define DEFAULT_STRING cxxopts::value<std::string>()->default_value
+
+namespace fs = boost::filesystem;
 
 /**
  * @brief Construct a new Arg Parse:: Arg Parse object
@@ -15,19 +20,44 @@ ArgParse::ArgParse(int argc, char *argv[])
       description("Command line interface for taking camera snapshots.\n"),
       options(program, description) {
 
+  fs::path home(getHome());
+  fs::path path_config(home / ".config" / "snapshot" / "config.ini");
+
   // clang-format off
   options.add_options()
     ("h,help", "Print help")
+
     ("g,gui", "Start the GUI")
+
     ("l,list", "List available cameras")
+
+    ("camera-index", "Select the camera by its index shown by the --list " \
+     "command")
+
     ("c,config", "Path to the config file",
-    cxxopts::value<std::string>()->default_value("$HOME/.config/config.json"))
+    DEFAULT_STRING(path_config.string()))
+
     ("loglevel", "Set the loglevel to CRITICAL, ERROR, WARNING, INFO, or DEBUG",
-    cxxopts::value<std::string>()->default_value("INFO"))
+    DEFAULT_STRING("INFO"))
+
     ("pattern", "Set the log pattern (see spdlog docs for details)",
-    cxxopts::value<std::string>()->default_value("[%Y-%m-%d %H:%M:%S.%e] " \
-                                                 "[%l] [%s:%# @ %!] %v"));
+    DEFAULT_STRING("[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"));
   // clang-format on
+}
+
+/**
+ * @brief Get the home directory
+ *
+ * Cross platform home directory expansion.
+ *
+ * @return The home directory
+ */
+std::string ArgParse::getHome() {
+  std::string home = getenv("HOME");
+  if (home.empty()) {
+    home = getenv("USERPROFILE");
+  }
+  return home;
 }
 
 /**

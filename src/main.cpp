@@ -3,11 +3,16 @@
 #include "./argparse.hpp"
 #include "./list.hpp"
 #include "./logger.hpp"
+#include "./config.hpp"
 #include "./mainwindow.hpp"
 #include <QApplication>
+#include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <QFile>
+
+const char default_config_path[] = "./static/config.ini";
 
 /**
  * @brief initLogger
@@ -29,8 +34,12 @@ void initLogger(cxxopts::ParseResult args) {
  *
  * @param path The path to the config file
  */
-void readConfig(std::string path) {
-  SPDLOG_DEBUG("Reading config file from {}", path);
+void readConfig(std::string path_user, std::string path_default) {
+  SPDLOG_DEBUG("Reading user config file from {}", path_user);
+  SPDLOG_DEBUG("Reading default config file from {}", path_default);
+
+  boost::property_tree::ptree config_default = parseConfig(path_default);
+  boost::property_tree::ptree config_user = parseConfig(path_user);
 }
 
 /**
@@ -70,7 +79,7 @@ int main(int argc, char *argv[]) {
   cxxopts::ParseResult args = parser.parse();
 
   initLogger(args);
-  readConfig(args["config"].as<std::string>());
+  readConfig(args["config"].as<std::string>(), default_config_path);
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;

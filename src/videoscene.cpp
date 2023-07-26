@@ -26,7 +26,7 @@ VideoScene::VideoScene(QObject *parent)
       session(parent),
       textItem(),
       videoItem() {
-  setPixmap(":/images/disconnected.png");
+  setPixmap(":/disconnected.png");
   setText("No camera available");
 }
 
