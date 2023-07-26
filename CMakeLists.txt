@@ -14,9 +14,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
-# Gui
-#TODO: split the GUI from the non-gui (e.g. list)
-file(COPY ${CMAKE_SOURCE_DIR}/static DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Gui TODO: split the GUI from the non-gui (e.g. list)
+file(COPY ${CMAKE_SOURCE_DIR}/src/static
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
@@ -47,6 +47,8 @@ add_executable(snapshot src/main.cpp resources/resources.qrc)
 target_link_libraries(snapshot gui)
 
 # Tests
+file(COPY ${CMAKE_SOURCE_DIR}/tests/static
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include(GoogleTest)
 include(FetchContent)
