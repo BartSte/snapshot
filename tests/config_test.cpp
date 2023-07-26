@@ -1,9 +1,7 @@
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <config.hpp>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <string>
-#include <QFile>
 
 /**
  * @brief Tests the ArgParse::parse() function.
