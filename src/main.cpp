@@ -39,12 +39,17 @@ void initLogger(cxxopts::ParseResult args) {
  * @param path The path to the config file
  */
 pt::ptree readConfig(std::string path_user, std::string path_default) {
-  SPDLOG_DEBUG("Reading user config file from {}", path_user);
-  SPDLOG_DEBUG("Reading default config file from {}", path_default);
 
   pt::ptree config = parseConfig(path_default);
-  pt::ptree config_user = parseConfig(path_user);
-  config.insert(config.end(), config_user.begin(), config_user.end());
+  SPDLOG_DEBUG("Reading default config file from {}", path_default);
+
+  if (fs::exists(path_user)) {
+    SPDLOG_DEBUG("Reading user config file from {}", path_user);
+    pt::ptree config_user = parseConfig(path_user);
+    config.insert(config.end(), config_user.begin(), config_user.end());
+  } else {
+    SPDLOG_INFO("User config file does not exist.");
+  }
 
   return config;
 }
