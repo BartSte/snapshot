@@ -1,0 +1,6 @@
+{
+    "gui": true,
+    "list": true,
+    "loglevel": "debug",
+    "pattern": "foo"
+}

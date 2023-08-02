@@ -21,7 +21,7 @@ ArgParse::ArgParse(int argc, char *argv[])
       options(program, description) {
 
   fs::path home(getHome());
-  fs::path path_config(home / ".config" / "snapshot" / "config.ini");
+  fs::path path_config(home / ".config" / "snapshot" / "config.json");
 
   // clang-format off
   options.add_options()

@@ -1,10 +1,5 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "./argparse.hpp"
-#include "./config.hpp"
-#include "./list.hpp"
-#include "./logger.hpp"
-#include "./mainwindow.hpp"
 #include <QApplication>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
@@ -12,6 +7,12 @@
 #include <cxxopts.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
+
+#include "./argparse.hpp"
+#include "./config.hpp"
+#include "./list.hpp"
+#include "./logger.hpp"
+#include "./mainwindow.hpp"
 
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
@@ -29,29 +30,6 @@ void initLogger(cxxopts::ParseResult args) {
   std::string loglevel = args["loglevel"].as<std::string>();
   std::string pattern = args["pattern"].as<std::string>();
   setLogger(loglevel, pattern);
-}
-
-/**
- * @brief readConfig
- *
- * Read the config file.
- *
- * @param path The path to the config file
- */
-pt::ptree readConfig(std::string path_user, std::string path_default) {
-
-  pt::ptree config = parseConfig(path_default);
-  SPDLOG_DEBUG("Reading default config file from {}", path_default);
-
-  if (fs::exists(path_user)) {
-    SPDLOG_DEBUG("Reading user config file from {}", path_user);
-    pt::ptree config_user = parseConfig(path_user);
-    config.insert(config.end(), config_user.begin(), config_user.end());
-  } else {
-    SPDLOG_INFO("User config file does not exist.");
-  }
-
-  return config;
 }
 
 /**
@@ -92,9 +70,9 @@ int main(int argc, char *argv[]) {
 
   initLogger(args);
 
-  const fs::path path_default_config = root / "static/config.ini";
+  const std::string path_default_config = (root / "static/config.json").string();
   const std::string path_user_config = args["config"].as<std::string>();
-  pt::ptree config = readConfig(path_user_config, path_default_config.string());
+  pt::ptree config = parseConfigs(path_user_config, path_default_config);
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;
