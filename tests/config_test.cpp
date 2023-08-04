@@ -1,7 +1,7 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <config.hpp>
+#include <helpers/config.hpp>
 #include <gtest/gtest.h>
 #include <string>
 

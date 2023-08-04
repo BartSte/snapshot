@@ -1,9 +1,10 @@
 #pragma once
 
-#include "./ui_mainwindow.h"
-#include "./videoscene.hpp"
 #include <QMainWindow>
 #include <boost/optional.hpp>
+
+#include "./gui/videoscene.hpp"
+#include "./ui_mainwindow.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
 

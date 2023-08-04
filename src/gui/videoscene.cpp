@@ -1,4 +1,3 @@
-#include "./videoscene.hpp"
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
@@ -8,6 +7,8 @@
 #include <qcameradevice.h>
 #include <qobject.h>
 #include <spdlog/spdlog.h>
+
+#include "./gui/videoscene.hpp"
 
 const float constRatio = 0.8;
 const float textOffset = 10;

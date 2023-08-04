@@ -1,11 +1,12 @@
-#include "./mainwindow.hpp"
-#include "./camera.hpp"
-#include "./videoscene.hpp"
 #include <QMainWindow>
 #include <QMediaDevices>
 #include <boost/optional.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
+
+#include "./camera.hpp"
+#include "./gui/mainwindow.hpp"
+#include "./gui/videoscene.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {

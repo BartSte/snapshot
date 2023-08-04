@@ -22,20 +22,20 @@ find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 add_library(
   gui
-  src/camera.hpp
-  src/argparse.cpp
-  src/argparse.hpp
   src/camera.cpp
+  src/camera.hpp
+  src/gui/mainwindow.cpp
+  src/gui/mainwindow.ui
+  src/gui/videoscene.cpp
+  src/gui/videoscene.hpp
+  src/helpers/argparse.cpp
+  src/helpers/argparse.hpp
+  src/helpers/config.cpp
+  src/helpers/config.hpp
+  src/helpers/logger.cpp
+  src/helpers/logger.hpp
   src/list.cpp
-  src/list.hpp
-  src/logger.cpp
-  src/logger.hpp
-  src/mainwindow.cpp
-  src/mainwindow.ui
-  src/videoscene.cpp
-  src/videoscene.hpp
-  src/config.cpp
-  src/config.hpp)
+  src/list.hpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})

@@ -8,11 +8,11 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-#include "./argparse.hpp"
-#include "./config.hpp"
+#include "./gui/mainwindow.hpp"
+#include "./helpers/argparse.hpp"
+#include "./helpers/config.hpp"
+#include "./helpers/logger.hpp"
 #include "./list.hpp"
-#include "./logger.hpp"
-#include "./mainwindow.hpp"
 
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
@@ -70,7 +70,8 @@ int main(int argc, char *argv[]) {
 
   initLogger(args);
 
-  const std::string path_default_config = (root / "static/config.json").string();
+  const std::string path_default_config =
+      (root / "static/config.json").string();
   const std::string path_user_config = args["config"].as<std::string>();
   pt::ptree config = parseConfigs(path_user_config, path_default_config);
 

@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include "./config.hpp"
+#include "./helpers/config.hpp"
 
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
