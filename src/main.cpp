@@ -6,8 +6,10 @@
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
+#include <qcameradevice.h>
 #include <spdlog/spdlog.h>
 
+#include "./camera.hpp"
 #include "./gui/mainwindow.hpp"
 #include "./helpers/argparse.hpp"
 #include "./helpers/config.hpp"
@@ -18,6 +20,7 @@ namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
 
 extern const fs::path root = boost::dll::program_location().parent_path();
+const fs::path path_config = (root / "static/config.json");
 
 /**
  * @brief initLogger
@@ -60,6 +63,11 @@ int showGui(int argc, char *argv[]) {
   QApplication app(argc, argv);
   MainWindow window;
 
+  boost::optional<QCameraDevice> cameraDevice = selectCamera();
+  if (cameraDevice) {
+    window.setCameraDevice(*cameraDevice);
+  }
+
   window.show();
   return app.exec();
 }
@@ -70,10 +78,10 @@ int main(int argc, char *argv[]) {
 
   initLogger(args);
 
-  const std::string path_default_config =
-      (root / "static/config.json").string();
+  const std::string path_default_config = path_config.string();
   const std::string path_user_config = args["config"].as<std::string>();
   pt::ptree config = parseConfigs(path_user_config, path_default_config);
+  /* config = addArgs(config, args); */
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;

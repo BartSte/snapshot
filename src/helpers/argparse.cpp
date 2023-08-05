@@ -31,8 +31,8 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("l,list", "List available cameras")
 
-    ("camera-index", "Select the camera by its index shown by the --list " \
-     "command")
+    ("camera", "Select a camera by the name shown by the list command",
+     DEFAULT_STRING(""))
 
     ("c,config", "Path to the config file",
     DEFAULT_STRING(path_config.string()))

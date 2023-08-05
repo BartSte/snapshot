@@ -10,8 +10,10 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
  public:
   VideoScene scene;
+  QCameraDevice cameraDevice;
 
   explicit MainWindow(QWidget *parent = nullptr);
+  void setCameraDevice(const QCameraDevice &cameraDevice);
   void updateScene();
 
   virtual ~MainWindow();

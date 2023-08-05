@@ -4,7 +4,6 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-#include "./camera.hpp"
 #include "./gui/mainwindow.hpp"
 #include "./gui/videoscene.hpp"
 
@@ -12,17 +11,25 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
 
   setupUi(this);
-  QList<QCameraDevice> devices = QMediaDevices::videoInputs();
-  boost::optional<const QCameraDevice> cameraDevice = selectCamera(devices);
-  if (cameraDevice) {
-    scene.setVideo(cameraDevice.get());
-  }
   graphicsView->setGeometry(rect());
   graphicsView->setScene(&scene);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QMainWindow::resizeEvent(event);
+  updateScene();
+}
+
+/**
+ * @brief MainWindow::setCameraDevice
+ *
+ * Set the camera device.
+ *
+ * @param cameraDevice The camera device
+ */
+void MainWindow::setCameraDevice(const QCameraDevice &cameraDevice) {
+  this->cameraDevice = cameraDevice;
+  scene.setVideo(cameraDevice);
   updateScene();
 }
 

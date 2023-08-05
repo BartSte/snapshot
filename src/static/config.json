@@ -1,6 +1,8 @@
 {
+    "help": false,
     "gui": false,
     "list": false,
+    "camera": "",
     "loglevel": "info",
     "pattern": "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"
 }

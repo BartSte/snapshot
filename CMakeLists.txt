@@ -14,37 +14,39 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
-# Gui TODO: split the GUI from the non-gui (e.g. list)
-file(COPY ${CMAKE_SOURCE_DIR}/src/static
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Find packages
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
-add_library(
-  gui
-  src/camera.cpp
-  src/camera.hpp
-  src/gui/mainwindow.cpp
-  src/gui/mainwindow.ui
-  src/gui/videoscene.cpp
-  src/gui/videoscene.hpp
-  src/helpers/argparse.cpp
-  src/helpers/argparse.hpp
-  src/helpers/config.cpp
-  src/helpers/config.hpp
-  src/helpers/logger.cpp
-  src/helpers/logger.hpp
-  src/list.cpp
-  src/list.hpp)
+
+# GUI
+add_library(gui src/gui/mainwindow.cpp src/gui/mainwindow.ui
+                src/gui/videoscene.cpp src/gui/videoscene.hpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                 ${Boost_INCLUDE_DIRS}})
 target_link_libraries(gui Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets
                       ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
-# Snapshot
+# Helpers
+add_library(
+  helpers
+  src/helpers/argparse.cpp src/helpers/argparse.hpp src/helpers/config.cpp
+  src/helpers/config.hpp src/helpers/logger.cpp src/helpers/logger.hpp)
+target_include_directories(
+  helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
+                    ${Boost_INCLUDE_DIRS}})
+target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
+
+# Snapshotlib
+file(COPY ${CMAKE_SOURCE_DIR}/src/static
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_library(snapshotlib src/camera.cpp src/camera.hpp src/list.cpp src/list.hpp)
+target_link_libraries(snapshotlib gui helpers)
+
+# Executable
 add_executable(snapshot src/main.cpp resources/resources.qrc)
-target_link_libraries(snapshot gui)
+target_link_libraries(snapshot snapshotlib)
 
 # Tests
 file(COPY ${CMAKE_SOURCE_DIR}/tests/static
@@ -60,4 +62,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp
                      tests/config_test.cpp resources/resources.qrc)
-target_link_libraries(tests gtest gui)
+target_link_libraries(tests gtest snapshotlib)
