@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
+#include <memory>
 #include <qcameradevice.h>
 #include <spdlog/spdlog.h>
 
@@ -32,7 +33,7 @@ const fs::path path_config = (root / "static/config.json");
 void initLogger(cxxopts::ParseResult args) {
   std::string loglevel = args["loglevel"].as<std::string>();
   std::string pattern = args["pattern"].as<std::string>();
-  setLogger(loglevel, pattern);
+  logging::set(loglevel, pattern);
 }
 
 /**
@@ -78,10 +79,10 @@ int main(int argc, char *argv[]) {
 
   initLogger(args);
 
-  const std::string path_default_config = path_config.string();
-  const std::string path_user_config = args["config"].as<std::string>();
-  pt::ptree config = parseConfigs(path_user_config, path_default_config);
-  /* config = addArgs(config, args); */
+  const std::string path_default = path_config.string();
+  const std::string path_user = args["config"].as<std::string>();
+  pt::ptree config = config::parseUserDefault(path_user, path_default);
+  config::merge(&config, args);
 
   if (args.count("help")) {
     std::cout << parser.help() << std::endl;

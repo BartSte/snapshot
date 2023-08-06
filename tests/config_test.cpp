@@ -1,8 +1,9 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <helpers/config.hpp>
 #include <gtest/gtest.h>
+#include <helpers/config.hpp>
+#include <memory>
 #include <string>
 
 namespace fs = boost::filesystem;
@@ -15,7 +16,7 @@ extern const boost::filesystem::path root;
 TEST(parseConfigTest, BasicAssertions) {
   fs::path path = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config = parseConfig(path.string());
+  boost::property_tree::ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);
@@ -23,21 +24,21 @@ TEST(parseConfigTest, BasicAssertions) {
 }
 
 /**
- * @brief Tests the mergeConfigs function.
- */ 
-TEST(mergeConfigsTest, BasicAssertions) {
+ * @brief Tests the merge function.
+ */
+TEST(mergeTest, BasicAssertions) {
   // makeg ptree with 1 key value pair
   pt::ptree user;
-  pt::ptree default_;
+  pt::ptree config;
 
   user.put("foo", true);
-  default_.put("foo", false);
-  default_.put("bar", false);
+  config.put("foo", false);
+  config.put("bar", false);
 
-  boost::property_tree::ptree merged = mergeConfigs(user, default_);
+  config::merge(&config, user);
 
-  ASSERT_EQ(merged.get<bool>("foo"), true);
-  ASSERT_EQ(merged.get<bool>("bar"), false);
+  ASSERT_EQ(config.get<bool>("foo"), true);
+  ASSERT_EQ(config.get<bool>("bar"), false);
 }
 
 /**
@@ -47,8 +48,8 @@ TEST(parseConfigsTest, BasicAssertions) {
   fs::path path = root / "static" / "config_user_test.json";
   fs::path path_default = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config = parseConfigs(path.string(),
-                                                    path_default.string());
+  boost::property_tree::ptree config =
+      config::parseUserDefault(path.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), true);
   ASSERT_EQ(config.get<bool>("list"), true);
@@ -56,12 +57,12 @@ TEST(parseConfigsTest, BasicAssertions) {
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }
 
-TEST(parseConfigsTestIncomplete, BasicAssertions){
+TEST(parseConfigsTestIncomplete, BasicAssertions) {
   fs::path path = root / "static" / "config_user_incomplete_test.json";
   fs::path path_default = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config = parseConfigs(path.string(),
-                                                    path_default.string());
+  boost::property_tree::ptree config =
+      config::parseUserDefault(path.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);

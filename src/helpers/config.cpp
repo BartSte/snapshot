@@ -1,3 +1,5 @@
+#include <boost/property_tree/ptree_fwd.hpp>
+#include <memory>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <boost/filesystem.hpp>
@@ -12,7 +14,7 @@ namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
 
 /**
- * @brief parseConfigs
+ * @brief parseUserDefault
  *
  * Parses two config files where first one takes precedence over the second. If
  * the first one does not exist, only the second one is used. If the second one
@@ -23,43 +25,39 @@ namespace fs = boost::filesystem;
  *
  * @return A boost::property_tree::ptree containing the parsed config.
  */
-pt::ptree parseConfigs(const std::string &path_user,
-                       const std::string &path_default) {
+pt::ptree config::parseUserDefault(const std::string &path_user,
+                                   const std::string &path_default) {
 
-  pt::ptree config = parseConfig(path_default);
+  pt::ptree config = config::parse(path_default);
   SPDLOG_DEBUG("Reading default config file from {}", path_default);
 
   if (fs::exists(path_user)) {
-
     SPDLOG_DEBUG("Reading user config file from {}", path_user);
-    pt::ptree config_user = parseConfig(path_user);
-    pt::ptree config_merged = mergeConfigs(config_user, config);
-
-    return config_merged;
+    pt::ptree config_user = config::parse(path_user);
+    config::merge(&config, config_user);
 
   } else {
-
     SPDLOG_INFO("User config file does not exist.");
-    return config;
   }
+  return config;
 }
 
 /**
- * @brief parseConfig
+ * @brief parse
  *
  * Parses a config *.json file.
  *
  * @param path The path to a config *.json file.
  * @return The parsed config as a boost::property_tree::ptree.
  */
-boost::property_tree::ptree parseConfig(const std::string &path) {
+boost::property_tree::ptree config::parse(const std::string &path) {
   pt::ptree tree;
   pt::json_parser::read_json(path, tree);
   return tree;
 }
 
 /**
- * @brief mergeConfigs
+ * @brief merge
  *
  * Merges two boost::property_tree::ptree objects. The first one takes
  * precedence over the second if there are duplicate keys.
@@ -68,10 +66,25 @@ boost::property_tree::ptree parseConfig(const std::string &path) {
  * @param config_user The second config.
  * @return The merged config.
  */
-pt::ptree mergeConfigs(const pt::ptree &config_user, const pt::ptree &config ) {
-  pt::ptree config_merged = config;
-  for (const auto &kv : config_user) {
-    config_merged.put(kv.first, kv.second.data());
+void config::merge(pt::ptree *config, const pt::ptree &config_user) {
+  for (const auto &key_value : config_user) {
+    config->put(key_value.first, key_value.second.data());
   }
-  return config_merged;
+}
+
+/**
+ * @brief merge
+ *
+ * Merges a boost::property_tree::ptree object with a
+ * cxxopts::ParseResult object. The ParseResult object takes precedence over the
+ * ptree object if there are duplicate keys.
+ *
+ * @param config The config.
+ * @param args The ParseResult object.
+ * @return The merged config.
+ */
+void config::merge(pt::ptree *config, const cxxopts::ParseResult &args) {
+  for (const auto &key_value : args.arguments()) {
+    config->put(key_value.key(), key_value.value());
+  }
 }
