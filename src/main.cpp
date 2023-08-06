@@ -82,16 +82,17 @@ int main(int argc, char *argv[]) {
   const std::string path_default = path_config.string();
   const std::string path_user = args["config"].as<std::string>();
   pt::ptree config = config::parseUserDefault(path_user, path_default);
-  config::merge(&config, args);
 
-  if (args.count("help")) {
+  config::merge(config, args);
+
+  if (config.count("help")) {
     std::cout << parser.help() << std::endl;
     return 0;
 
-  } else if (args.count("list")) {
+  } else if (config.count("list")) {
     return printAvailableCameras(argc, argv);
 
-  } else if (args.count("gui")) {
+  } else if (config.count("gui")) {
     return showGui(argc, argv);
   }
 }

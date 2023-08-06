@@ -1,5 +1,6 @@
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <memory>
+#include <utility>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <boost/filesystem.hpp>
@@ -34,7 +35,7 @@ pt::ptree config::parseUserDefault(const std::string &path_user,
   if (fs::exists(path_user)) {
     SPDLOG_DEBUG("Reading user config file from {}", path_user);
     pt::ptree config_user = config::parse(path_user);
-    config::merge(&config, config_user);
+    config::merge(config, config_user);
 
   } else {
     SPDLOG_INFO("User config file does not exist.");
@@ -66,9 +67,9 @@ boost::property_tree::ptree config::parse(const std::string &path) {
  * @param config_user The second config.
  * @return The merged config.
  */
-void config::merge(pt::ptree *config, const pt::ptree &config_user) {
+void config::merge(pt::ptree &config, const pt::ptree &config_user) {
   for (const auto &key_value : config_user) {
-    config->put(key_value.first, key_value.second.data());
+    config.put(key_value.first, key_value.second.data());
   }
 }
 
@@ -83,8 +84,8 @@ void config::merge(pt::ptree *config, const pt::ptree &config_user) {
  * @param args The ParseResult object.
  * @return The merged config.
  */
-void config::merge(pt::ptree *config, const cxxopts::ParseResult &args) {
+void config::merge(pt::ptree &config, const cxxopts::ParseResult &args) {
   for (const auto &key_value : args.arguments()) {
-    config->put(key_value.key(), key_value.value());
+    config.put(key_value.key(), key_value.value());
   }
 }
