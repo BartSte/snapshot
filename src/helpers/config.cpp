@@ -30,18 +30,17 @@ pt::ptree config::parseUserDefault(const std::string &path_user,
                                    const std::string &path_default) {
 
   pt::ptree config = config::parse(path_default);
-  std::unique_ptr<pt::ptree> pconfig = std::make_unique<pt::ptree>(config);
   SPDLOG_DEBUG("Reading default config file from {}", path_default);
 
   if (fs::exists(path_user)) {
     SPDLOG_DEBUG("Reading user config file from {}", path_user);
     pt::ptree config_user = config::parse(path_user);
-    pconfig = config::merge(std::move(pconfig), config_user);
+    config::merge(config, config_user);
 
   } else {
     SPDLOG_INFO("User config file does not exist.");
   }
-  return *pconfig;
+  return config;
 }
 
 /**
@@ -68,12 +67,10 @@ boost::property_tree::ptree config::parse(const std::string &path) {
  * @param config_user The second config.
  * @return The merged config.
  */
-std::unique_ptr<pt::ptree> config::merge(std::unique_ptr<pt::ptree> config,
-                                         const pt::ptree &config_user) {
+void config::merge(pt::ptree &config, const pt::ptree &config_user) {
   for (const auto &key_value : config_user) {
-    config->put(key_value.first, key_value.second.data());
+    config.put(key_value.first, key_value.second.data());
   }
-  return std::move(config);
 }
 
 /**
@@ -87,10 +84,8 @@ std::unique_ptr<pt::ptree> config::merge(std::unique_ptr<pt::ptree> config,
  * @param args The ParseResult object.
  * @return The merged config.
  */
-std::unique_ptr<pt::ptree> config::merge(std::unique_ptr<pt::ptree> config,
-                                         const cxxopts::ParseResult &args) {
+void config::merge(pt::ptree &config, const cxxopts::ParseResult &args) {
   for (const auto &key_value : args.arguments()) {
-    config->put(key_value.key(), key_value.value());
+    config.put(key_value.key(), key_value.value());
   }
-  return std::move(config);
 }

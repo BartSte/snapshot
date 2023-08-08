@@ -10,14 +10,10 @@ namespace pt = boost::property_tree;
 
 namespace config {
 
-// TODO(barts) make this module use smart pointers
-// TODO (barts) fix seg fault
 pt::ptree parseUserDefault(const std::string &path_user,
                            const std::string &path_default);
 pt::ptree parse(const std::string &path);
-std::unique_ptr<pt::ptree> merge(std::unique_ptr<pt::ptree> config,
-                                 const pt::ptree &config_user);
-std::unique_ptr<pt::ptree> merge(std::unique_ptr<pt::ptree> config,
-                                 const cxxopts::ParseResult &args);
+void merge(pt::ptree &config, const pt::ptree &config_user);
+void merge(pt::ptree &config, const cxxopts::ParseResult &args);
 
 } // namespace config

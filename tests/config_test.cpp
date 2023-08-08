@@ -29,16 +29,16 @@ TEST(parseConfigTest, BasicAssertions) {
 TEST(mergeTest, BasicAssertions) {
   // makeg ptree with 1 key value pair
   pt::ptree user;
-  std::unique_ptr<pt::ptree> pconfig;
+  pt::ptree pconfig;
 
   user.put("foo", true);
-  pconfig->put("foo", false);
-  pconfig->put("bar", false);
+  pconfig.put("foo", false);
+  pconfig.put("bar", false);
 
-  pconfig = config::merge(std::move(pconfig), user);
+  config::merge(pconfig, user);
 
-  ASSERT_EQ(pconfig->get<bool>("foo"), true);
-  ASSERT_EQ(pconfig->get<bool>("bar"), false);
+  ASSERT_EQ(pconfig.get<bool>("foo"), true);
+  ASSERT_EQ(pconfig.get<bool>("bar"), false);
 }
 
 /**
