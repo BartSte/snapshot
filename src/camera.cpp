@@ -12,6 +12,8 @@
 namespace pt = boost::property_tree;
 using boost::optional;
 
+extern const std::string streams[4];
+
 /**
  * @brief selectCameraByName
  *
@@ -60,4 +62,30 @@ optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
   }
   SPDLOG_WARN("Camera not found");
   return boost::none;
+}
+
+/**
+ * TODO: write test
+ *
+ * @brief selectCameraStream
+ *
+ * Select a camera stream from the config. If the stream is not found, return
+ * boost::none.
+ *
+ * @param config The config to select from.
+ * @return The selected stream.
+ */
+std::string selectCameraStream(const pt::ptree &config) {
+  std::string url = config.get<std::string>("camera");
+
+  for (const std::string &stream : streams) {
+    SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
+    if (url.find(stream) != std::string::npos) {
+      SPDLOG_INFO("Selected stream: {}", url);
+      return url;
+    }
+  }
+
+  SPDLOG_INFO("No stream found.");
+  return "";
 }
