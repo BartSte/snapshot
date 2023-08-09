@@ -1,7 +1,8 @@
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <memory>
 #include <utility>
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/json_parser.hpp>

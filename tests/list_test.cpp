@@ -5,7 +5,7 @@
 /**
  * @brief Tests the ArgParse::parse() function.
  */
-TEST(listTestlistCameras, BasicAssertions) {
+TEST(listTest, listTestlistCameras) {
   std::string result = listCameras();
   std::cout << result << std::endl;
 }

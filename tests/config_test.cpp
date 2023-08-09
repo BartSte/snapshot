@@ -7,26 +7,29 @@
 #include <string>
 
 namespace fs = boost::filesystem;
+namespace pt = pt;
 
 extern const boost::filesystem::path root;
 
 /**
  * @brief Tests the parseConfig function.
  */
-TEST(parseConfigTest, BasicAssertions) {
+TEST(configTest, parseConfig) {
   fs::path path = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config = config::parse(path.string());
+  pt::ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);
+  ASSERT_EQ(config.get<std::string>("camera"), "default");
   ASSERT_EQ(config.get<std::string>("loglevel"), "info");
+  ASSERT_EQ(config.get<std::string>("pattern"), "pattern");
 }
 
 /**
  * @brief Tests the merge function.
  */
-TEST(mergeTest, BasicAssertions) {
+TEST(configTest, merge) {
   // makeg ptree with 1 key value pair
   pt::ptree user;
   pt::ptree pconfig;
@@ -44,28 +47,30 @@ TEST(mergeTest, BasicAssertions) {
 /**
  * @brief The config_user_test should overwrite the config_test settings.
  */
-TEST(parseConfigsTest, BasicAssertions) {
+TEST(configTest, parseConfigs) {
   fs::path path = root / "static" / "config_user_test.json";
   fs::path path_default = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config =
+  pt::ptree config =
       config::parseUserDefault(path.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), true);
   ASSERT_EQ(config.get<bool>("list"), true);
+  ASSERT_EQ(config.get<std::string>("camera"), "usb_cam");
   ASSERT_EQ(config.get<std::string>("loglevel"), "debug");
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }
 
-TEST(parseConfigsTestIncomplete, BasicAssertions) {
+TEST(configTest, parseConfigsTestIncomplete) {
   fs::path path = root / "static" / "config_user_incomplete_test.json";
   fs::path path_default = root / "static" / "config_test.json";
 
-  boost::property_tree::ptree config =
+  pt::ptree config =
       config::parseUserDefault(path.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);
+  ASSERT_EQ(config.get<std::string>("camera"), "default");
   ASSERT_EQ(config.get<std::string>("loglevel"), "info");
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }

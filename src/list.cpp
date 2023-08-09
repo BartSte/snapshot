@@ -66,17 +66,16 @@ std::string tableToString(Table table, std::string separator = " | ") {
  * @return The QList as a Table.
  **/
 Table qlistToTable(QList<QCameraDevice> cameras) {
-  std::vector<std::string> headers = {"Index", "id", "isDefault",
-                                      "Description"};
+  std::vector<std::string> headers = {"Index", "Name", "ID", "Is Default"};
   std::vector<std::vector<std::string>> rows;
   rows.push_back(headers);
   for (int i = 0; i < cameras.size(); i++) {
     QCameraDevice camera = cameras.at(i);
     std::vector<std::string> row;
     row.push_back(std::to_string(i));
-    row.push_back(camera.id().toStdString());
-    row.push_back(std::to_string(camera.isDefault()));
     row.push_back(camera.description().toStdString());
+    row.push_back(camera.id().toStdString());
+    row.push_back(camera.isDefault() ? "true" : "false");
     rows.push_back(row);
   }
   return rows;
