@@ -1,3 +1,5 @@
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>

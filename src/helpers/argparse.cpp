@@ -31,14 +31,14 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("l,list", "List available cameras")
 
-    ("camera", "Select a camera by the name shown by the list command",
-     DEFAULT_STRING(""))
+    ("c,camera", "Select a camera by the name shown by the list command",
+     DEFAULT_STRING("default"))
 
-    ("c,config", "Path to the config file",
+    ("config", "Path to the config file",
     DEFAULT_STRING(path_config.string()))
 
     ("loglevel", "Set the loglevel to CRITICAL, ERROR, WARNING, INFO, or DEBUG",
-    DEFAULT_STRING("INFO"))
+    DEFAULT_STRING("warning"))
 
     ("pattern", "Set the log pattern (see spdlog docs for details)",
     DEFAULT_STRING("[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"));

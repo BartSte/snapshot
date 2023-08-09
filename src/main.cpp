@@ -24,15 +24,32 @@ extern const fs::path root = boost::dll::program_location().parent_path();
 const fs::path path_config = (root / "static/config.json");
 
 /**
+ * @brief getConfig
+ *
+ * Get the config from the config file and the cli arguments.
+ *
+ * @param path_config The path to the config file
+ * @param args The cli arguments
+ * @return The config
+ */
+const pt::ptree getConfig(const cxxopts::ParseResult &args) {
+  const std::string path_default = path_config.string();
+  const std::string path_user = args["config"].as<std::string>();
+  pt::ptree config = config::parseUserDefault(path_user, path_default);
+  config::merge(config, args);
+  return config;
+}
+
+/**
  * @brief initLogger
  *
  * Initialize the logger.
  *
  * @param args The cli arguments
  */
-void initLogger(cxxopts::ParseResult args) {
-  std::string loglevel = args["loglevel"].as<std::string>();
-  std::string pattern = args["pattern"].as<std::string>();
+void initLogger(const pt::ptree &config) {
+  std::string loglevel = config.get<std::string>("loglevel");
+  std::string pattern = config.get<std::string>("pattern");
   logging::set(loglevel, pattern);
 }
 
@@ -60,11 +77,11 @@ int printAvailableCameras(int argc, char *argv[]) {
  *
  * @return exit code
  */
-int showGui(int argc, char *argv[]) {
+int showGui(int argc, char *argv[], const pt::ptree &config) {
   QApplication app(argc, argv);
   MainWindow window;
 
-  boost::optional<QCameraDevice> cameraDevice = selectCamera();
+  boost::optional<QCameraDevice> cameraDevice = selectCamera(config);
   if (cameraDevice) {
     window.setCameraDevice(*cameraDevice);
   }
@@ -76,23 +93,18 @@ int showGui(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
   ArgParse parser(argc, argv);
   cxxopts::ParseResult args = parser.parse();
+  const pt::ptree config = getConfig(args);
 
-  initLogger(args);
+  initLogger(config);
 
-  const std::string path_default = path_config.string();
-  const std::string path_user = args["config"].as<std::string>();
-  pt::ptree config = config::parseUserDefault(path_user, path_default);
-
-  config::merge(config, args);
-
-  if (config.count("help")) {
+  if (config.get<bool>("help")) {
     std::cout << parser.help() << std::endl;
     return 0;
-
-  } else if (config.count("list")) {
+  }
+  if (config.get<bool>("list")) {
     return printAvailableCameras(argc, argv);
-
-  } else if (config.count("gui")) {
-    return showGui(argc, argv);
+  }
+  if (config.get<bool>("gui")) {
+    return showGui(argc, argv, config);
   }
 }
