@@ -1,0 +1,8 @@
+#!/bin/env bash
+# 
+# View the stream using vlc by using the following command when using localhost
+# vlc udp://@localhost:port
+
+file=$1
+address=$2 # udp://ip:port
+ffmpeg -stream_loop -1 -i $file -c:v libx264 -f mpegts $address

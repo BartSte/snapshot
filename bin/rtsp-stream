@@ -1,0 +1,9 @@
+#!/bin/env bash
+# 
+# View the stream using vlc by using the following command when using localhost
+# vlc rtsp://localhost:port/stream
+
+
+file=$1
+address=$2 # rtsp://ip:port/stream
+cvlc --loop $1 --sout="#gather:rtp{sdp=$address}" --sout-keep

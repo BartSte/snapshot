@@ -21,15 +21,28 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 }
 
 /**
- * @brief MainWindow::setCameraDevice
+ * @brief MainWindow::setVideo
  *
  * Set the camera device.
  *
  * @param cameraDevice The camera device
  */
-void MainWindow::setCameraDevice(const QCameraDevice &cameraDevice) {
+void MainWindow::setVideo(const QCameraDevice &cameraDevice) {
   this->cameraDevice = cameraDevice;
   scene.setVideo(cameraDevice);
+  updateScene();
+}
+
+/**
+ * @brief MainWindow::setVideo
+ *
+ * Set the video stream.
+ *
+ * @param cameraDevice The camera device
+ */
+void MainWindow::setVideo(const QString &url) {
+  this->url = url;
+  scene.setVideo(url);
   updateScene();
 }
 

@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
 #include <QMediaCaptureSession>
+#include <QMediaPlayer>
 #include <qobject.h>
 #include <string>
 
@@ -23,6 +24,7 @@ class VideoScene : public QGraphicsScene {
   QGraphicsVideoItem videoItem;
   QGraphicsPixmapItem pixmapItem;
   QMediaCaptureSession session;
+  QMediaPlayer player;
 
   explicit VideoScene(QObject *parent = nullptr);
 
@@ -34,6 +36,7 @@ class VideoScene : public QGraphicsScene {
   void centerText();
 
   void setVideo(const QCameraDevice &device);
+  void setVideo(const QString &url);
   void updateResolution();
   void scaleVideo();
   void centerVideo();
@@ -42,4 +45,5 @@ class VideoScene : public QGraphicsScene {
 
  private:
   void setCamera(const QCameraDevice &device);
+  void setStream(const QString &url);
 };

@@ -83,7 +83,17 @@ int showGui(int argc, char *argv[], const pt::ptree &config) {
 
   boost::optional<QCameraDevice> cameraDevice = selectCamera(config);
   if (cameraDevice) {
-    window.setCameraDevice(*cameraDevice);
+    // TODO(barts): do not dereference pointer here
+    window.setVideo(*cameraDevice);
+  } else {
+    // TODO(barts): refactor this
+    std::string url = config.get<std::string>("camera");
+    if (url.find("rtsp://") == 0 || url.find("udp://") == 0) {
+      window.setVideo(QString::fromStdString(url));
+    } else {
+      SPDLOG_ERROR("No camera found");
+      return 1;
+    }
   }
 
   window.show();
@@ -100,11 +110,14 @@ int main(int argc, char *argv[]) {
   if (config.get<bool>("help")) {
     std::cout << parser.help() << std::endl;
     return 0;
-  }
-  if (config.get<bool>("list")) {
+
+  } else if (config.get<bool>("list")) {
     return printAvailableCameras(argc, argv);
-  }
-  if (config.get<bool>("gui")) {
+
+  } else if (config.get<bool>("gui")) {
     return showGui(argc, argv, config);
+
+  } else {
+    return 0;
   }
 }
