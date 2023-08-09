@@ -28,7 +28,8 @@ VideoScene::VideoScene(QObject *parent)
       pixmapItem(),
       session(parent),
       textItem(),
-      videoItem() {
+      videoItem(),
+      player(parent) {
   setPixmap(":/disconnected.png");
   setText("No camera available");
 }
@@ -112,7 +113,8 @@ void VideoScene::centerText() {
 }
 
 /**
- * @brief TODO
+ * @brief TODO-> use a signal (videoVisible) that hides the pixmap and the
+ * text.
  *
  * @param device
  */
@@ -121,6 +123,19 @@ void VideoScene::setVideo(const QCameraDevice &device) {
   textItem.setVisible(false);
   setCamera(device);
 }
+
+/**
+  * @brief VideoScene::setVideo
+  *
+  * Display an udp or rtsp stream in the scene.
+  * @param url The url of the stream.
+  */
+void VideoScene::setVideo(const QString &url) {
+  pixmapItem.setVisible(false);
+  textItem.setVisible(false);
+  setStream(url);
+}
+
 
 /**
  * @brief VideoScene::updateResolution
@@ -183,6 +198,20 @@ void VideoScene::setCamera(const QCameraDevice &device) {
   session.setVideoOutput(&videoItem);
   camera.start();
   addItem(&videoItem);
+}
+
+/**
+  * @brief VideoScene::setStream
+  * Display an udp stream in the scene.
+  *
+  * @param stream The url of the stream to be displayed.
+  *
+  */
+void VideoScene::setStream(const QString &url) {
+  player.setVideoOutput(&videoItem);
+  player.setSource(QUrl(url));
+  addItem(&videoItem);
+  player.play();
 }
 
 /**
