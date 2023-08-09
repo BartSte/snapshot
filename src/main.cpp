@@ -17,10 +17,12 @@
 #include "./helpers/logger.hpp"
 #include "./list.hpp"
 
-namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
+namespace pt = boost::property_tree;
 
 extern const fs::path root = boost::dll::program_location().parent_path();
+extern const std::string streams[4] = {"rtsp://", "udp://", "http://",
+                                       "https://"};
 const fs::path path_config = (root / "static/config.json");
 
 /**
@@ -81,22 +83,21 @@ int showGui(int argc, char *argv[], const pt::ptree &config) {
   QApplication app(argc, argv);
   MainWindow window;
 
+  std::string cameraStream = selectCameraStream(config);
   boost::optional<QCameraDevice> cameraDevice = selectCamera(config);
-  if (cameraDevice) {
-    // TODO(barts): do not dereference pointer here
+  window.show();
+
+  if (cameraStream != "") {
+    SPDLOG_INFO("Using camera stream: {}", cameraStream);
+    window.setVideo(QString::fromStdString(cameraStream));
+
+  } else if (cameraDevice) {
+    SPDLOG_INFO("Using camera: {}", cameraDevice->description().toStdString());
     window.setVideo(*cameraDevice);
   } else {
-    // TODO(barts): refactor this
-    std::string url = config.get<std::string>("camera");
-    if (url.find("rtsp://") == 0 || url.find("udp://") == 0) {
-      window.setVideo(QString::fromStdString(url));
-    } else {
-      SPDLOG_ERROR("No camera found");
-      return 1;
-    }
+    SPDLOG_WARN("No camera selected.");
   }
 
-  window.show();
   return app.exec();
 }
 

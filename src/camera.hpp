@@ -10,3 +10,4 @@ using boost::optional;
 optional<QCameraDevice> selectCamera(const pt::ptree &config);
 optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
                                            const std::string &name);
+std::string selectCameraStream(const pt::ptree &config);
