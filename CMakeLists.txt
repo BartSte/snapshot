@@ -19,15 +19,6 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 
-# GUI
-add_library(gui src/gui/mainwindow.cpp src/gui/mainwindow.ui
-                src/gui/videoscene.cpp src/gui/videoscene.hpp)
-target_include_directories(
-  gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
-                ${Boost_INCLUDE_DIRS}})
-target_link_libraries(gui Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets
-                      ${Boost_LIBRARIES} spdlog::spdlog_header_only)
-
 # Helpers
 add_library(
   helpers
@@ -38,11 +29,32 @@ target_include_directories(
                     ${Boost_INCLUDE_DIRS}})
 target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
+# Camera
+add_library(camera src/camera.cpp src/camera.hpp)
+target_include_directories(camera INTERFACE ${Boost_INCLUDE_DIRS}})
+target_link_libraries(camera Qt6::Multimedia ${Boost_LIBRARIES}
+                      spdlog::spdlog_header_only)
+
+# GUI
+add_library(gui src/gui/mainwindow.cpp src/gui/mainwindow.ui
+                src/gui/videoscene.cpp src/gui/videoscene.hpp)
+target_include_directories(
+  gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
+                ${Boost_INCLUDE_DIRS}})
+target_link_libraries(
+  gui
+  camera
+  Qt6::Widgets
+  Qt6::Multimedia
+  Qt6::MultimediaWidgets
+  ${Boost_LIBRARIES}
+  spdlog::spdlog_header_only)
+
 # Snapshotlib
 file(COPY ${CMAKE_SOURCE_DIR}/src/static
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_library(snapshotlib src/camera.cpp src/camera.hpp src/list.cpp src/list.hpp)
-target_link_libraries(snapshotlib gui helpers)
+add_library(snapshotlib src/list.cpp src/list.hpp)
+target_link_libraries(snapshotlib gui helpers camera)
 
 # Executable
 add_executable(snapshot src/main.cpp resources/resources.qrc)
