@@ -10,7 +10,6 @@
 #include <qcameradevice.h>
 #include <spdlog/spdlog.h>
 
-#include "./camera.hpp"
 #include "./gui/mainwindow.hpp"
 #include "./helpers/argparse.hpp"
 #include "./helpers/config.hpp"
@@ -24,6 +23,7 @@ extern const fs::path root = boost::dll::program_location().parent_path();
 extern const std::string streams[4] = {"rtsp://", "udp://", "http://",
                                        "https://"};
 const fs::path path_config = (root / "static/config.json");
+const std::string TITLE = "Snap shot machine";
 
 /**
  * @brief getConfig
@@ -82,22 +82,9 @@ int printAvailableCameras(int argc, char *argv[]) {
 int showGui(int argc, char *argv[], const pt::ptree &config) {
   QApplication app(argc, argv);
   MainWindow window;
-
-  std::string cameraStream = selectCameraStream(config);
-  boost::optional<QCameraDevice> cameraDevice = selectCamera(config);
+  window.setWindowTitle(QString::fromStdString(TITLE));
+  window.enableCamera(config.get<std::string>("camera"));
   window.show();
-
-  if (cameraStream != "") {
-    SPDLOG_INFO("Using camera stream: {}", cameraStream);
-    window.setVideo(QString::fromStdString(cameraStream));
-
-  } else if (cameraDevice) {
-    SPDLOG_INFO("Using camera: {}", cameraDevice->description().toStdString());
-    window.setVideo(*cameraDevice);
-  } else {
-    SPDLOG_WARN("No camera selected.");
-  }
-
   return app.exec();
 }
 

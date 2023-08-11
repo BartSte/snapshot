@@ -4,10 +4,9 @@
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-namespace pt = boost::property_tree;
 using boost::optional;
 
-optional<QCameraDevice> selectCamera(const pt::ptree &config);
+optional<QCameraDevice> selectCamera(const std::string &id);
 optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
                                            const std::string &name);
-std::string selectCameraStream(const pt::ptree &config);
+std::string selectStream(const std::string &id);

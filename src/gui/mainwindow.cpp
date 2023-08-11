@@ -1,11 +1,17 @@
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include <QMainWindow>
 #include <QMediaDevices>
 #include <boost/optional.hpp>
+#include <boost/property_tree/ptree_fwd.hpp>
+#include <camera.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 
 #include "./gui/mainwindow.hpp"
 #include "./gui/videoscene.hpp"
+
+namespace pt = boost::property_tree;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
@@ -18,6 +24,28 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QMainWindow::resizeEvent(event);
   updateScene();
+}
+
+/**
+ * @brief MainWindow::enableCamera
+ *
+ * Enable the camera device or the stream.
+ */
+void MainWindow::enableCamera(const std::string &id) {
+  std::string cameraStream = selectStream(id);
+  boost::optional<QCameraDevice> cameraDevice = selectCamera(id);
+
+  if (cameraStream != "") {
+    SPDLOG_INFO("Using stream: {}", cameraStream);
+    setVideo(QString::fromStdString(cameraStream));
+
+  } else if (cameraDevice) {
+    SPDLOG_INFO("Using camera: {}", cameraDevice->description().toStdString());
+    setVideo(*cameraDevice);
+
+  } else {
+    SPDLOG_WARN("No camera selected.");
+  }
 }
 
 /**

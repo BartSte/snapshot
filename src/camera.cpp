@@ -24,10 +24,9 @@ extern const std::string streams[4];
  * @param name The name of the camera to select.
  * @return The selected camera.
  */
-optional<QCameraDevice> selectCamera(const pt::ptree &config) {
-  std::string name = config.get<std::string>("camera");
-  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+optional<QCameraDevice> selectCamera(const std::string &name) {
   SPDLOG_DEBUG("Camera name: {}", name);
+  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
 
   if (cameras.size() == 0) {
     SPDLOG_WARN("No cameras found");
@@ -67,7 +66,7 @@ optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
 /**
  * TODO: write test
  *
- * @brief selectCameraStream
+ * @brief selectStream
  *
  * Select a camera stream from the config. If the stream is not found, return
  * boost::none.
@@ -75,9 +74,7 @@ optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
  * @param config The config to select from.
  * @return The selected stream.
  */
-std::string selectCameraStream(const pt::ptree &config) {
-  std::string url = config.get<std::string>("camera");
-
+std::string selectStream(const std::string &url) {
   for (const std::string &stream : streams) {
     SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
     if (url.find(stream) != std::string::npos) {
