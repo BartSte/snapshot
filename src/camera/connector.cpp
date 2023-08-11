@@ -7,7 +7,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <spdlog/spdlog.h>
 
-#include "./camera.hpp"
+#include "./camera/connector.hpp"
 
 namespace pt = boost::property_tree;
 using boost::optional;

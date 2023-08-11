@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
+#include <camera/list.hpp>
 #include <memory>
 #include <qcameradevice.h>
 #include <spdlog/spdlog.h>
@@ -14,7 +15,6 @@
 #include "./helpers/argparse.hpp"
 #include "./helpers/config.hpp"
 #include "./helpers/logger.hpp"
-#include "./list.hpp"
 
 namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
