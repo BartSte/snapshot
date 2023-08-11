@@ -4,7 +4,7 @@
 #include <QMediaDevices>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <camera.hpp>
+#include <camera/connector.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 

@@ -1,9 +1,10 @@
-#include "./list.hpp"
 #include <QCameraDevice>
 #include <QMediaDevices>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "./camera/list.hpp"
 
 using Table = std::vector<std::vector<std::string>>;
 
