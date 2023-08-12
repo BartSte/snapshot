@@ -4,9 +4,9 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <camera/find.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
-#include <camera/list.hpp>
 #include <memory>
 #include <qcameradevice.h>
 #include <spdlog/spdlog.h>
@@ -19,11 +19,9 @@
 namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
-extern const fs::path root = boost::dll::program_location().parent_path();
-extern const std::string streams[4] = {"rtsp://", "udp://", "http://",
-                                       "https://"};
-const fs::path path_config = (root / "static/config.json");
-const std::string TITLE = "Snap shot machine";
+extern const fs::path ROOT = boost::dll::program_location().parent_path();
+const fs::path PATH_CONFIG = (ROOT / "static/config.json");
+const char *TITLE = "Snap shot machine";
 
 /**
  * @brief getConfig
@@ -35,7 +33,7 @@ const std::string TITLE = "Snap shot machine";
  * @return The config
  */
 const pt::ptree getConfig(const cxxopts::ParseResult &args) {
-  const std::string path_default = path_config.string();
+  const std::string path_default = PATH_CONFIG.string();
   const std::string path_user = args["config"].as<std::string>();
   pt::ptree config = config::parseUserDefault(path_user, path_default);
   config::merge(config, args);
@@ -83,7 +81,7 @@ int showGui(int argc, char *argv[], const pt::ptree &config) {
   QApplication app(argc, argv);
   MainWindow window;
   window.setWindowTitle(QString::fromStdString(TITLE));
-  window.enableCamera(config.get<std::string>("camera"));
+  window.setVideo(config.get<std::string>("camera"));
   window.show();
   return app.exec();
 }

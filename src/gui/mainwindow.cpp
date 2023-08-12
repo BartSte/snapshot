@@ -4,14 +4,11 @@
 #include <QMediaDevices>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <camera/connector.hpp>
+#include <camera/find.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 
 #include "./gui/mainwindow.hpp"
-#include "./gui/videoscene.hpp"
-
-namespace pt = boost::property_tree;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
@@ -31,17 +28,17 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
  *
  * Enable the camera device or the stream.
  */
-void MainWindow::enableCamera(const std::string &id) {
+void MainWindow::setVideo(const std::string &id) {
   std::string cameraStream = selectStream(id);
   boost::optional<QCameraDevice> cameraDevice = selectCamera(id);
 
   if (cameraStream != "") {
     SPDLOG_INFO("Using stream: {}", cameraStream);
-    setVideo(QString::fromStdString(cameraStream));
+    setStream(QString::fromStdString(cameraStream));
 
   } else if (cameraDevice) {
     SPDLOG_INFO("Using camera: {}", cameraDevice->description().toStdString());
-    setVideo(*cameraDevice);
+    setCamera(*cameraDevice);
 
   } else {
     SPDLOG_WARN("No camera selected.");
@@ -55,7 +52,7 @@ void MainWindow::enableCamera(const std::string &id) {
  *
  * @param cameraDevice The camera device
  */
-void MainWindow::setVideo(const QCameraDevice &cameraDevice) {
+void MainWindow::setCamera(const QCameraDevice &cameraDevice) {
   this->cameraDevice = cameraDevice;
   scene.setVideo(cameraDevice);
   updateScene();
@@ -68,7 +65,7 @@ void MainWindow::setVideo(const QCameraDevice &cameraDevice) {
  *
  * @param cameraDevice The camera device
  */
-void MainWindow::setVideo(const QString &url) {
+void MainWindow::setStream(const QString &url) {
   this->url = url;
   scene.setVideo(url);
   updateScene();
@@ -82,17 +79,10 @@ void MainWindow::setVideo(const QString &url) {
 void MainWindow::updateScene() {
   QRect viewRect = graphicsView->rect();
   SPDLOG_INFO("View rect: {}x{}", viewRect.width(), viewRect.height());
-
   scene.setSceneRect(viewRect);
-
-  scene.scalePixmap();
-  scene.centerPixmap();
-
-  scene.centerText();
-
-  scene.updateResolution();
-  scene.scaleVideo();
-  scene.centerVideo();
+  scene.updatePixmap();
+  scene.updateText();
+  scene.updateVideo();
 }
 
 MainWindow::~MainWindow() {}

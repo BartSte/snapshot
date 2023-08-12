@@ -30,8 +30,7 @@ target_include_directories(
 target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
 # Camera
-add_library(camera src/camera/connector.cpp src/camera/connector.hpp
-                   src/camera/list.cpp src/camera/list.hpp)
+add_library(camera src/camera/find.cpp src/camera/find.hpp)
 target_include_directories(camera INTERFACE ${Boost_INCLUDE_DIRS}})
 target_link_libraries(camera Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)
@@ -55,7 +54,7 @@ target_link_libraries(
 file(COPY ${CMAKE_SOURCE_DIR}/src/static
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(snapshot src/main.cpp resources/resources.qrc)
-target_link_libraries(snapshot camera gui helpers)
+target_link_libraries(snapshot gui helpers)
 
 # Tests
 file(COPY ${CMAKE_SOURCE_DIR}/tests/static
@@ -69,6 +68,6 @@ FetchContent_Declare(
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
 FetchContent_MakeAvailable(googletest)
-add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/list_test.cpp
+add_executable(tests tests/main.cpp tests/argparse_test.cpp tests/find_test.cpp
                      tests/config_test.cpp resources/resources.qrc)
 target_link_libraries(tests gtest camera gui helpers)

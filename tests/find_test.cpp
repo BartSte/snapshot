@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <camera/list.hpp>
+#include <camera/find.hpp>
 #include <iostream>
 
 /**
  * @brief Tests the ArgParse::parse() function.
  */
-TEST(listTest, listTestlistCameras) {
+TEST(findTest, listCameras) {
   std::string result = listCameras();
   std::cout << result << std::endl;
 }

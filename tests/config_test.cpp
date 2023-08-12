@@ -9,13 +9,13 @@
 namespace fs = boost::filesystem;
 namespace pt = pt;
 
-extern const boost::filesystem::path root;
+extern const boost::filesystem::path ROOT;
 
 /**
  * @brief Tests the parseConfig function.
  */
 TEST(configTest, parseConfig) {
-  fs::path path = root / "static" / "config_test.json";
+  fs::path path = ROOT / "static" / "config_test.json";
 
   pt::ptree config = config::parse(path.string());
 
@@ -48,8 +48,8 @@ TEST(configTest, merge) {
  * @brief The config_user_test should overwrite the config_test settings.
  */
 TEST(configTest, parseConfigs) {
-  fs::path path = root / "static" / "config_user_test.json";
-  fs::path path_default = root / "static" / "config_test.json";
+  fs::path path = ROOT / "static" / "config_user_test.json";
+  fs::path path_default = ROOT / "static" / "config_test.json";
 
   pt::ptree config =
       config::parseUserDefault(path.string(), path_default.string());
@@ -62,8 +62,8 @@ TEST(configTest, parseConfigs) {
 }
 
 TEST(configTest, parseConfigsTestIncomplete) {
-  fs::path path = root / "static" / "config_user_incomplete_test.json";
-  fs::path path_default = root / "static" / "config_test.json";
+  fs::path path = ROOT / "static" / "config_user_incomplete_test.json";
+  fs::path path_default = ROOT / "static" / "config_test.json";
 
   pt::ptree config =
       config::parseUserDefault(path.string(), path_default.string());
