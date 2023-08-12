@@ -1,5 +1,10 @@
 WORK IN PROGRESS
 
+# TODO:
+- [ ] Immidiate opening of gui, do not wait till connected 
+- [ ] display connection status
+- [ ] Enable reconnection when disconnected
+
 ## Dependencies
 
 - [Qt6](https://www.qt.io/download)

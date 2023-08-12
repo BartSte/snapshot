@@ -48,6 +48,15 @@ void VideoScene::setPixmap(std::string path) {
 }
 
 /**
+ * @brief VideoScene::updatePixmap
+ * Update the QGraphicsPixmapItem when called.
+ */
+void VideoScene::updatePixmap() {
+  scalePixmap();
+  centerPixmap();
+}
+
+/**
  * @brief VideoScene::resizeEvent
  * @param event The resize event.
  * Resize the QGraphicsPixmapItem and the QGraphicsTextItem when the scene is
@@ -96,6 +105,12 @@ void VideoScene::setText(std::string text) {
 }
 
 /**
+ * @brief VideoScene::updateText
+ * Update the QGraphicsTextItem when called.
+ */
+void VideoScene::updateText() { centerText(); }
+
+/**
  * @brief VideoScene::positionText
  * Position the text below the QGraphicsPixmapItem, in the center of the scene.
  */
@@ -125,17 +140,26 @@ void VideoScene::setVideo(const QCameraDevice &device) {
 }
 
 /**
-  * @brief VideoScene::setVideo
-  *
-  * Display an udp or rtsp stream in the scene.
-  * @param url The url of the stream.
-  */
+ * @brief VideoScene::setVideo
+ *
+ * Display an udp or rtsp stream in the scene.
+ * @param url The url of the stream.
+ */
 void VideoScene::setVideo(const QString &url) {
   pixmapItem.setVisible(false);
   textItem.setVisible(false);
   setStream(url);
 }
 
+/**
+ * @brief VideoScene::updateVideo
+ * Update the QGraphicsVideoItem when called.
+ */
+void VideoScene::updateVideo() {
+  updateResolution();
+  scaleVideo();
+  centerVideo();
+}
 
 /**
  * @brief VideoScene::updateResolution
@@ -201,17 +225,17 @@ void VideoScene::setCamera(const QCameraDevice &device) {
 }
 
 /**
-  * @brief VideoScene::setStream
-  * Display an udp stream in the scene.
-  *
-  * @param stream The url of the stream to be displayed.
-  *
-  */
+ * @brief VideoScene::setStream
+ * Display an udp stream in the scene.
+ *
+ * @param stream The url of the stream to be displayed.
+ *
+ */
 void VideoScene::setStream(const QString &url) {
   player.setVideoOutput(&videoItem);
   player.setSource(QUrl(url));
-  addItem(&videoItem);
   player.play();
+  addItem(&videoItem);
 }
 
 /**

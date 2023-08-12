@@ -19,31 +19,39 @@
 class VideoScene : public QGraphicsScene {
 
  public:
-  QCamera camera;
   QGraphicsTextItem textItem;
   QGraphicsVideoItem videoItem;
   QGraphicsPixmapItem pixmapItem;
+
+  // TODO: move these to libcamera
+  // setVideo should only feed the videoItem into the setVideoOutput method
+  QCamera camera;
   QMediaCaptureSession session;
   QMediaPlayer player;
 
   explicit VideoScene(QObject *parent = nullptr);
 
   void setPixmap(std::string path);
-  void scalePixmap();
-  void centerPixmap();
+  void updatePixmap();
 
   void setText(std::string text);
-  void centerText();
+  void updateText();
 
   void setVideo(const QCameraDevice &device);
   void setVideo(const QString &url);
-  void updateResolution();
-  void scaleVideo();
-  void centerVideo();
+  void updateVideo();
 
   virtual ~VideoScene();
 
  private:
+  void scalePixmap();
+  void centerPixmap();
+
+  void centerText();
+
+  void updateResolution();
+  void scaleVideo();
+  void centerVideo();
   void setCamera(const QCameraDevice &device);
   void setStream(const QString &url);
 };
