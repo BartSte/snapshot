@@ -23,13 +23,11 @@ const QString textFont = "Arial";
  * @param mainWindow A pointer to a QWidget.
  */
 VideoScene::VideoScene(QObject *parent)
-    : QGraphicsScene(parent),
-      camera(parent),
-      pixmapItem(),
-      session(parent),
-      textItem(),
-      videoItem(),
-      player(parent) {
+    : QGraphicsScene(parent), pixmapItem(), textItem(), videoItem() {
+  addItem(&pixmapItem);
+  addItem(&textItem);
+  addItem(&videoItem);
+
   setPixmap(":/disconnected.png");
   setText("No camera available");
 }
@@ -44,7 +42,6 @@ void VideoScene::setPixmap(std::string path) {
   QString qpath = QString::fromStdString(path);
   QPixmap pixmap(qpath);
   pixmapItem.setPixmap(pixmap);
-  addItem(&pixmapItem);
 }
 
 /**
@@ -101,7 +98,6 @@ void VideoScene::setText(std::string text) {
 
   textItem.setPlainText(qtext);
   textItem.setFont(font);
-  addItem(&textItem);
 }
 
 /**
@@ -128,27 +124,18 @@ void VideoScene::centerText() {
 }
 
 /**
- * @brief TODO-> use a signal (videoVisible) that hides the pixmap and the
- * text.
+ * @brief DOCS:
  *
- * @param device
+ * @param video
  */
-void VideoScene::setVideo(const QCameraDevice &device) {
-  pixmapItem.setVisible(false);
-  textItem.setVisible(false);
-  setCamera(device);
-}
-
-/**
- * @brief VideoScene::setVideo
- *
- * Display an udp or rtsp stream in the scene.
- * @param url The url of the stream.
- */
-void VideoScene::setVideo(const QString &url) {
-  pixmapItem.setVisible(false);
-  textItem.setVisible(false);
-  setStream(url);
+void VideoScene::setVideo(const std::string &id) {
+  video = Video::factory(id);
+  if (video != nullptr) {
+    video->setVideoOutput(&videoItem);
+    video->start();
+  } else {
+    SPDLOG_INFO("No camera found");
+  }
 }
 
 /**
@@ -156,30 +143,11 @@ void VideoScene::setVideo(const QString &url) {
  * Update the QGraphicsVideoItem when called.
  */
 void VideoScene::updateVideo() {
-  updateResolution();
-  scaleVideo();
-  centerVideo();
-}
-
-/**
- * @brief VideoScene::updateResolution
- * Select the highest resolution available for the camera.
- */
-void VideoScene::updateResolution() {
-  QList<QCameraFormat> formats = camera.cameraDevice().videoFormats();
-  SPDLOG_DEBUG("formats: {}", formats.size());
-
-  QSize max_reso(0, 0);
-  QCameraFormat selected;
-  for (QCameraFormat format : formats) {
-    QSize reso = format.resolution();
-    if (reso.width() > max_reso.width() && reso.height() > max_reso.height()) {
-      max_reso = reso;
-      selected = format;
-      SPDLOG_DEBUG("resolution: {}x{}", reso.width(), reso.height());
-    }
+  if (video != nullptr) {
+    video->updateResolution();
+    scaleVideo();
+    centerVideo();
   }
-  camera.setCameraFormat(selected);
 }
 
 /**
@@ -209,37 +177,3 @@ void VideoScene::centerVideo() {
 
   videoItem.setPos(x, y);
 }
-
-/**
- * @brief VideoScene::setCamera
- *
- * @param camera The camera to be displayed.
- *
- */
-void VideoScene::setCamera(const QCameraDevice &device) {
-  camera.setCameraDevice(device);
-  session.setCamera(&camera);
-  session.setVideoOutput(&videoItem);
-  camera.start();
-  addItem(&videoItem);
-}
-
-/**
- * @brief VideoScene::setStream
- * Display an udp stream in the scene.
- *
- * @param stream The url of the stream to be displayed.
- *
- */
-void VideoScene::setStream(const QString &url) {
-  player.setVideoOutput(&videoItem);
-  player.setSource(QUrl(url));
-  player.play();
-  addItem(&videoItem);
-}
-
-/**
- * @brief VideoScene::~VideoScene
- * Destructor.
- */
-VideoScene::~VideoScene() { camera.stop(); }

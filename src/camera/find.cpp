@@ -2,19 +2,112 @@
 
 #include <QCameraDevice>
 #include <QMediaDevices>
-#include <boost/optional.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <iostream>
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 
 #include "./camera/find.hpp"
 
-using boost::optional;
 using Table = std::vector<std::vector<std::string>>;
 
-const std::string STREAMS[4] = {"rtsp://", "udp://", "http://", "https://"};
+const char *STREAMS[4] = {"rtsp://", "udp://", "http://", "https://"};
+
+/**
+ * @brief findCameraByName
+ *
+ * Select a camera by name from a list of cameras. If the camera is not found,
+ * return boost::none.
+ *
+ * @param cameras The list of cameras to select from.
+ * @param name The name of the camera to select.
+ * @return The selected camera.
+ */
+bool findCameraByName(const QList<QCameraDevice> &cameras,
+                      const std::string &name) {
+  for (const QCameraDevice &camera : cameras) {
+    SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
+    if (camera.description().toStdString() == name) {
+      SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
+      return true;
+    }
+  }
+  SPDLOG_WARN("Camera not found");
+  return false;
+}
+
+/**
+ * @brief findCamera
+ *
+ * Select a camera by name from a list of cameras. If the camera is not found,
+ * return boost::none.
+ *
+ * @param cameras The list of cameras to select from.
+ * @param name The name of the camera to select.
+ * @return The selected camera.
+ */
+bool findCamera(const std::string &name) {
+  SPDLOG_DEBUG("Camera name: {}", name);
+  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+
+  if (cameras.size() == 0) {
+    SPDLOG_WARN("No cameras found");
+    return false;
+
+  } else if (name == "default") {
+    SPDLOG_INFO("Selecting default camera");
+    QCameraDevice device = QMediaDevices::defaultVideoInput();
+    return device.isNull() == false;
+
+  } else {
+    SPDLOG_INFO("Found {} cameras", cameras.size());
+    return findCameraByName(cameras, name);
+  }
+}
+
+/**
+ * TODO: write test
+ *
+ * @brief findStream
+ *
+ * Select a camera stream from the config. If the stream is not found, return
+ * boost::none.
+ *
+ * @param config The config to select from.
+ * @return The selected stream.
+ */
+bool findStream(const std::string &url) {
+  for (const std::string &stream : STREAMS) {
+    SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
+    if (url.find(stream) != std::string::npos) {
+      SPDLOG_INFO("Selected stream: {}", url);
+      return true;
+    }
+  }
+
+  SPDLOG_INFO("No stream found.");
+  return false;
+}
+
+/**
+ * @brief DOCS:
+ *
+ * @param name
+ * @return
+ */
+QCameraDevice getCameraDevice(const std::string &name) {
+  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+  for (const QCameraDevice &camera : cameras) {
+    SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
+    if (camera.description().toStdString() == name) {
+      SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
+      return camera;
+    }
+  }
+  SPDLOG_WARN("Camera not found");
+  return QCameraDevice();
+}
 
 /**
  * @brief getColumnWidths
@@ -103,77 +196,4 @@ std::string listCameras() {
   const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
   Table table = qlistToTable(cameras);
   return tableToString(table);
-}
-
-/**
- * @brief selectCameraByName
- *
- * Select a camera by name from a list of cameras. If the camera is not found,
- * return boost::none.
- *
- * @param cameras The list of cameras to select from.
- * @param name The name of the camera to select.
- * @return The selected camera.
- */
-optional<QCameraDevice> selectCamera(const std::string &name) {
-  SPDLOG_DEBUG("Camera name: {}", name);
-  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-
-  if (cameras.size() == 0) {
-    SPDLOG_WARN("No cameras found");
-    return boost::none;
-  } else if (name == "default") {
-    SPDLOG_INFO("Selecting default camera");
-    return QMediaDevices::defaultVideoInput();
-  } else {
-    SPDLOG_INFO("Found {} cameras", cameras.size());
-    return selectCameraByName(cameras, name);
-  }
-}
-
-/**
- * @brief selectCameraByName
- *
- * Select a camera by name from a list of cameras. If the camera is not found,
- * return boost::none.
- *
- * @param cameras The list of cameras to select from.
- * @param name The name of the camera to select.
- * @return The selected camera.
- */
-optional<QCameraDevice> selectCameraByName(const QList<QCameraDevice> &cameras,
-                                           const std::string &name) {
-  for (const QCameraDevice &camera : cameras) {
-    SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
-    if (camera.description().toStdString() == name) {
-      SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
-      return camera;
-    }
-  }
-  SPDLOG_WARN("Camera not found");
-  return boost::none;
-}
-
-/**
- * TODO: write test
- *
- * @brief selectStream
- *
- * Select a camera stream from the config. If the stream is not found, return
- * boost::none.
- *
- * @param config The config to select from.
- * @return The selected stream.
- */
-std::string selectStream(const std::string &url) {
-  for (const std::string &stream : STREAMS) {
-    SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
-    if (url.find(stream) != std::string::npos) {
-      SPDLOG_INFO("Selected stream: {}", url);
-      return url;
-    }
-  }
-
-  SPDLOG_INFO("No stream found.");
-  return "";
 }

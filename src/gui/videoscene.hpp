@@ -1,13 +1,10 @@
 #pragma once
 
-#include <QCamera>
-#include <QCameraDevice>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
-#include <QMediaCaptureSession>
-#include <QMediaPlayer>
-#include <qobject.h>
+#include <camera/connect.hpp>
+#include <memory>
 #include <string>
 
 /**
@@ -22,12 +19,7 @@ class VideoScene : public QGraphicsScene {
   QGraphicsTextItem textItem;
   QGraphicsVideoItem videoItem;
   QGraphicsPixmapItem pixmapItem;
-
-  // TODO: move these to libcamera
-  // setVideo should only feed the videoItem into the setVideoOutput method
-  QCamera camera;
-  QMediaCaptureSession session;
-  QMediaPlayer player;
+  std::unique_ptr<Video> video;
 
   explicit VideoScene(QObject *parent = nullptr);
 
@@ -37,11 +29,8 @@ class VideoScene : public QGraphicsScene {
   void setText(std::string text);
   void updateText();
 
-  void setVideo(const QCameraDevice &device);
-  void setVideo(const QString &url);
+  void setVideo(const std::string &id);
   void updateVideo();
-
-  virtual ~VideoScene();
 
  private:
   void scalePixmap();
@@ -52,6 +41,4 @@ class VideoScene : public QGraphicsScene {
   void updateResolution();
   void scaleVideo();
   void centerVideo();
-  void setCamera(const QCameraDevice &device);
-  void setStream(const QString &url);
 };

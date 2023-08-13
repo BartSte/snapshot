@@ -1,7 +1,8 @@
-#include "./helpers/argparse.hpp"
 #include <boost/filesystem.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
+
+#include "./helpers/argparse.hpp"
 
 #define DEFAULT_STRING cxxopts::value<std::string>()->default_value
 

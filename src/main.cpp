@@ -4,6 +4,7 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <camera/connect.hpp>
 #include <camera/find.hpp>
 #include <cxxopts.hpp>
 #include <iostream>
@@ -21,7 +22,6 @@ namespace pt = boost::property_tree;
 
 extern const fs::path ROOT = boost::dll::program_location().parent_path();
 const fs::path PATH_CONFIG = (ROOT / "static/config.json");
-const char *TITLE = "Snap shot machine";
 
 /**
  * @brief getConfig
@@ -79,10 +79,11 @@ int printAvailableCameras(int argc, char *argv[]) {
  */
 int showGui(int argc, char *argv[], const pt::ptree &config) {
   QApplication app(argc, argv);
+
   MainWindow window;
-  window.setWindowTitle(QString::fromStdString(TITLE));
-  window.setVideo(config.get<std::string>("camera"));
+  window.scene.setVideo(config.get<std::string>("camera"));
   window.show();
+
   return app.exec();
 }
 
