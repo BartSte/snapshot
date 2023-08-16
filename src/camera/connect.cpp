@@ -14,26 +14,11 @@
 #include "./camera/connect.hpp"
 #include "./camera/find.hpp"
 
-// DOCS:
-std::unique_ptr<Video> Video::factory(const std::string &id) {
-  QUrl url = findStream(id);
-  QCameraDevice device = findCamera(id);
-
-  if (url.isValid()) {
-    return std::make_unique<Stream>(url);
-
-  } else if (!device.isNull()) {
-    return std::make_unique<Camera>(device);
-
-  } else {
-    SPDLOG_WARN("No camera found.");
-    return nullptr;
-  }
-}
-
 Stream::Stream(const QUrl &url) : Video(), player() { player.setSource(url); }
 
 void Stream::start() { player.play(); }
+
+bool Stream::isNull() { return false; }
 
 void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
   player.setVideoOutput(videoItem);
@@ -47,6 +32,8 @@ Camera::Camera(const QCameraDevice &device) : Video(), camera(), session() {
 }
 
 void Camera::start() { camera.start(); }
+
+bool Camera::isNull() { return false; }
 
 void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
   session.setVideoOutput(videoItem);
@@ -68,4 +55,21 @@ void Camera::updateResolution() {
     }
   }
   camera.setCameraFormat(selected);
+}
+
+// DOCS:
+std::unique_ptr<Video> VideoFactory::create(const std::string &id) {
+  QUrl url = findStream(id);
+  QCameraDevice device = findCamera(id);
+
+  if (url.isValid()) {
+    return std::make_unique<Stream>(url);
+
+  } else if (!device.isNull()) {
+    return std::make_unique<Camera>(device);
+
+  } else {
+    SPDLOG_WARN("No camera found.");
+    return std::make_unique<NullVideo>();
+  }
 }

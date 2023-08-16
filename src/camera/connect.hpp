@@ -14,10 +14,20 @@ class Video {
  public:
   virtual ~Video() = default;
   virtual void start() = 0;
+  virtual bool isNull() = 0;
   virtual void setVideoOutput(QGraphicsVideoItem *videoItem) = 0;
   virtual void updateResolution() = 0;
+};
 
-  static std::unique_ptr<Video> factory(const std::string &id);
+class NullVideo : public Video {
+
+ public:
+  ~NullVideo() override = default;
+  void start() override {}
+  // TODO: remove isNull in favor of smart signals
+  bool isNull() override { return true; }
+  void setVideoOutput(QGraphicsVideoItem *videoItem) override {}
+  void updateResolution() override {}
 };
 
 class Stream : public Video {
@@ -28,6 +38,7 @@ class Stream : public Video {
   explicit Stream(const QUrl &url);
   ~Stream() override = default;
   void start() override;
+  bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
 };
@@ -41,6 +52,12 @@ class Camera : public Video {
   explicit Camera(const QCameraDevice &device);
   ~Camera() override = default;
   void start() override;
+  bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
+};
+
+class VideoFactory {
+ public:
+  std::unique_ptr<Video> create(const std::string &id);
 };

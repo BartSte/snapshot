@@ -77,4 +77,4 @@ add_executable(
   tests
   tests/main.cpp tests/ resources/resources.qrc tests/camera_test/find_test.cpp
   tests/helpers_test/argparse_test.cpp tests/helpers_test/config_test.cpp)
-target_link_libraries(tests gtest camera gui helpers)
+target_link_libraries(tests gtest gmock camera gui helpers)
