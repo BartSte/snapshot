@@ -16,11 +16,14 @@
 
 // DOCS:
 std::unique_ptr<Video> Video::factory(const std::string &id) {
-  if (findStream(id)) {
-    return std::make_unique<Stream>(id);
+  QUrl url = findStream(id);
+  QCameraDevice device = findCamera(id);
 
-  } else if (findCamera(id)) {
-    return std::make_unique<Camera>(id);
+  if (url.isValid()) {
+    return std::make_unique<Stream>(url);
+
+  } else if (!device.isNull()) {
+    return std::make_unique<Camera>(device);
 
   } else {
     SPDLOG_WARN("No camera found.");
@@ -28,13 +31,9 @@ std::unique_ptr<Video> Video::factory(const std::string &id) {
   }
 }
 
-Stream::Stream(const std::string &id) : Video(), player() { setVideoInput(id); }
+Stream::Stream(const QUrl &url) : Video(), player() { player.setSource(url); }
 
 void Stream::start() { player.play(); }
-
-void Stream::setVideoInput(const std::string &name) {
-  player.setSource(QUrl(QString::fromStdString(name)));
-}
 
 void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
   player.setVideoOutput(videoItem);
@@ -42,17 +41,12 @@ void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
 
 void Stream::updateResolution() {}
 
-Camera::Camera(const std::string &id) : Video(), camera(), session() {
-  setVideoInput(id);
-}
-
-void Camera::start() { camera.start(); }
-
-void Camera::setVideoInput(const std::string &name) {
-  QCameraDevice device = getCameraDevice(name);
+Camera::Camera(const QCameraDevice &device) : Video(), camera(), session() {
   camera.setCameraDevice(device);
   session.setCamera(&camera);
 }
+
+void Camera::start() { camera.start(); }
 
 void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
   session.setVideoOutput(videoItem);

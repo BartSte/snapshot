@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-export CC=$(which clang)
-export CXX=$(which clang++)
-export CMAKE_C_COMPILER=$(which clang)
-export CMAKE_CXX_COMPILER=$(which clang++)
-cmake -G "Ninja" -S . -B ./build -D CMAKE_BUILD_TYPE=Debug -Wdev $@ 
-# cmake -G "Ninja" -S . -B ./build -D CMAKE_BUILD_TYPE=Debug -Wdev -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always $@ 
+# cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -Wdev $@
+cmake -G "Ninja" -S . -B ./build \
+    -Wdev \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_CXX_COMPILER=$(which clang++) \
+    -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always \
+    $@

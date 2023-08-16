@@ -2,9 +2,11 @@
 
 #include <QCameraDevice>
 #include <memory>
+#include <qcameradevice.h>
+#include <qmediadevices.h>
+#include <qurl.h>
 #include <string>
 
-bool findStream(const std::string &id);
-bool findCamera(const std::string &id);
-std::string listCameras();
-QCameraDevice getCameraDevice(const std::string &name);
+QUrl findStream(const std::string &id);
+QCameraDevice findCamera(const std::string &id);
+std::string listCameras(const QList<QCameraDevice> &cameras = QMediaDevices::videoInputs());
