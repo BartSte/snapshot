@@ -1,3 +1,5 @@
+#include <qcameradevice.h>
+#include <qurl.h>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <QCameraDevice>
@@ -24,17 +26,17 @@ const char *STREAMS[4] = {"rtsp://", "udp://", "http://", "https://"};
  * @param name The name of the camera to select.
  * @return The selected camera.
  */
-bool findCameraByName(const QList<QCameraDevice> &cameras,
-                      const std::string &name) {
+QCameraDevice findCameraByName(const QList<QCameraDevice> &cameras,
+                               const std::string &name) {
   for (const QCameraDevice &camera : cameras) {
     SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
     if (camera.description().toStdString() == name) {
       SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
-      return true;
+      return camera;
     }
   }
   SPDLOG_WARN("Camera not found");
-  return false;
+  return QCameraDevice();
 }
 
 /**
@@ -47,18 +49,17 @@ bool findCameraByName(const QList<QCameraDevice> &cameras,
  * @param name The name of the camera to select.
  * @return The selected camera.
  */
-bool findCamera(const std::string &name) {
+QCameraDevice findCamera(const std::string &name) {
   SPDLOG_DEBUG("Camera name: {}", name);
   QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
 
   if (cameras.size() == 0) {
     SPDLOG_WARN("No cameras found");
-    return false;
+    return QCameraDevice();
 
   } else if (name == "default") {
     SPDLOG_INFO("Selecting default camera");
-    QCameraDevice device = QMediaDevices::defaultVideoInput();
-    return device.isNull() == false;
+    return QMediaDevices::defaultVideoInput();
 
   } else {
     SPDLOG_INFO("Found {} cameras", cameras.size());
@@ -77,17 +78,17 @@ bool findCamera(const std::string &name) {
  * @param config The config to select from.
  * @return The selected stream.
  */
-bool findStream(const std::string &url) {
+QUrl findStream(const std::string &url) {
   for (const std::string &stream : STREAMS) {
     SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
     if (url.find(stream) != std::string::npos) {
-      SPDLOG_INFO("Selected stream: {}", url);
-      return true;
+      SPDLOG_INFO("Valid stream found: {}", url);
+      return QUrl(QString::fromStdString(url));
     }
   }
 
-  SPDLOG_INFO("No stream found.");
-  return false;
+  SPDLOG_INFO("No valid stream found.");
+  return QUrl();
 }
 
 /**
@@ -192,8 +193,7 @@ Table qlistToTable(QList<QCameraDevice> cameras) {
  *
  * @return The available cameras as a std::string.
  */
-std::string listCameras() {
-  const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+std::string listCameras(const QList<QCameraDevice> &cameras) {
   Table table = qlistToTable(cameras);
   return tableToString(table);
 }
