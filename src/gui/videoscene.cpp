@@ -1,3 +1,4 @@
+#include "camera/connect.hpp"
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <QCamera>
@@ -129,12 +130,13 @@ void VideoScene::centerText() {
  * @param video
  */
 void VideoScene::setVideo(const std::string &id) {
-  video = Video::factory(id);
-  if (video != nullptr) {
+  VideoFactory factory = VideoFactory();
+  video = factory.create(id);
+  if (video->isNull()) {
+    SPDLOG_INFO("No camera found");
+  } else {
     video->setVideoOutput(&videoItem);
     video->start();
-  } else {
-    SPDLOG_INFO("No camera found");
   }
 }
 

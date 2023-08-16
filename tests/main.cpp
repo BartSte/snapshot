@@ -1,7 +1,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 namespace fs = boost::filesystem;
 

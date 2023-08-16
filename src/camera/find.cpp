@@ -49,10 +49,9 @@ QCameraDevice findCameraByName(const QList<QCameraDevice> &cameras,
  * @param name The name of the camera to select.
  * @return The selected camera.
  */
-QCameraDevice findCamera(const std::string &name) {
+QCameraDevice findCamera(const std::string &name,
+                         const QList<QCameraDevice> &cameras) {
   SPDLOG_DEBUG("Camera name: {}", name);
-  QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-
   if (cameras.size() == 0) {
     SPDLOG_WARN("No cameras found");
     return QCameraDevice();
