@@ -1,6 +1,5 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "gmock/gmock.h"
 #include <boost/property_tree/ptree.hpp>
 #include <camera/find.hpp>
 #include <gtest/gtest.h>
@@ -8,11 +7,6 @@
 #include <qlist.h>
 #include <qmediadevices.h>
 #include <spdlog/spdlog.h>
-
-namespace pt = boost::property_tree;
-
-//TODO: mock QCameraDevice such that it's description can be set to a specific 
-// value for testing purposes.
 
 QList<QCameraDevice> getCameras() {
   QList<QCameraDevice> cameras;
@@ -36,25 +30,50 @@ TEST(findTest, listCameras) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(findTest, findCamera) {
+TEST(findTest, findCameraEmpty) {
+  std::string name = "";
+  QCameraDevice camera = findCamera(name, QList<QCameraDevice>());
+  ASSERT_EQ(camera.description().toStdString(), "");
+}
+
+TEST(findTest, findCameraDefault) {
   std::string name = "default";
-  pt::ptree config;
-  config.put("camera", name);
+  QCameraDevice defaultCamera = QMediaDevices::defaultVideoInput();
   QList<QCameraDevice> cameras = getCameras();
 
   QCameraDevice camera = findCamera(name, cameras);
 
-  SPDLOG_DEBUG("Camera name: {}", camera.description().toStdString());
-  ASSERT_EQ(camera.description().toStdString(), "");
+  std::string actual = camera.description().toStdString();
+  std::string expected = defaultCamera.description().toStdString();
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(findTest, findCameraNonDefault) {
+  std::string name = "non-default";
+  QList<QCameraDevice> cameras = getCameras();
+
+  QCameraDevice camera = findCamera(name, cameras);
+
+  // camera does not exist, so an empty one is returned
+  std::string expected = "";
+  std::string actual = camera.description().toStdString();
+  ASSERT_EQ(actual, expected);
 }
 
 TEST(findTest, findStream) {
-  std::string name = "rtsp://localhost:8554/test";
-  pt::ptree config;
-  config.put("camera", name);
+  QUrl stream;
+  std::string name;
 
-  QUrl stream = findStream(name);
-
-  SPDLOG_DEBUG("Stream: {}", stream.toString().toStdString());
-  /* ASSERT_EQ(stream.toString(), name); */
+  std::vector<std::vector<std::string>> testers({
+      {"rtsp://localhost:8554/test", "rtsp://localhost:8554/test"},
+      {"udp://123.456.789.1:8554/test", "udp://123.456.789.1:8554/test"},
+      {"http://localhost:8554/test", "http://localhost:8554/test"},
+      {"https://localhost:8554/test", "https://localhost:8554/test"},
+      {"file:///home/user/test", ""},
+  });
+  for (auto name_vs_expected : testers) {
+    name = name_vs_expected[0];
+    stream = findStream(name);
+    ASSERT_EQ(stream.toString().toStdString(), name_vs_expected[1]);
+  }
 }
