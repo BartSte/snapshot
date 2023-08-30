@@ -6,17 +6,37 @@
 #include <qcameradevice.h>
 #include <qmediacapturesession.h>
 #include <qmediaplayer.h>
+#include <qobject.h>
+#include <qtmetamacros.h>
 #include <qurl.h>
 #include <string>
 
-class Video {
+enum class VideoState {
+  Stopped,
+  Started,
+};
+
+class Video : public QObject {
+
+  Q_OBJECT
 
  public:
+  Video(QObject *parent = nullptr);
+  VideoState getState();
+
   virtual ~Video() = default;
   virtual void start() = 0;
+  virtual void stop() = 0;
   virtual bool isNull() = 0;
   virtual void setVideoOutput(QGraphicsVideoItem *videoItem) = 0;
   virtual void updateResolution() = 0;
+
+ protected:
+  VideoState state;
+  void setState(VideoState state);
+
+ signals:
+  void stateChanged(VideoState state);
 };
 
 class NullVideo : public Video {
@@ -24,7 +44,7 @@ class NullVideo : public Video {
  public:
   ~NullVideo() override = default;
   void start() override {}
-  // TODO: remove isNull in favor of smart signals
+  void stop() override {}
   bool isNull() override { return true; }
   void setVideoOutput(QGraphicsVideoItem *videoItem) override {}
   void updateResolution() override {}
@@ -32,12 +52,15 @@ class NullVideo : public Video {
 
 class Stream : public Video {
 
+  Q_OBJECT
+
  public:
   QMediaPlayer player;
 
-  explicit Stream(const QUrl &url);
+  Stream(const QUrl &url, QObject *parent = nullptr);
   ~Stream() override = default;
   void start() override;
+  void stop() override;
   bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
@@ -45,13 +68,16 @@ class Stream : public Video {
 
 class Camera : public Video {
 
+  Q_OBJECT
+
  public:
   QCamera camera;
   QMediaCaptureSession session;
 
-  explicit Camera(const QCameraDevice &device);
+  Camera(const QCameraDevice &device, QObject *parent = nullptr);
   ~Camera() override = default;
   void start() override;
+  void stop() override;
   bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
