@@ -7,6 +7,7 @@
 #include <qmediacapturesession.h>
 #include <qmediadevices.h>
 #include <qmediaplayer.h>
+#include <qobject.h>
 #include <qurl.h>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -14,9 +15,28 @@
 #include "./camera/connect.hpp"
 #include "./camera/find.hpp"
 
-Stream::Stream(const QUrl &url) : Video(), player() { player.setSource(url); }
+Video::Video(QObject *parent) : QObject(parent), state(VideoState::Stopped) {}
+VideoState Video::getState() { return state; }
+void Video::setState(VideoState state) {
+  if (this->state != state) {
+    this->state = state;
+    emit stateChanged(state);
+  }
+}
 
-void Stream::start() { player.play(); }
+Stream::Stream(const QUrl &url, QObject *parent) : Video(parent), player() {
+  player.setSource(url);
+}
+
+void Stream::start() {
+  player.play();
+  setState(VideoState::Started);
+}
+
+void Stream::stop() {
+  player.stop();
+  setState(VideoState::Stopped);
+}
 
 bool Stream::isNull() { return false; }
 
@@ -26,12 +46,21 @@ void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
 
 void Stream::updateResolution() {}
 
-Camera::Camera(const QCameraDevice &device) : Video(), camera(), session() {
+Camera::Camera(const QCameraDevice &device, QObject *parent)
+    : Video(), camera(), session() {
   camera.setCameraDevice(device);
   session.setCamera(&camera);
 }
 
-void Camera::start() { camera.start(); }
+void Camera::start() {
+  camera.start();
+  setState(VideoState::Started);
+}
+
+void Camera::stop() {
+  camera.stop();
+  setState(VideoState::Stopped);
+}
 
 bool Camera::isNull() { return false; }
 
