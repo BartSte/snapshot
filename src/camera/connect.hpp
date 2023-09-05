@@ -14,6 +14,7 @@
 enum class VideoState {
   Stopped,
   Started,
+  Paused,
 };
 
 class Video : public QObject {
@@ -33,7 +34,6 @@ class Video : public QObject {
 
  protected:
   VideoState state;
-  void setState(VideoState state);
 
  signals:
   void stateChanged(VideoState state);
@@ -48,6 +48,7 @@ class NullVideo : public Video {
   bool isNull() override { return true; }
   void setVideoOutput(QGraphicsVideoItem *videoItem) override {}
   void updateResolution() override {}
+
 };
 
 class Stream : public Video {
@@ -64,6 +65,9 @@ class Stream : public Video {
   bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
+
+ protected:
+  void setState(QMediaPlayer::PlaybackState state);
 };
 
 class Camera : public Video {
@@ -81,6 +85,9 @@ class Camera : public Video {
   bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
+
+ protected:
+  void setState(bool is_active);
 };
 
 class VideoFactory {
