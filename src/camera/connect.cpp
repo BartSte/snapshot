@@ -15,28 +15,34 @@
 #include "./camera/connect.hpp"
 #include "./camera/find.hpp"
 
+// DOCS: add docstrings
+
 Video::Video(QObject *parent) : QObject(parent), state(VideoState::Stopped) {}
 VideoState Video::getState() { return state; }
-void Video::setState(VideoState state) {
-  if (this->state != state) {
-    this->state = state;
-    emit stateChanged(state);
-  }
-}
 
 Stream::Stream(const QUrl &url, QObject *parent) : Video(parent), player() {
+  connect(&player, &QMediaPlayer::playbackStateChanged, this,
+          &Stream::setState);
   player.setSource(url);
 }
 
-void Stream::start() {
-  player.play();
-  setState(VideoState::Started);
+void Stream::setState(QMediaPlayer::PlaybackState state) {
+  switch (state) {
+  case QMediaPlayer::PlaybackState::StoppedState:
+    this->state = VideoState::Stopped;
+    break;
+  case QMediaPlayer::PlaybackState::PlayingState:
+    this->state = VideoState::Started;
+    break;
+  case QMediaPlayer::PlaybackState::PausedState:
+    this->state = VideoState::Paused;
+    break;
+  }
 }
 
-void Stream::stop() {
-  player.stop();
-  setState(VideoState::Stopped);
-}
+void Stream::start() { player.play(); }
+
+void Stream::stop() { player.stop(); }
 
 bool Stream::isNull() { return false; }
 
@@ -48,18 +54,21 @@ void Stream::updateResolution() {}
 
 Camera::Camera(const QCameraDevice &device, QObject *parent)
     : Video(), camera(), session() {
+  connect(&camera, &QCamera::activeChanged, this, &Camera::setState);
   camera.setCameraDevice(device);
   session.setCamera(&camera);
 }
 
-void Camera::start() {
-  camera.start();
-  setState(VideoState::Started);
-}
+void Camera::start() { camera.start(); }
 
-void Camera::stop() {
-  camera.stop();
-  setState(VideoState::Stopped);
+void Camera::stop() { camera.stop(); }
+
+void Camera::setState(bool active) {
+  if (active) {
+    state = VideoState::Started;
+  } else {
+    state = VideoState::Stopped;
+  }
 }
 
 bool Camera::isNull() { return false; }
