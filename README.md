@@ -22,11 +22,11 @@ WORK IN PROGRESS
 ## Running the rtsp stream
 
 ```bash
-./bin/rtsp-stream extra/sample.mp4 rtsp://localhost:8090/stream
+./bin/rtsp-stream src/static/sample.mp4 rtsp://localhost:8090/stream
 ```
 
 ## Running the udp stream
 
 ```bash
-./bin/udp-stream extra/sample.mp4 udp://localhost:8090
+./bin/udp-stream src/static/sample.mp4 udp://localhost:8090
 ```

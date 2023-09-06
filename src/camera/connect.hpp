@@ -12,9 +12,9 @@
 #include <string>
 
 enum class VideoState {
-  Stopped,
-  Started,
-  Paused,
+  Stopped = 0,
+  Paused = 1,
+  Started = 2,
 };
 
 class Video : public QObject {
@@ -36,7 +36,7 @@ class Video : public QObject {
   VideoState state;
 
  signals:
-  void stateChanged(VideoState state);
+  void stateChanged();
 };
 
 class NullVideo : public Video {

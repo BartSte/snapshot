@@ -1,6 +1,6 @@
-#include "camera/connect.hpp"
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
+#include "camera/connect.hpp"
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
@@ -13,10 +13,10 @@
 
 #include "./gui/videoscene.hpp"
 
-const float constRatio = 0.8;
-const float textOffset = 10;
-const float textFontSize = 16;
 const QString textFont = "Arial";
+const float constRatio = 0.8;
+const float textFontSize = 16;
+const float textOffset = 10;
 
 /**
  * @brief VideoScene::VideoScene
@@ -28,9 +28,6 @@ VideoScene::VideoScene(QObject *parent)
   addItem(&pixmapItem);
   addItem(&textItem);
   addItem(&videoItem);
-
-  setPixmap(":/disconnected.png");
-  setText("No camera available");
 }
 
 /**
@@ -132,12 +129,11 @@ void VideoScene::centerText() {
 void VideoScene::setVideo(const std::string &id) {
   VideoFactory factory = VideoFactory();
   video = factory.create(id);
-  if (video->isNull()) {
-    SPDLOG_INFO("No camera found");
-  } else {
-    video->setVideoOutput(&videoItem);
-    video->start();
-  }
+  video->setVideoOutput(&videoItem);
+
+  connect(video.get(), &Video::stateChanged, this, &VideoScene::update);
+
+  video->start();
 }
 
 /**
@@ -178,4 +174,15 @@ void VideoScene::centerVideo() {
   float y = (sceneRect().height() - heightVideo) / 2;
 
   videoItem.setPos(x, y);
+}
+
+
+/**
+ * @brief DOCS:
+ */
+void VideoScene::update() {
+  // TODO: change visibility based on VideoState
+  updatePixmap();
+  updateText();
+  updateVideo();
 }

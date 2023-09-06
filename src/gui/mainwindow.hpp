@@ -13,7 +13,6 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   VideoScene scene;
 
   explicit MainWindow(QWidget *parent = nullptr);
-  void updateScene();
 
  protected:
   virtual void resizeEvent(QResizeEvent *event);

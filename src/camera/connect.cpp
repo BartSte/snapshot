@@ -26,17 +26,27 @@ Stream::Stream(const QUrl &url, QObject *parent) : Video(parent), player() {
   player.setSource(url);
 }
 
-void Stream::setState(QMediaPlayer::PlaybackState state) {
-  switch (state) {
+void Stream::setState(QMediaPlayer::PlaybackState playerState) {
+  VideoState newState;
+
+  switch (playerState) {
   case QMediaPlayer::PlaybackState::StoppedState:
-    this->state = VideoState::Stopped;
+    newState = VideoState::Stopped;
+    SPDLOG_INFO("VideoState is Stopped");
     break;
   case QMediaPlayer::PlaybackState::PlayingState:
-    this->state = VideoState::Started;
+    newState = VideoState::Started;
+    SPDLOG_INFO("VideoState is Started");
     break;
   case QMediaPlayer::PlaybackState::PausedState:
-    this->state = VideoState::Paused;
+    newState = VideoState::Paused;
+    SPDLOG_INFO("VideoState is Paused");
     break;
+  }
+
+  if (newState != this->state) {
+    this->state = newState;
+    emit stateChanged();
   }
 }
 
@@ -64,10 +74,18 @@ void Camera::start() { camera.start(); }
 void Camera::stop() { camera.stop(); }
 
 void Camera::setState(bool active) {
+  VideoState newState;
   if (active) {
-    state = VideoState::Started;
+    newState = VideoState::Started;
+    SPDLOG_INFO("VideoState is Started");
   } else {
-    state = VideoState::Stopped;
+    newState = VideoState::Stopped;
+    SPDLOG_INFO("VideoState is Started");
+  }
+  
+  if (newState != this->state) {
+    this->state = newState;
+    emit stateChanged();
   }
 }
 
