@@ -24,15 +24,15 @@ class VideoScene : public QGraphicsScene {
   explicit VideoScene(QObject *parent = nullptr);
 
   void setPixmap(std::string path);
-  void updatePixmap();
-
   void setText(std::string text);
-  void updateText();
-
   void setVideo(const std::string &id);
-  void updateVideo();
+  void update();
 
  private:
+  void updatePixmap();
+  void updateText();
+  void updateVideo();
+
   void scalePixmap();
   void centerPixmap();
 

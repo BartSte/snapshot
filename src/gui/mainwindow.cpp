@@ -25,19 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QMainWindow::resizeEvent(event);
-  updateScene();
-}
-
-/**
- * @brief MainWindow::updateScene
- *
- * Update the scene and its elements.
- */
-void MainWindow::updateScene() {
   QRect viewRect = graphicsView->rect();
-  SPDLOG_INFO("View rect: {}x{}", viewRect.width(), viewRect.height());
   scene.setSceneRect(viewRect);
-  scene.updatePixmap();
-  scene.updateText();
-  scene.updateVideo();
+  scene.update();
+
+  SPDLOG_INFO("View rect: {}x{}", viewRect.width(), viewRect.height());
 }
