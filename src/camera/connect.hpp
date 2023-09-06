@@ -11,6 +11,12 @@
 #include <qurl.h>
 #include <string>
 
+// TODO:
+// - Ensure it works with the streams as well
+// - When a stream disconnects, the video state should change
+// - The window must be displayed before trying to connect to the video.
+// Showing the GUI cannot be blocked by starting the video
+
 enum class VideoState {
   Stopped = 0,
   Paused = 1,
