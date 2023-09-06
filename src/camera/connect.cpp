@@ -62,6 +62,47 @@ void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
 
 void Stream::updateResolution() {}
 
+File::File(const QString &path, QObject *parent) : Video(parent), player() {
+  connect(&player, &QMediaPlayer::playbackStateChanged, this, &File::setState);
+  player.setSource(QUrl::fromLocalFile(path));
+}
+
+// TODO:remove duplicated code from Stream
+void File::setState(QMediaPlayer::PlaybackState playerState) {
+  VideoState newState;
+
+  switch (playerState) {
+  case QMediaPlayer::PlaybackState::StoppedState:
+    newState = VideoState::Stopped;
+    SPDLOG_INFO("VideoState is Stopped");
+    break;
+  case QMediaPlayer::PlaybackState::PlayingState:
+    newState = VideoState::Started;
+    SPDLOG_INFO("VideoState is Started");
+    break;
+  case QMediaPlayer::PlaybackState::PausedState:
+    newState = VideoState::Paused;
+    SPDLOG_INFO("VideoState is Paused");
+    break;
+  }
+
+  if (newState != this->state) {
+    this->state = newState;
+    emit stateChanged();
+  }
+}
+
+void File::start() { player.play(); }
+
+void File::stop() { player.stop(); }
+
+bool File::isNull() { return false; }
+
+void File::setVideoOutput(QGraphicsVideoItem *videoItem) {
+  player.setVideoOutput(videoItem);
+}
+
+void File::updateResolution() {}
 Camera::Camera(const QCameraDevice &device, QObject *parent)
     : Video(), camera(), session() {
   connect(&camera, &QCamera::activeChanged, this, &Camera::setState);
@@ -82,7 +123,7 @@ void Camera::setState(bool active) {
     newState = VideoState::Stopped;
     SPDLOG_INFO("VideoState is Started");
   }
-  
+
   if (newState != this->state) {
     this->state = newState;
     emit stateChanged();
@@ -116,10 +157,14 @@ void Camera::updateResolution() {
 // DOCS:
 std::unique_ptr<Video> VideoFactory::create(const std::string &id) {
   QUrl url = findStream(id);
+  QString path = findFile(id);
   QCameraDevice device = findCamera(id);
 
   if (url.isValid()) {
     return std::make_unique<Stream>(url);
+
+  } else if (!path.isNull()) {
+    return std::make_unique<File>(path);
 
   } else if (!device.isNull()) {
     return std::make_unique<Camera>(device);
