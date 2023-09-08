@@ -14,3 +14,5 @@ findCamera(const std::string &id,
            const QList<QCameraDevice> &cameras = QMediaDevices::videoInputs());
 std::string
 listCameras(const QList<QCameraDevice> &cameras = QMediaDevices::videoInputs());
+
+QString findFile(const std::string &id);

@@ -3,6 +3,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <QCameraDevice>
+#include <QFile>
 #include <QMediaDevices>
 #include <iostream>
 #include <memory>
@@ -195,4 +196,24 @@ Table qlistToTable(QList<QCameraDevice> cameras) {
 std::string listCameras(const QList<QCameraDevice> &cameras) {
   Table table = qlistToTable(cameras);
   return tableToString(table);
+}
+
+/**
+ * @brief findFile
+ *
+ * Select a file from the config. If the file is not found, return and empty
+ * QString.
+ *
+ * @param config The config to select from.
+ * @return The selected file.
+ */
+QString findFile(const std::string &path) {
+  bool isFile = QFile::exists(QString::fromStdString(path));
+  if (isFile) {
+    SPDLOG_INFO("File found: {}", path);
+    return QString::fromStdString(path);
+  } else {
+    SPDLOG_INFO("No file found.");
+    return QString();
+  }
 }

@@ -54,7 +54,6 @@ class NullVideo : public Video {
   bool isNull() override { return true; }
   void setVideoOutput(QGraphicsVideoItem *videoItem) override {}
   void updateResolution() override {}
-
 };
 
 class Stream : public Video {
@@ -64,8 +63,27 @@ class Stream : public Video {
  public:
   QMediaPlayer player;
 
-  Stream(const QUrl &url, QObject *parent = nullptr);
+  explicit Stream(const QUrl &url, QObject *parent = nullptr);
   ~Stream() override = default;
+  void start() override;
+  void stop() override;
+  bool isNull() override;
+  void setVideoOutput(QGraphicsVideoItem *videoItem) override;
+  void updateResolution() override;
+
+ protected:
+  void setState(QMediaPlayer::PlaybackState state);
+};
+
+class File : public Video {
+
+  Q_OBJECT
+
+ public:
+  QMediaPlayer player;
+
+  explicit File(const QString &path, QObject *parent = nullptr);
+  ~File() override = default;
   void start() override;
   void stop() override;
   bool isNull() override;
@@ -84,7 +102,7 @@ class Camera : public Video {
   QCamera camera;
   QMediaCaptureSession session;
 
-  Camera(const QCameraDevice &device, QObject *parent = nullptr);
+  explicit Camera(const QCameraDevice &device, QObject *parent = nullptr);
   ~Camera() override = default;
   void start() override;
   void stop() override;
