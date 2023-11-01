@@ -5,6 +5,7 @@ WORK IN PROGRESS
 - [ ] Immidiate opening of gui, do not wait till connected
 - [ ] display connection status
 - [ ] Enable reconnection when disconnected
+- [ ] Refactor all modules
 
 ## Dependencies
 
