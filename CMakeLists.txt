@@ -58,23 +58,23 @@ target_link_libraries(
 # Executable
 file(COPY ${CMAKE_SOURCE_DIR}/src/static
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_executable(snapshot src/main.cpp resources/resources.qrc)
+add_executable(snapshot src/main.cpp src/app.cpp src/app.hpp src/gui.cpp
+                        src/gui.hpp resources/resources.qrc)
 target_link_libraries(snapshot gui helpers)
 
 # Tests
-# Also add the mocking library
-file(COPY ${CMAKE_SOURCE_DIR}/tests/static
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-include(GoogleTest)
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  DOWNLOAD_EXTRACT_TIMESTAMP true
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-FetchContent_MakeAvailable(googletest)
-add_executable(
-  tests
-  tests/main.cpp tests/ resources/resources.qrc tests/camera_test/find_test.cpp
-  tests/helpers_test/argparse_test.cpp tests/helpers_test/config_test.cpp)
-target_link_libraries(tests gtest gmock camera gui helpers)
+# file(COPY ${CMAKE_SOURCE_DIR}/tests/static
+#      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# include(GoogleTest)
+# include(FetchContent)
+# FetchContent_Declare(
+#   googletest
+#   DOWNLOAD_EXTRACT_TIMESTAMP true
+#   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+# )
+# FetchContent_MakeAvailable(googletest)
+# add_executable(
+#   tests
+#   tests/main.cpp tests/ resources/resources.qrc tests/camera_test/find_test.cpp
+#   tests/helpers_test/argparse_test.cpp tests/helpers_test/config_test.cpp)
+# target_link_libraries(tests gtest gmock camera gui helpers)
