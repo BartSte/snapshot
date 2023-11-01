@@ -2,6 +2,7 @@
 
 #include <qapplication.h>
 #include <qmetaobject.h>
+#include <string>
 
 #include "gui/mainwindow.hpp"
 
