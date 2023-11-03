@@ -13,6 +13,8 @@
 
 #include "./gui/videoscene.hpp"
 
+using OptionalVideo = std::optional<std::unique_ptr<Video>>;
+
 const QString textFont = "Arial";
 const float constRatio = 0.8;
 const float textFontSize = 16;
@@ -127,13 +129,18 @@ void VideoScene::centerText() {
  * @param video
  */
 void VideoScene::setVideo(const std::string &id) {
+
   VideoFactory factory = VideoFactory();
   video = factory.create(id);
-  video->setVideoOutput(&videoItem);
 
-  connect(video.get(), &Video::stateChanged, this, &VideoScene::update);
-
-  video->start();
+  if (!video.has_value()) {
+    SPDLOG_INFO("No video found.");
+  } else {
+    video.value()->setVideoOutput(&videoItem);
+    connect(video.value().get(), &Video::stateChanged, this,
+            &VideoScene::update);
+    video.value()->start();
+  }
 }
 
 /**
@@ -141,8 +148,8 @@ void VideoScene::setVideo(const std::string &id) {
  * Update the QGraphicsVideoItem when called.
  */
 void VideoScene::updateVideo() {
-  if (video != nullptr) {
-    video->updateResolution();
+  if (video.has_value()) {
+    video.value()->updateResolution();
     scaleVideo();
     centerVideo();
   }

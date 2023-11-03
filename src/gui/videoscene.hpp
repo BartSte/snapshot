@@ -3,9 +3,10 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
-#include <video/connect.hpp>
 #include <memory>
+#include <optional>
 #include <string>
+#include <video/connect.hpp>
 
 /**
  * @class VideoScene
@@ -19,7 +20,6 @@ class VideoScene : public QGraphicsScene {
   QGraphicsTextItem textItem;
   QGraphicsVideoItem videoItem;
   QGraphicsPixmapItem pixmapItem;
-  std::unique_ptr<Video> video;
 
   explicit VideoScene(QObject *parent = nullptr);
 
@@ -29,6 +29,8 @@ class VideoScene : public QGraphicsScene {
   void update();
 
  private:
+  std::optional<std::unique_ptr<Video>> video;
+
   void updatePixmap();
   void updateText();
   void updateVideo();
