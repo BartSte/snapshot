@@ -6,8 +6,8 @@
 #include <memory>
 #include <string>
 
-namespace fs = boost::filesystem;
-namespace pt = pt;
+using path = boost::filesystem::path;
+using ptree = boost::property_tree::ptree;
 
 extern const boost::filesystem::path ROOT;
 
@@ -15,9 +15,9 @@ extern const boost::filesystem::path ROOT;
  * @brief Tests the parseConfig function.
  */
 TEST(configTest, parseConfig) {
-  fs::path path = ROOT / "static" / "config_test.json";
+  path path = ROOT / "static" / "config_test.json";
 
-  pt::ptree config = config::parse(path.string());
+  ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);
@@ -31,8 +31,8 @@ TEST(configTest, parseConfig) {
  */
 TEST(configTest, merge) {
   // makeg ptree with 1 key value pair
-  pt::ptree user;
-  pt::ptree pconfig;
+  ptree user;
+  ptree pconfig;
 
   user.put("foo", true);
   pconfig.put("foo", false);
@@ -48,11 +48,11 @@ TEST(configTest, merge) {
  * @brief The config_user_test should overwrite the config_test settings.
  */
 TEST(configTest, parseConfigs) {
-  fs::path path = ROOT / "static" / "config_user_test.json";
-  fs::path path_default = ROOT / "static" / "config_test.json";
+  path path_user = ROOT / "static" / "config_user_test.json";
+  path path_default = ROOT / "static" / "config_test.json";
 
-  pt::ptree config =
-      config::parseUserDefault(path.string(), path_default.string());
+  ptree config =
+      config::parseUserDefault(path_user.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), true);
   ASSERT_EQ(config.get<bool>("list"), true);
@@ -62,11 +62,11 @@ TEST(configTest, parseConfigs) {
 }
 
 TEST(configTest, parseConfigsTestIncomplete) {
-  fs::path path = ROOT / "static" / "config_user_incomplete_test.json";
-  fs::path path_default = ROOT / "static" / "config_test.json";
+  path path_user = ROOT / "static" / "config_user_incomplete_test.json";
+  path path_default = ROOT / "static" / "config_test.json";
 
-  pt::ptree config =
-      config::parseUserDefault(path.string(), path_default.string());
+  ptree config =
+      config::parseUserDefault(path_user.string(), path_default.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
   ASSERT_EQ(config.get<bool>("list"), false);
