@@ -15,34 +15,87 @@
 #include "./video/connect.hpp"
 #include "./video/find.hpp"
 
-// DOCS: add docstrings
+using VideoPtr = std::optional<std::unique_ptr<Video>>;
 
+// TODO: The Stream and File have overlapping code for the methods start(),
+// stop(), setVideoOutput() and updateResolution(). In some sense, this is
+// also true for the Camera class. I think I can move functionality to the base
+// class.
+
+/**
+ * @brief convertState
+ *
+ * Convert a bool to a VideoState.
+ *
+ * @param active True if the state is active, false otherwise.
+ * @return The VideoState.
+ */
+VideoState convertState(bool active) {
+  if (active) {
+    SPDLOG_INFO("VideoState::Started");
+    return VideoState::Started;
+  } else {
+    SPDLOG_INFO("VideoState::Stopped");
+    return VideoState::Stopped;
+  }
+}
+
+/**
+ * @brief convertState
+ *
+ * Convert the QMediaPlayer::PlaybackState to a VideoState.
+ *
+ * @param state The QMediaPlayer::PlaybackState.
+ * @return The VideoState.
+ */
+VideoState convertState(QMediaPlayer::PlaybackState &state) {
+  switch (state) {
+  case QMediaPlayer::PlaybackState::StoppedState:
+    SPDLOG_INFO("VideoState::Stopped");
+    return VideoState::Stopped;
+  case QMediaPlayer::PlaybackState::PlayingState:
+    SPDLOG_INFO("VideoState::Started");
+    return VideoState::Started;
+  case QMediaPlayer::PlaybackState::PausedState:
+    SPDLOG_INFO("VideoState::Paused");
+    return VideoState::Paused;
+  }
+}
+
+/**
+ * @brief Constructor
+ *
+ * Inherits from QObject.
+ *
+ * @param parent The parent QObject. Default is nullptr.
+ */
 Video::Video(QObject *parent) : QObject(parent), state(VideoState::Stopped) {}
-VideoState Video::getState() { return state; }
 
+/**
+ * @brief Constructor
+ *
+ * Create a stream from a url. The playback state of QMediaPlayer is connected
+ * to the setState slot.
+ *
+ * @param url The url of the stream.
+ * @param parent The parent QObject. Default is nullptr.
+ */
 Stream::Stream(const QUrl &url, QObject *parent) : Video(parent), player() {
   connect(&player, &QMediaPlayer::playbackStateChanged, this,
           &Stream::setState);
   player.setSource(url);
 }
 
+/**
+ * @brief setState
+ *
+ * Convert the QMediaPlayer::PlaybackState to a VideoState and emit the
+ * stateChanged signal if the state has changed.
+ *
+ * @param playerState The QMediaPlayer::PlaybackState.
+ */
 void Stream::setState(QMediaPlayer::PlaybackState playerState) {
-  VideoState newState;
-
-  switch (playerState) {
-  case QMediaPlayer::PlaybackState::StoppedState:
-    newState = VideoState::Stopped;
-    SPDLOG_INFO("VideoState is Stopped");
-    break;
-  case QMediaPlayer::PlaybackState::PlayingState:
-    newState = VideoState::Started;
-    SPDLOG_INFO("VideoState is Started");
-    break;
-  case QMediaPlayer::PlaybackState::PausedState:
-    newState = VideoState::Paused;
-    SPDLOG_INFO("VideoState is Paused");
-    break;
-  }
+  VideoState newState = convertState(playerState);
 
   if (newState != this->state) {
     this->state = newState;
@@ -50,41 +103,54 @@ void Stream::setState(QMediaPlayer::PlaybackState playerState) {
   }
 }
 
+/**
+ * @brief start
+ *
+ * Wrapper for QMediaPlayer::play().
+ */
 void Stream::start() { player.play(); }
 
+/**
+ * @brief stop
+ *
+ * Wrapper for QMediaPlayer::stop().
+ */
 void Stream::stop() { player.stop(); }
 
-bool Stream::isNull() { return false; }
-
+/**
+ * @brief setVideoOutput
+ *
+ * Wrapper for QMediaPlayer::setVideoOutput().
+ *
+ * @param videoItem Pointer to the QGraphicsVideoItem.
+ */
 void Stream::setVideoOutput(QGraphicsVideoItem *videoItem) {
   player.setVideoOutput(videoItem);
 }
 
-void Stream::updateResolution() {}
-
+/**
+ * @brief constructor
+ *
+ * Connect the QMediaPlayer::playbackStateChanged signal to the setState slot.
+ *
+ * @param path The path to the file.
+ * @param parent The parent QObject. Default is nullptr.
+ */
 File::File(const QString &path, QObject *parent) : Video(parent), player() {
   connect(&player, &QMediaPlayer::playbackStateChanged, this, &File::setState);
   player.setSource(QUrl::fromLocalFile(path));
 }
 
-// TODO:remove duplicated code from Stream
+/**
+ * @brief setState
+ *
+ * Convert the QMediaPlayer::PlaybackState to a VideoState and emit the
+ * stateChanged signal if the state has changed.
+ *
+ * @param playerState
+ */
 void File::setState(QMediaPlayer::PlaybackState playerState) {
-  VideoState newState;
-
-  switch (playerState) {
-  case QMediaPlayer::PlaybackState::StoppedState:
-    newState = VideoState::Stopped;
-    SPDLOG_INFO("VideoState is Stopped");
-    break;
-  case QMediaPlayer::PlaybackState::PlayingState:
-    newState = VideoState::Started;
-    SPDLOG_INFO("VideoState is Started");
-    break;
-  case QMediaPlayer::PlaybackState::PausedState:
-    newState = VideoState::Paused;
-    SPDLOG_INFO("VideoState is Paused");
-    break;
-  }
+  VideoState newState = convertState(playerState);
 
   if (newState != this->state) {
     this->state = newState;
@@ -96,13 +162,18 @@ void File::start() { player.play(); }
 
 void File::stop() { player.stop(); }
 
-bool File::isNull() { return false; }
-
 void File::setVideoOutput(QGraphicsVideoItem *videoItem) {
   player.setVideoOutput(videoItem);
 }
 
-void File::updateResolution() {}
+/**
+ * @brief constructor
+ *
+ * Connect the QCamera::activeChanged signal to the setState slot.
+ *
+ * @param device The QCameraDevice to use.
+ * @param parent The parent QObject. Default is nullptr.
+ */
 Camera::Camera(const QCameraDevice &device, QObject *parent)
     : Video(), camera(), session() {
   connect(&camera, &QCamera::activeChanged, this, &Camera::setState);
@@ -115,14 +186,7 @@ void Camera::start() { camera.start(); }
 void Camera::stop() { camera.stop(); }
 
 void Camera::setState(bool active) {
-  VideoState newState;
-  if (active) {
-    newState = VideoState::Started;
-    SPDLOG_INFO("VideoState is Started");
-  } else {
-    newState = VideoState::Stopped;
-    SPDLOG_INFO("VideoState is Started");
-  }
+  VideoState newState = convertState(active);
 
   if (newState != this->state) {
     this->state = newState;
@@ -130,12 +194,15 @@ void Camera::setState(bool active) {
   }
 }
 
-bool Camera::isNull() { return false; }
-
 void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
   session.setVideoOutput(videoItem);
 }
 
+/**
+ * @brief updateResolution
+ *
+ * Update the resolution of the camera to the highest resolution available.
+ */
 void Camera::updateResolution() {
   QList<QCameraFormat> formats = camera.cameraDevice().videoFormats();
   SPDLOG_DEBUG("formats: {}", formats.size());
@@ -145,7 +212,6 @@ void Camera::updateResolution() {
   for (QCameraFormat format : formats) {
     QSize reso = format.resolution();
     if (reso.width() > max_reso.width() && reso.height() > max_reso.height()) {
-
       max_reso = reso;
       selected = format;
       SPDLOG_DEBUG("resolution: {}x{}", reso.width(), reso.height());
@@ -154,8 +220,18 @@ void Camera::updateResolution() {
   camera.setCameraFormat(selected);
 }
 
-// DOCS:
-std::unique_ptr<Video> VideoFactory::create(const std::string &id) {
+/**
+ * @brief create
+ *
+ * Create a Video object from a string id. The id can be a url, a path to a
+ * file or the name of a camera. If the id is not found, return std::nullopt.
+ *
+ * @param id The identifier of the video. This can be a url, a path to a file,
+ * or the name of a camera.
+ * @return A unique pointer to the Video object, or std::nullopt if the id is
+ * not found.
+ */
+VideoPtr VideoFactory::create(const std::string &id) {
   QUrl url = findStream(id);
   QString path = findFile(id);
   QCameraDevice device = findCamera(id);
@@ -171,6 +247,6 @@ std::unique_ptr<Video> VideoFactory::create(const std::string &id) {
 
   } else {
     SPDLOG_WARN("No camera found.");
-    return std::make_unique<NullVideo>();
+    return std::nullopt;
   }
 }

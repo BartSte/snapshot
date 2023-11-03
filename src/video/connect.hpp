@@ -2,6 +2,7 @@
 
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
 #include <memory>
+#include <optional>
 #include <qcamera.h>
 #include <qcameradevice.h>
 #include <qmediacapturesession.h>
@@ -11,49 +12,34 @@
 #include <qurl.h>
 #include <string>
 
-// TODO:
-// - Ensure it works with the streams as well
-// - When a stream disconnects, the video state should change
-// - The window must be displayed before trying to connect to the video.
-// Showing the GUI cannot be blocked by starting the video
-
 enum class VideoState {
   Stopped = 0,
   Paused = 1,
   Started = 2,
 };
 
+VideoState convertState(bool is_active);
+VideoState convertState(QMediaPlayer::PlaybackState &state);
+
 class Video : public QObject {
 
   Q_OBJECT
 
  public:
-  Video(QObject *parent = nullptr);
-  VideoState getState();
+  explicit Video(QObject *parent = nullptr);
+  VideoState getState() { return state; }
 
   virtual ~Video() = default;
   virtual void start() = 0;
   virtual void stop() = 0;
-  virtual bool isNull() = 0;
   virtual void setVideoOutput(QGraphicsVideoItem *videoItem) = 0;
-  virtual void updateResolution() = 0;
+  virtual void updateResolution() {}
 
  protected:
   VideoState state;
 
  signals:
   void stateChanged();
-};
-
-class NullVideo : public Video {
-
- public:
-  ~NullVideo() override = default;
-  void start() override {}
-  void stop() override {}
-  bool isNull() override { return true; }
-  void setVideoOutput(QGraphicsVideoItem *videoItem) override {}
-  void updateResolution() override {}
 };
 
 class Stream : public Video {
@@ -67,9 +53,7 @@ class Stream : public Video {
   ~Stream() override = default;
   void start() override;
   void stop() override;
-  bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
-  void updateResolution() override;
 
  protected:
   void setState(QMediaPlayer::PlaybackState state);
@@ -86,9 +70,7 @@ class File : public Video {
   ~File() override = default;
   void start() override;
   void stop() override;
-  bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
-  void updateResolution() override;
 
  protected:
   void setState(QMediaPlayer::PlaybackState state);
@@ -106,7 +88,6 @@ class Camera : public Video {
   ~Camera() override = default;
   void start() override;
   void stop() override;
-  bool isNull() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
 
@@ -115,6 +96,7 @@ class Camera : public Video {
 };
 
 class VideoFactory {
+
  public:
-  std::unique_ptr<Video> create(const std::string &id);
+  std::optional<std::unique_ptr<Video>> create(const std::string &id);
 };
