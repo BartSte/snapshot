@@ -1,6 +1,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <camera/find.hpp>
+#include <video/find.hpp>
 #include <cxxopts.hpp>
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>

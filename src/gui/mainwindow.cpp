@@ -1,7 +1,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <QMainWindow>
-#include <camera/find.hpp>
+#include <video/find.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 

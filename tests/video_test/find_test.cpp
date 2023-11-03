@@ -1,7 +1,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <boost/property_tree/ptree.hpp>
-#include <camera/find.hpp>
+#include <video/find.hpp>
 #include <gtest/gtest.h>
 #include <qcameradevice.h>
 #include <qlist.h>

@@ -33,11 +33,11 @@ target_include_directories(
                     ${Boost_INCLUDE_DIRS}})
 target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
-# Camera
-add_library(camera src/camera/find.cpp src/camera/find.hpp
-                   src/camera/connect.cpp src/camera/connect.hpp)
-target_include_directories(camera INTERFACE ${Boost_INCLUDE_DIRS}})
-target_link_libraries(camera Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
+# video
+add_library(video src/video/find.cpp src/video/find.hpp
+                   src/video/connect.cpp src/video/connect.hpp)
+target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
+target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)
 
 # GUI
@@ -48,7 +48,7 @@ target_include_directories(
                 ${Boost_INCLUDE_DIRS}})
 target_link_libraries(
   gui
-  camera
+  video
   Qt6::Widgets
   Qt6::Multimedia
   Qt6::MultimediaWidgets
@@ -76,6 +76,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 add_executable(
   tests
-  tests/main.cpp tests/ resources/resources.qrc tests/camera_test/find_test.cpp
+  tests/main.cpp tests/ resources/resources.qrc tests/video_test/find_test.cpp
   tests/helpers_test/argparse_test.cpp tests/helpers_test/config_test.cpp)
-target_link_libraries(tests gtest gmock camera gui helpers)
+target_link_libraries(tests gtest gmock video gui helpers)

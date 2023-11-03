@@ -12,8 +12,8 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include "./camera/connect.hpp"
-#include "./camera/find.hpp"
+#include "./video/connect.hpp"
+#include "./video/find.hpp"
 
 // DOCS: add docstrings
 
