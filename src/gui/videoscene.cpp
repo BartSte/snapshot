@@ -1,6 +1,5 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "camera/connect.hpp"
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
@@ -10,6 +9,7 @@
 #include <qcameradevice.h>
 #include <qobject.h>
 #include <spdlog/spdlog.h>
+#include <video/connect.hpp>
 
 #include "./gui/videoscene.hpp"
 
@@ -175,7 +175,6 @@ void VideoScene::centerVideo() {
 
   videoItem.setPos(x, y);
 }
-
 
 /**
  * @brief DOCS:

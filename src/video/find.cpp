@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "./camera/find.hpp"
+#include "./video/find.hpp"
 
 using Table = std::vector<std::vector<std::string>>;
 

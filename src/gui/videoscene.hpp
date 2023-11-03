@@ -3,7 +3,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
-#include <camera/connect.hpp>
+#include <video/connect.hpp>
 #include <memory>
 #include <string>
 
