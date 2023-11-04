@@ -12,91 +12,55 @@
 #include <qurl.h>
 #include <string>
 
-enum class VideoState {
-  Stopped = 0,
-  Paused = 1,
-  Started = 2,
-};
+#include "./video/state.hpp"
 
-VideoState convertState(bool is_active);
-VideoState convertState(QMediaPlayer::PlaybackState &state);
-
-class Video : public QObject {
-
+class BaseVideo : public QObject {
   Q_OBJECT
 
- public:
-  explicit Video(QObject *parent = nullptr);
-  VideoState getState() { return state; }
+ signals:
+  void stateChanged();
 
-  virtual ~Video() = default;
+ protected:
+  VideoState state;
+  explicit BaseVideo(QObject *parent = nullptr);
+  void setState(const VideoState &newState);
+
+ public:
+  VideoState getState() { return state; }
+  virtual ~BaseVideo() = default;
   virtual void start() = 0;
   virtual void stop() = 0;
   virtual void setVideoOutput(QGraphicsVideoItem *videoItem) = 0;
   virtual void updateResolution() {}
-
- protected:
-  VideoState state;
-
- signals:
-  void stateChanged();
 };
 
-class Stream : public Video {
-
-  Q_OBJECT
+class MediaPlayer : public BaseVideo {
+ protected:
+  QMediaPlayer player;
+  void setState(const QMediaPlayer::PlaybackState &state);
 
  public:
-  QMediaPlayer player;
-
-  explicit Stream(const QUrl &url, QObject *parent = nullptr);
-  ~Stream() override = default;
+  explicit MediaPlayer(const QUrl &url, QObject *parent = nullptr);
+  explicit MediaPlayer(const QString &url, QObject *parent = nullptr);
+  ~MediaPlayer() override = default;
   void start() override;
   void stop() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
-
- protected:
-  void setState(QMediaPlayer::PlaybackState state);
 };
 
-class File : public Video {
-
-  Q_OBJECT
-
- public:
-  QMediaPlayer player;
-
-  explicit File(const QString &path, QObject *parent = nullptr);
-  ~File() override = default;
-  void start() override;
-  void stop() override;
-  void setVideoOutput(QGraphicsVideoItem *videoItem) override;
-
+class Camera : public BaseVideo {
  protected:
-  void setState(QMediaPlayer::PlaybackState state);
-};
-
-class Camera : public Video {
-
-  Q_OBJECT
-
- public:
   QCamera camera;
   QMediaCaptureSession session;
+  void setState(bool is_active);
 
+ public:
   explicit Camera(const QCameraDevice &device, QObject *parent = nullptr);
   ~Camera() override = default;
   void start() override;
   void stop() override;
   void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
-
- protected:
-  void setState(bool is_active);
 };
 
-class VideoFactory {
-
- public:
-  std::optional<std::unique_ptr<Video>> create(const std::string &id);
-};
+std::optional<std::unique_ptr<BaseVideo>> videoFactory(const std::string &id);

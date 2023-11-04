@@ -33,9 +33,9 @@ target_include_directories(
                     ${Boost_INCLUDE_DIRS}})
 target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
 
-# video
-add_library(video src/video/find.cpp src/video/find.hpp
-                   src/video/connect.cpp src/video/connect.hpp)
+# Video
+add_library(video src/video/find.cpp src/video/find.hpp src/video/connect.cpp
+                  src/video/connect.hpp src/video/state.cpp src/video/state.hpp)
 target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
 target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)
