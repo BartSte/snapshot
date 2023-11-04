@@ -15,7 +15,6 @@
  * a text.
  */
 class VideoScene : public QGraphicsScene {
-
  public:
   QGraphicsTextItem textItem;
   QGraphicsVideoItem videoItem;
@@ -29,7 +28,7 @@ class VideoScene : public QGraphicsScene {
   void update();
 
  private:
-  std::optional<std::unique_ptr<Video>> video;
+  std::optional<std::unique_ptr<BaseVideo>> video;
 
   void updatePixmap();
   void updateText();
