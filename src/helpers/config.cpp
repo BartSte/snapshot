@@ -1,5 +1,3 @@
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <memory>
 #include <utility>
@@ -31,15 +29,15 @@ pt::ptree config::parseUserDefault(const std::string &path_user,
                                    const std::string &path_default) {
 
   pt::ptree config = config::parse(path_default);
-  SPDLOG_DEBUG("Reading default config file from {}", path_default);
+  spdlog::debug("Reading default config file from {}", path_default);
 
   if (fs::exists(path_user)) {
-    SPDLOG_DEBUG("Reading user config file from {}", path_user);
+    spdlog::debug("Reading user config file from {}", path_user);
     pt::ptree config_user = config::parse(path_user);
     config::merge(config, config_user);
 
   } else {
-    SPDLOG_INFO("User config file does not exist.");
+    spdlog::info("User config file does not exist.");
   }
   return config;
 }

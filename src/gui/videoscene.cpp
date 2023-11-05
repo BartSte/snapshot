@@ -1,5 +1,3 @@
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
@@ -132,7 +130,7 @@ void VideoScene::setVideo(const std::string &id) {
   video = videoFactory(id);
 
   if (!video.has_value()) {
-    SPDLOG_INFO("No video found.");
+    spdlog::info("No video found.");
   } else {
     video.value()->setVideoOutput(&videoItem);
     connect(video.value().get(), &BaseVideo::stateChanged, this,
@@ -163,7 +161,7 @@ void VideoScene::scaleVideo() {
   float heightRatio = sceneRect().height() / videoItem.size().height();
   float aspectRatio = std::min(widthRatio, heightRatio);
 
-  SPDLOG_DEBUG("aspectRatio: {}", aspectRatio);
+  spdlog::debug("aspectRatio: {}", aspectRatio);
   videoItem.setScale(aspectRatio);
 }
 

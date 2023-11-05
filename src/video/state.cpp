@@ -1,5 +1,3 @@
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <spdlog/spdlog.h>
 
 #include "./state.hpp"
@@ -14,10 +12,10 @@
  */
 const VideoState convertState(bool active) {
   if (active) {
-    SPDLOG_INFO("VideoState::Started");
+    spdlog::info("VideoState::Started");
     return VideoState::Started;
   } else {
-    SPDLOG_INFO("VideoState::Stopped");
+    spdlog::info("VideoState::Stopped");
     return VideoState::Stopped;
   }
 }
@@ -33,13 +31,13 @@ const VideoState convertState(bool active) {
 const VideoState convertState(const QMediaPlayer::PlaybackState &state) {
   switch (state) {
   case QMediaPlayer::PlaybackState::StoppedState:
-    SPDLOG_INFO("VideoState::Stopped");
+    spdlog::info("VideoState::Stopped");
     return VideoState::Stopped;
   case QMediaPlayer::PlaybackState::PlayingState:
-    SPDLOG_INFO("VideoState::Started");
+    spdlog::info("VideoState::Started");
     return VideoState::Started;
   case QMediaPlayer::PlaybackState::PausedState:
-    SPDLOG_INFO("VideoState::Paused");
+    spdlog::info("VideoState::Paused");
     return VideoState::Paused;
   }
 }
