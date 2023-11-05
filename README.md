@@ -219,6 +219,16 @@ debugging and testing the project.
 Follow the steps in the [Building](#building) section to build the project.
 Instead of the `Release` build type, use the `Debug` build type.
 
+### Running debug mode
+
+By running the following command, the application is run in debug mode:
+
+```bash
+snapshot --debug
+```
+
+This opens the gui and plays the sample.mp4 file from the `src/static` folder.
+
 ### Running the rtsp stream
 
 By running the following command, a video stream is published using the rtsp

@@ -1,6 +1,5 @@
 <RCC>
     <qresource>
         <file>disconnected.png</file>
-        <file>sample.mp4</file>
     </qresource>
 </RCC>
