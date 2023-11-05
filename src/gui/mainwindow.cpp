@@ -1,5 +1,3 @@
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <QMainWindow>
 #include <video/find.hpp>
 #include <iostream>
@@ -29,5 +27,5 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   scene.setSceneRect(viewRect);
   scene.update();
 
-  SPDLOG_INFO("View rect: {}x{}", viewRect.width(), viewRect.height());
+  spdlog::info("View rect: {}x{}", viewRect.width(), viewRect.height());
 }

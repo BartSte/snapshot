@@ -1,12 +1,10 @@
-#include <qcameradevice.h>
-#include <qurl.h>
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <QCameraDevice>
 #include <QFile>
 #include <QMediaDevices>
 #include <iostream>
 #include <memory>
+#include <qcameradevice.h>
+#include <qurl.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -30,13 +28,13 @@ const char *STREAMS[4] = {"rtsp://", "udp://", "http://", "https://"};
 QCameraDevice findCameraByName(const QList<QCameraDevice> &cameras,
                                const std::string &name) {
   for (const QCameraDevice &camera : cameras) {
-    SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
+    spdlog::debug("Found camera: {}", camera.description().toStdString());
     if (camera.description().toStdString() == name) {
-      SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
+      spdlog::info("Selected camera: {}", camera.description().toStdString());
       return camera;
     }
   }
-  SPDLOG_WARN("Camera not found");
+  spdlog::warn("Camera not found");
   return QCameraDevice();
 }
 
@@ -52,17 +50,17 @@ QCameraDevice findCameraByName(const QList<QCameraDevice> &cameras,
  */
 QCameraDevice findCamera(const std::string &name,
                          const QList<QCameraDevice> &cameras) {
-  SPDLOG_DEBUG("Camera name: {}", name);
+  spdlog::debug("Camera name: {}", name);
   if (cameras.size() == 0) {
-    SPDLOG_WARN("No cameras found");
+    spdlog::warn("No cameras found");
     return QCameraDevice();
 
   } else if (name == "default") {
-    SPDLOG_INFO("Selecting default camera");
+    spdlog::info("Selecting default camera");
     return QMediaDevices::defaultVideoInput();
 
   } else {
-    SPDLOG_INFO("Found {} cameras", cameras.size());
+    spdlog::info("Found {} cameras", cameras.size());
     return findCameraByName(cameras, name);
   }
 }
@@ -80,14 +78,14 @@ QCameraDevice findCamera(const std::string &name,
  */
 QUrl findStream(const std::string &url) {
   for (const std::string &stream : STREAMS) {
-    SPDLOG_DEBUG("Compare potential stream {} to {}", stream, url);
+    spdlog::debug("Compare potential stream {} to {}", stream, url);
     if (url.find(stream) != std::string::npos) {
-      SPDLOG_INFO("Valid stream found: {}", url);
+      spdlog::info("Valid stream found: {}", url);
       return QUrl(QString::fromStdString(url));
     }
   }
 
-  SPDLOG_INFO("No valid stream found.");
+  spdlog::info("No valid stream found.");
   return QUrl();
 }
 
@@ -100,13 +98,13 @@ QUrl findStream(const std::string &url) {
 QCameraDevice getCameraDevice(const std::string &name) {
   QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
   for (const QCameraDevice &camera : cameras) {
-    SPDLOG_DEBUG("Found camera: {}", camera.description().toStdString());
+    spdlog::debug("Found camera: {}", camera.description().toStdString());
     if (camera.description().toStdString() == name) {
-      SPDLOG_INFO("Selected camera: {}", camera.description().toStdString());
+      spdlog::info("Selected camera: {}", camera.description().toStdString());
       return camera;
     }
   }
-  SPDLOG_WARN("Camera not found");
+  spdlog::warn("Camera not found");
   return QCameraDevice();
 }
 
@@ -210,10 +208,10 @@ std::string listCameras(const QList<QCameraDevice> &cameras) {
 QString findFile(const std::string &path) {
   bool isFile = QFile::exists(QString::fromStdString(path));
   if (isFile) {
-    SPDLOG_INFO("File found: {}", path);
+    spdlog::info("File found: {}", path);
     return QString::fromStdString(path);
   } else {
-    SPDLOG_INFO("No file found.");
+    spdlog::info("No file found.");
     return QString();
   }
 }

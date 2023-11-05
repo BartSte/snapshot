@@ -1,5 +1,3 @@
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
 #include <qcamera.h>
 #include <qcameradevice.h>
@@ -136,7 +134,7 @@ void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
  */
 void Camera::updateResolution() {
   QList<QCameraFormat> formats = camera.cameraDevice().videoFormats();
-  SPDLOG_DEBUG("formats: {}", formats.size());
+  spdlog::debug("formats: {}", formats.size());
 
   QSize max_reso(0, 0);
   QCameraFormat selected;
@@ -145,7 +143,7 @@ void Camera::updateResolution() {
     if (reso.width() > max_reso.width() && reso.height() > max_reso.height()) {
       max_reso = reso;
       selected = format;
-      SPDLOG_DEBUG("resolution: {}x{}", reso.width(), reso.height());
+      spdlog::debug("resolution: {}x{}", reso.width(), reso.height());
     }
   }
   camera.setCameraFormat(selected);
@@ -165,22 +163,22 @@ void Camera::updateResolution() {
 VideoPtr videoFactory(const std::string &id) {
   QUrl url = findStream(id);
   if (url.isValid()) {
-    SPDLOG_INFO("MediaPlayer for a stream created.");
+    spdlog::info("MediaPlayer for a stream created.");
     return std::make_unique<MediaPlayer>(url);
   }
 
   QString path = findFile(id);
   if (!path.isNull()) {
-    SPDLOG_INFO("MediaPlayer for a file created.");
+    spdlog::info("MediaPlayer for a file created.");
     return std::make_unique<MediaPlayer>(path);
   }
 
   QCameraDevice device = findCamera(id);
   if (!device.isNull()) {
-    SPDLOG_INFO("Camera created.");
+    spdlog::info("Camera created.");
     return std::make_unique<Camera>(device);
   } else {
-    SPDLOG_WARN("No camera found.");
+    spdlog::warn("No camera found.");
     return std::nullopt;
   }
 }
