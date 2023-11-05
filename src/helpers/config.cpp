@@ -1,12 +1,11 @@
-#include <boost/property_tree/ptree_fwd.hpp>
-#include <memory>
-#include <utility>
-
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ptree_fwd.hpp>
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
+#include <utility>
 
 #include "./helpers/config.hpp"
 
@@ -75,9 +74,9 @@ void config::merge(pt::ptree &config, const pt::ptree &config_user) {
 /**
  * @brief merge
  *
- * Merges a boost::property_tree::ptree object with a
- * cxxopts::ParseResult object. The ParseResult object takes precedence over the
- * ptree object if there are duplicate keys.
+ * Merges a boost::property_tree::ptree object with a cxxopts::ParseResult
+ * object. The ParseResult object takes precedence over the ptree object if
+ * there are duplicate keys.
  *
  * @param config The config.
  * @param args The ParseResult object.

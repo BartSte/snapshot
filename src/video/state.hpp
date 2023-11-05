@@ -8,5 +8,5 @@ enum class VideoState {
   Started = 2,
 };
 
-const VideoState convertState(bool is_active);
-const VideoState convertState(const QMediaPlayer::PlaybackState &state);
+VideoState convertState(bool is_active);
+VideoState convertState(const QMediaPlayer::PlaybackState &state);

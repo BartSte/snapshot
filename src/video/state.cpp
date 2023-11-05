@@ -2,6 +2,13 @@
 
 #include "./state.hpp"
 
+using PlaybackState = QMediaPlayer::PlaybackState;
+
+const std::map<PlaybackState, VideoState> STATE_MAP = {
+    {PlaybackState::StoppedState, VideoState::Stopped},
+    {PlaybackState::PlayingState, VideoState::Started},
+    {PlaybackState::PausedState, VideoState::Paused}};
+
 /**
  * @brief convertState
  *
@@ -10,12 +17,10 @@
  * @param active True if the state is active, false otherwise.
  * @return The VideoState.
  */
-const VideoState convertState(bool active) {
+VideoState convertState(bool active) {
   if (active) {
-    spdlog::info("VideoState::Started");
     return VideoState::Started;
   } else {
-    spdlog::info("VideoState::Stopped");
     return VideoState::Stopped;
   }
 }
@@ -28,16 +33,6 @@ const VideoState convertState(bool active) {
  * @param state The QMediaPlayer::PlaybackState.
  * @return The VideoState.
  */
-const VideoState convertState(const QMediaPlayer::PlaybackState &state) {
-  switch (state) {
-  case QMediaPlayer::PlaybackState::StoppedState:
-    spdlog::info("VideoState::Stopped");
-    return VideoState::Stopped;
-  case QMediaPlayer::PlaybackState::PlayingState:
-    spdlog::info("VideoState::Started");
-    return VideoState::Started;
-  case QMediaPlayer::PlaybackState::PausedState:
-    spdlog::info("VideoState::Paused");
-    return VideoState::Paused;
-  }
+VideoState convertState(const QMediaPlayer::PlaybackState &state) {
+  return STATE_MAP.at(state);
 }

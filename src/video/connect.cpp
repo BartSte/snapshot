@@ -96,8 +96,7 @@ void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
  * @param playerState The QMediaPlayer::PlaybackState.
  */
 void MediaPlayer::setState(const QMediaPlayer::PlaybackState &playerState) {
-  const VideoState newState = convertState(playerState);
-  BaseVideo::setState(newState);
+  BaseVideo::setState(convertState(playerState));
 }
 
 /**
