@@ -9,11 +9,10 @@
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
 
+ protected:
+  void resizeEvent(QResizeEvent *event) override;
+
  public:
   VideoScene scene;
-
   explicit MainWindow(QWidget *parent = nullptr);
-
- protected:
-  virtual void resizeEvent(QResizeEvent *event);
 };

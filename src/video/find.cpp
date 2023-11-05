@@ -19,7 +19,7 @@ const char *STREAMS[4] = {"rtsp://", "udp://", "http://", "https://"};
  * @brief findCameraByName
  *
  * Select a camera by name from a list of cameras. If the camera is not found,
- * return boost::none.
+ * an empty QCameraDevice is returned.
  *
  * @param cameras The list of cameras to select from.
  * @param name The name of the camera to select.
@@ -42,7 +42,7 @@ QCameraDevice findCameraByName(const QList<QCameraDevice> &cameras,
  * @brief findCamera
  *
  * Select a camera by name from a list of cameras. If the camera is not found,
- * return boost::none.
+ * an empty QCameraDevice is returned.
  *
  * @param cameras The list of cameras to select from.
  * @param name The name of the camera to select.
@@ -66,12 +66,10 @@ QCameraDevice findCamera(const std::string &name,
 }
 
 /**
- * TODO: write test
- *
  * @brief findStream
  *
  * Select a camera stream from the config. If the stream is not found, return
- * boost::none.
+ * and empty QUrl.
  *
  * @param config The config to select from.
  * @return The selected stream.
@@ -90,10 +88,13 @@ QUrl findStream(const std::string &url) {
 }
 
 /**
- * @brief DOCS:
+ * @brief getCameraDevice
  *
- * @param name
- * @return
+ * Select a camera by name from a list of cameras. If the camera is not found,
+ * an empty QCameraDevice is returned.
+ *
+ * @param string The name of the camera to select.
+ * @return The selected camera.
  */
 QCameraDevice getCameraDevice(const std::string &name) {
   QList<QCameraDevice> cameras = QMediaDevices::videoInputs();

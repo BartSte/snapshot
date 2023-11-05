@@ -8,13 +8,23 @@
 #include <string>
 #include <video/connect.hpp>
 
-/**
- * @class VideoScene
- * @brief The VideoScene class is a QGraphicsScene that displays a video
- * stream. If the stream is disconnected, it displays a disconnected image with
- * a text.
- */
 class VideoScene : public QGraphicsScene {
+ private:
+  std::optional<std::unique_ptr<BaseVideo>> video;
+
+  void updatePixmap();
+  void scalePixmap();
+  void centerPixmap();
+
+  void updateText();
+  void centerText();
+
+  void updateVideo();
+  void scaleVideo();
+  void centerVideo();
+
+  void updateResolution();
+
  public:
   QGraphicsTextItem textItem;
   QGraphicsVideoItem videoItem;
@@ -22,24 +32,8 @@ class VideoScene : public QGraphicsScene {
 
   explicit VideoScene(QObject *parent = nullptr);
 
-  void setPixmap(std::string path);
-  void setText(std::string text);
+  void setPixmap(const std::string &path);
+  void setText(const std::string &text);
   void setVideo(const std::string &id);
   void update();
-
- private:
-  std::optional<std::unique_ptr<BaseVideo>> video;
-
-  void updatePixmap();
-  void updateText();
-  void updateVideo();
-
-  void scalePixmap();
-  void centerPixmap();
-
-  void centerText();
-
-  void updateResolution();
-  void scaleVideo();
-  void centerVideo();
 };

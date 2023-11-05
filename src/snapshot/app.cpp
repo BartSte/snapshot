@@ -1,12 +1,12 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <video/find.hpp>
 #include <cxxopts.hpp>
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>
 #include <iostream>
 #include <qapplication.h>
 #include <string>
+#include <video/find.hpp>
 
 #include "./app.hpp"
 #include "./gui.hpp"
@@ -58,9 +58,8 @@ ptree App::parseConfig(const cxxopts::ParseResult &args) {
  * @param args The cli arguments
  */
 void App::initLogger(const ptree &config) {
-  std::string loglevel = settings.get<std::string>("loglevel");
-  std::string pattern = settings.get<std::string>("pattern");
-  logging::set(loglevel, pattern);
+  logging::set(settings.get<std::string>("loglevel"),
+               settings.get<std::string>("pattern"));
 }
 
 /**
@@ -74,16 +73,18 @@ int App::exec() {
   if (settings.get<bool>("help")) {
     std::cout << parser.help() << std::endl;
     return 0;
-
-  } else if (settings.get<bool>("list")) {
-    return printCameras();
-
-  } else if (settings.get<bool>("gui")) {
-    return show();
-
-  } else {
-    return 0;
   }
+
+  int exit_code = 0;
+  if (settings.get<bool>("list")) {
+    exit_code = printCameras();
+  }
+
+  if (settings.get<bool>("gui")) {
+    exit_code = show();
+  }
+
+  return exit_code;
 }
 
 /**
@@ -113,4 +114,3 @@ int App::show() {
   gui.show();
   return gui.exec();
 }
-

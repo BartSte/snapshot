@@ -36,7 +36,7 @@ VideoScene::VideoScene(QObject *parent)
  * @param path The path to the image.
  * Set the image to be displayed in the scene.
  */
-void VideoScene::setPixmap(std::string path) {
+void VideoScene::setPixmap(const std::string &path) {
   QString qpath = QString::fromStdString(path);
   QPixmap pixmap(qpath);
   pixmapItem.setPixmap(pixmap);
@@ -90,7 +90,7 @@ void VideoScene::centerPixmap() {
  * @param text The text to be displayed.
  * Set the text to be displayed in the scene.
  */
-void VideoScene::setText(std::string text) {
+void VideoScene::setText(const std::string &text) {
   QString qtext = QString::fromStdString(text);
   QFont font(textFont, textFontSize);
 
@@ -122,7 +122,9 @@ void VideoScene::centerText() {
 }
 
 /**
- * @brief DOCS:
+ * @brief setVideo
+ *
+ * Set the video stream to the given camera.
  *
  * @param video
  */
@@ -180,10 +182,11 @@ void VideoScene::centerVideo() {
 }
 
 /**
- * @brief DOCS:
+ * @brief update
+ *
+ * Update the all QGraphicsItems in the scene.
  */
 void VideoScene::update() {
-  // TODO: change visibility based on VideoState
   updatePixmap();
   updateText();
   updateVideo();

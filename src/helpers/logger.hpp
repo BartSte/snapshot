@@ -7,4 +7,4 @@ namespace logging {
 
 void set(std::string level, std::string pattern);
 
-} // namespace logging
+}

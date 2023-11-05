@@ -268,7 +268,7 @@ more information.
 
 # TODO:
 
-- [ ] Refactor all modules
+- [ ] Add a --debug mode that plays the sample.mp4
 - [ ] Add recording snapshot at an interval
 - [ ] Immediately opening of gui, do not wait till connected
 - [ ] When connection is lost, what happens? Display connection status
