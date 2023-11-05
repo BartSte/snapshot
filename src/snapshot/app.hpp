@@ -23,6 +23,7 @@ class App {
  private:
   static const path ROOT;
   static const path PATH_CONFIG;
+  static const path DEBUG_VIDEO;
 
   int argc;
   char **argv;

@@ -16,6 +16,7 @@ using path = boost::filesystem::path;
 
 const path App::ROOT = boost::dll::program_location().parent_path();
 const path App::PATH_CONFIG = App::ROOT / "static/config.json";
+const path App::DEBUG_VIDEO = App::ROOT / "static/sample.mp4";
 
 /**
  * @brief Constructor
@@ -73,6 +74,9 @@ int App::exec() {
   if (settings.get<bool>("help")) {
     std::cout << parser.help() << std::endl;
     return 0;
+  } else if (settings.get<bool>("debug")) {
+    settings.put("gui", true);
+    settings.put("camera", DEBUG_VIDEO.string());
   }
 
   int exit_code = 0;
