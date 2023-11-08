@@ -5,6 +5,7 @@
 #include <string>
 
 #include "gui/mainwindow.hpp"
+#include "video/connect.hpp"
 
 class Gui : public QObject {
  private:
@@ -13,7 +14,7 @@ class Gui : public QObject {
 
  public:
   explicit Gui(QObject *parent = nullptr);
-  void setVideo(const std::string &camera);
+  void setVideo(std::unique_ptr<BaseVideo> camera);
   void show();
 
   MainWindow window;

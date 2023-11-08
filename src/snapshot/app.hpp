@@ -9,6 +9,7 @@
 #include <video/record.hpp>
 
 #include "snapshot/gui.hpp"
+#include "video/connect.hpp"
 
 class App : public QApplication {
 
@@ -26,6 +27,7 @@ class App : public QApplication {
 
   std::unique_ptr<Gui> gui;
   std::unique_ptr<Recorder> recorder;
+  std::unique_ptr<BaseVideo> video;
   ArgParse parser;
   ptree settings;
 
@@ -34,6 +36,7 @@ class App : public QApplication {
   void printHelp();
   void enableDebugMode();
   void list();
+  void connectCamera();
   void startRecorder();
   void showGui();
 };
