@@ -2,6 +2,8 @@
     "help": false,
     "list": false,
     "gui": false,
+    "debug": false,
+    "record": false,
     "camera": "default",
     "loglevel": "warning",
     "pattern": "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"

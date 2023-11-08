@@ -11,8 +11,6 @@
 
 #include "./gui/videoscene.hpp"
 
-using OptionalVideo = std::optional<std::unique_ptr<BaseVideo>>;
-
 const QString textFont = "Arial";
 const float constRatio = 0.8;
 const float textFontSize = 16;
@@ -122,22 +120,21 @@ void VideoScene::centerText() {
 }
 
 /**
- * @brief setVideo
+ * @brief getVideo
  *
  * Set the video stream to the given camera.
  *
  * @param video
  */
 void VideoScene::setVideo(const std::string &id) {
-  video = videoFactory(id);
-
-  if (!video.has_value()) {
-    spdlog::info("No video found.");
+  auto optional = videoFactory(id);
+  if (optional.has_value()) {
+    video = std::move(optional.value());
+    video->setVideoOutput(&videoItem);
+    connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
+    video->start();
   } else {
-    video.value()->setVideoOutput(&videoItem);
-    connect(video.value().get(), &BaseVideo::stateChanged, this,
-            &VideoScene::update);
-    video.value()->start();
+    spdlog::info("No video found.");
   }
 }
 
@@ -146,8 +143,8 @@ void VideoScene::setVideo(const std::string &id) {
  * Update the QGraphicsVideoItem when called.
  */
 void VideoScene::updateVideo() {
-  if (video.has_value()) {
-    video.value()->updateResolution();
+  if (video) {
+    video->updateResolution();
     scaleVideo();
     centerVideo();
   }

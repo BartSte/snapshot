@@ -16,6 +16,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 # Find packages
+find_package(cxxopts REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
@@ -31,11 +32,20 @@ add_library(
 target_include_directories(
   helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                     ${Boost_INCLUDE_DIRS}})
-target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only)
+target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only
+                      cxxopts::cxxopts)
 
 # Video
-add_library(video src/video/find.cpp src/video/find.hpp src/video/connect.cpp
-                  src/video/connect.hpp src/video/state.cpp src/video/state.hpp)
+add_library(
+  video
+  src/video/find.cpp
+  src/video/find.hpp
+  src/video/connect.cpp
+  src/video/connect.hpp
+  src/video/state.cpp
+  src/video/state.hpp
+  src/video/record.cpp
+  src/video/record.hpp)
 target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
 target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)

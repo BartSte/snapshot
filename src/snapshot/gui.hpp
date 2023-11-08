@@ -1,18 +1,18 @@
 #pragma once
 
-#include <qapplication.h>
 #include <qmetaobject.h>
+#include <qobject.h>
 #include <string>
 
 #include "gui/mainwindow.hpp"
 
-class Gui : public QApplication {
+class Gui : public QObject {
  private:
   static const char *noCameraText;
   static const char *pixmapPath;
 
  public:
-  Gui(int argc, char *argv[]);
+  explicit Gui(QObject *parent = nullptr);
   void setVideo(const std::string &camera);
   void show();
 

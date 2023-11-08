@@ -10,7 +10,7 @@
 
 class VideoScene : public QGraphicsScene {
  private:
-  std::optional<std::unique_ptr<BaseVideo>> video;
+  std::unique_ptr<BaseVideo> video;
 
   void updatePixmap();
   void scalePixmap();
@@ -36,4 +36,5 @@ class VideoScene : public QGraphicsScene {
   void setText(const std::string &text);
   void setVideo(const std::string &id);
   void update();
+  void print(const QVideoFrame &frame) { spdlog::info("Test"); }
 };

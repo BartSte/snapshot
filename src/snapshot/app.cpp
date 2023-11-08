@@ -1,3 +1,4 @@
+#include <boost/dll.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
@@ -7,6 +8,7 @@
 #include <qapplication.h>
 #include <string>
 #include <video/find.hpp>
+#include <video/record.hpp>
 
 #include "./app.hpp"
 #include "./gui.hpp"
@@ -27,7 +29,8 @@ const path App::DEBUG_VIDEO = App::ROOT / "static/sample.mp4";
  * @param argc
  * @param argv
  */
-App::App(int argc, char *argv[]) : argc(argc), argv(argv), parser(argc, argv) {
+App::App(int argc, char *argv[])
+    : QApplication(argc, argv), parser(argc, argv) {
   auto args = parser.parse();
   settings = parseConfig(args);
   initLogger(settings);
@@ -70,25 +73,33 @@ void App::initLogger(const ptree &config) {
  *
  * @return exit code
  */
-int App::exec() {
+int App::run() {
+  printHelp();
+  enableDebugMode();
+  list();
+  showGui();
+  startRecorder();
+  return exec();
+}
+
+/**
+ * @brief TODO
+ */
+void App::printHelp() {
   if (settings.get<bool>("help")) {
     std::cout << parser.help() << std::endl;
-    return 0;
-  } else if (settings.get<bool>("debug")) {
+    exit(0);
+  }
+}
+
+/**
+ * @brief TODO
+ */
+void App::enableDebugMode() {
+  if (settings.get<bool>("debug")) {
     settings.put("gui", true);
     settings.put("camera", DEBUG_VIDEO.string());
   }
-
-  int exit_code = 0;
-  if (settings.get<bool>("list")) {
-    exit_code = printCameras();
-  }
-
-  if (settings.get<bool>("gui")) {
-    exit_code = show();
-  }
-
-  return exit_code;
 }
 
 /**
@@ -99,10 +110,10 @@ int App::exec() {
  *
  * @return exit code
  */
-int App::printCameras() {
-  QApplication app(argc, argv);
-  std::cout << listCameras() << std::endl;
-  return 0;
+void App::list() {
+  if (settings.get<bool>("list")) {
+    std::cout << listCameras() << std::endl;
+  }
 }
 
 /**
@@ -112,9 +123,36 @@ int App::printCameras() {
  *
  * @return exit code
  */
-int App::show() {
-  Gui gui(argc, argv);
-  gui.setVideo(settings.get<std::string>("camera"));
-  gui.show();
-  return gui.exec();
+void App::showGui() {
+  if (settings.get<bool>("gui")) {
+    gui = std::make_unique<Gui>();
+    gui->setVideo(settings.get<std::string>("camera"));
+    gui->show();
+  }
+}
+
+/**
+ * @brief record
+ *
+ * Record a video.
+ *
+ * @return exit code
+ */
+void App::startRecorder() {
+  if (!settings.get<bool>("record")) {
+    return;
+  }
+  QVideoSink *sink;
+  if (gui) {
+    sink = gui->window.scene.videoItem.videoSink();
+    recorder = std::make_unique<Recorder>(sink);
+  } else {
+    spdlog::error("Recorder without gui not implemented.");
+    /* The gui holds on to the BaseVideo object. If there is no GUI, there is
+     * also no BaseVideo object. A solution could be to create a BaseVideo
+     * on she heap and move it to the GUI when it is created. If no GUI is
+     * created, the App holds on to the BaseVideo object and passes it
+     * QVideoSink to the Recorder. */
+    /* recorder = std::make_unique<Recorder>() */
+  }
 }
