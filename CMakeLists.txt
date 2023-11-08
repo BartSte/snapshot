@@ -68,9 +68,8 @@ target_link_libraries(
 # Executable
 file(COPY ${CMAKE_SOURCE_DIR}/src/static
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_executable(
-  snapshot src/main.cpp src/snapshot/app.cpp src/snapshot/app.hpp
-           src/snapshot/gui.cpp src/snapshot/gui.hpp resources/resources.qrc)
+add_executable(snapshot src/main.cpp src/snapshot/app.cpp src/snapshot/app.hpp
+                        resources/resources.qrc)
 target_link_libraries(snapshot gui helpers)
 
 # Tests
