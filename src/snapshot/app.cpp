@@ -2,6 +2,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <cxxopts.hpp>
+#include <gui/mainwindow.hpp>
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>
 #include <iostream>
@@ -11,7 +12,6 @@
 #include <video/record.hpp>
 
 #include "./app.hpp"
-#include "./gui.hpp"
 
 using ptree = boost::property_tree::ptree;
 using path = boost::filesystem::path;
@@ -33,7 +33,8 @@ App::App(int argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
   auto args = parser.parse();
   settings = parseConfig(args);
-  initLogger(settings);
+  logging::set(settings.get<std::string>("loglevel"),
+               settings.get<std::string>("pattern"));
 }
 
 /**
@@ -55,18 +56,6 @@ ptree App::parseConfig(const cxxopts::ParseResult &args) {
 }
 
 /**
- * @brief initLogger
- *
- * Initialize the logger.
- *
- * @param args The cli arguments
- */
-void App::initLogger(const ptree &config) {
-  logging::set(settings.get<std::string>("loglevel"),
-               settings.get<std::string>("pattern"));
-}
-
-/**
  * @brief exec
  *
  * Executes the program.
@@ -74,7 +63,9 @@ void App::initLogger(const ptree &config) {
  * @return exit code
  */
 int App::run() {
-  printHelp();
+  if (printHelp()) {
+    return 0;
+  }
   enableDebugMode();
   list();
   connectCamera();
@@ -84,17 +75,21 @@ int App::run() {
 }
 
 /**
- * @brief TODO
+ * @brief Print the help message if the help flag is set.
  */
-void App::printHelp() {
-  if (settings.get<bool>("help")) {
+bool App::printHelp() {
+  bool help = settings.get<bool>("help");
+  if (help) {
     std::cout << parser.help() << std::endl;
-    exit(0);
   }
+  return help;
 }
 
 /**
- * @brief TODO
+ * @brief enableDebugMode
+ *
+ * If the debug flag is set, enable the gui and set the camera to the debug
+ * video.
  */
 void App::enableDebugMode() {
   if (settings.get<bool>("debug")) {
@@ -117,6 +112,11 @@ void App::list() {
   }
 }
 
+/**
+ * @brief connectCamera
+ *
+ * Connect to the camera specified in the config file, if it is found.
+ */
 void App::connectCamera() {
   std::string id = settings.get<std::string>("camera");
   auto optional = videoFactory(id);
@@ -136,11 +136,15 @@ void App::connectCamera() {
  * @return exit code
  */
 void App::showGui() {
-  gui = std::make_unique<Gui>();
-  if (settings.get<bool>("gui") && video) {
-    gui->setVideo(std::move(video));
+  if (!settings.get<bool>("gui")) {
+    return;
   }
-  gui->show();
+
+  window = std::make_unique<MainWindow>();
+  if (video) {
+    window->scene.setVideo(std::move(video));
+  }
+  window->show();
 }
 
 /**
@@ -155,8 +159,8 @@ void App::startRecorder() {
     return;
   }
   QVideoSink *sink;
-  if (gui) {
-    sink = gui->window.scene.videoItem.videoSink();
+  if (window) {
+    sink = window->scene.videoItem.videoSink();
     recorder = std::make_unique<Recorder>(sink);
   } else {
     spdlog::error("Recorder without gui not implemented.");

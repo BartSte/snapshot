@@ -127,11 +127,11 @@ void VideoScene::centerText() {
  *
  * @param video
  */
-void VideoScene::setVideo(std::unique_ptr<BaseVideo> video_) {
-  video = std::move(video_);
-  video->setVideoOutput(&videoItem);
+void VideoScene::setVideo(std::unique_ptr<BaseVideo> video) {
+  this->video = std::move(video);
+  this->video->setVideoOutput(&videoItem);
   connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
-  video->start();
+  this->video->start();
 }
 
 /**

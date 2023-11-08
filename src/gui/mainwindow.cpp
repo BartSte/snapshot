@@ -6,6 +6,8 @@
 #include "./gui/mainwindow.hpp"
 
 const char *TITLE = "Snap shot machine";
+const char *NOCAMERA_TEXT = "No camera available";
+const char *PIXMAP_PATH = ":/disconnected.png";
 
 /**
  * @brief Constructor
@@ -21,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
   setWindowTitle(QString::fromStdString(TITLE));
   graphicsView->setGeometry(rect());
   graphicsView->setScene(&scene);
+  scene.setPixmap(PIXMAP_PATH);
+  scene.setText(NOCAMERA_TEXT);
 }
 
 /**
