@@ -1,3 +1,4 @@
+#include <QVideoSink>
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
 #include <qcamera.h>
 #include <qcameradevice.h>
@@ -5,6 +6,7 @@
 #include <qmediacapturesession.h>
 #include <qmediadevices.h>
 #include <qmediaplayer.h>
+#include <qmetaobject.h>
 #include <qobject.h>
 #include <qurl.h>
 #include <spdlog/spdlog.h>
@@ -88,6 +90,15 @@ void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
 }
 
 /**
+ * @brief TODO
+ *
+ * @param sink 
+ */
+void MediaPlayer::setVideoSink(QVideoSink *sink) {
+  player.setVideoSink(sink);
+}
+
+/**
  * @brief setState
  *
  * Convert the QMediaPlayer::PlaybackState to a VideoState and emit the
@@ -124,6 +135,15 @@ void Camera::setState(bool active) {
 
 void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
   session.setVideoOutput(videoItem);
+}
+
+/**
+ * @brief TODO
+ *
+ * @param sink 
+ */
+void Camera::setVideoSink(QVideoSink *sink) {
+  session.setVideoSink(sink);
 }
 
 /**

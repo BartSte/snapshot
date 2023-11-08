@@ -32,7 +32,9 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("l,list", "List available cameras")
 
-    ("d, debug", "Enable debug mode. Plays an internal video and show the gui.")
+    ("d,debug", "Enable debug mode. Plays an internal video and show the gui.")
+
+    ("r,record", "Record")
 
     ("c,camera", "Select a camera by the name shown by the list command",
      DEFAULT_STRING("default"))

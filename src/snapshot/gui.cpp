@@ -1,5 +1,5 @@
 #include <gui/mainwindow.hpp>
-#include <qapplication.h>
+#include <qobject.h>
 #include <string>
 
 #include "./gui.hpp"
@@ -11,7 +11,7 @@ const char *Gui::pixmapPath = ":/disconnected.png";
  * @brief Constructor
  *
  */
-Gui::Gui(int argc, char *argv[]) : QApplication(argc, argv), window() {
+Gui::Gui(QObject *parent) : QObject(parent), window() {
   window.scene.setPixmap(pixmapPath);
   window.scene.setText(noCameraText);
 }

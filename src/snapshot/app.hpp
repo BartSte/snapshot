@@ -1,37 +1,39 @@
 #pragma once
 
-#include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
-#include <cxxopts.hpp>
+#include <helpers/argparse.hpp>
+#include <memory>
 #include <qapplication.h>
-#include <qmetaobject.h>
+#include <video/record.hpp>
 
-#include "gui/mainwindow.hpp"
-#include "helpers/argparse.hpp"
+#include "snapshot/gui.hpp"
 
-class App {
+class App : public QApplication {
 
   using ptree = boost::property_tree::ptree;
   using path = boost::filesystem::path;
 
  public:
   App(int argc, char *argv[]);
-  int exec();
+  int run();
 
  private:
   static const path ROOT;
   static const path PATH_CONFIG;
   static const path DEBUG_VIDEO;
 
-  int argc;
-  char **argv;
+  std::unique_ptr<Gui> gui;
+  std::unique_ptr<Recorder> recorder;
   ArgParse parser;
   ptree settings;
 
   ptree parseConfig(const cxxopts::ParseResult &args);
   void initLogger(const ptree &config);
-  int printCameras();
-  int show();
+  void printHelp();
+  void enableDebugMode();
+  void list();
+  void startRecorder();
+  void showGui();
 };
