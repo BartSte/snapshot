@@ -77,6 +77,7 @@ int App::run() {
   printHelp();
   enableDebugMode();
   list();
+  connectCamera();
   showGui();
   startRecorder();
   return exec();
@@ -116,6 +117,17 @@ void App::list() {
   }
 }
 
+void App::connectCamera() {
+  std::string id = settings.get<std::string>("camera");
+  auto optional = videoFactory(id);
+  if (optional.has_value()) {
+    video = std::move(optional.value());
+    video->start();
+  } else {
+    spdlog::info("No video found.");
+  }
+}
+
 /**
  * @brief show
  *
@@ -124,11 +136,11 @@ void App::list() {
  * @return exit code
  */
 void App::showGui() {
-  if (settings.get<bool>("gui")) {
-    gui = std::make_unique<Gui>();
-    gui->setVideo(settings.get<std::string>("camera"));
-    gui->show();
+  gui = std::make_unique<Gui>();
+  if (settings.get<bool>("gui") && video) {
+    gui->setVideo(std::move(video));
   }
+  gui->show();
 }
 
 /**

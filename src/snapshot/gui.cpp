@@ -1,8 +1,10 @@
 #include <gui/mainwindow.hpp>
 #include <qobject.h>
+#include <qpalette.h>
 #include <string>
 
 #include "./gui.hpp"
+#include "video/connect.hpp"
 
 const char *Gui::noCameraText = "No camera available";
 const char *Gui::pixmapPath = ":/disconnected.png";
@@ -23,7 +25,9 @@ Gui::Gui(QObject *parent) : QObject(parent), window() {
  *
  * @param camera The camera id
  */
-void Gui::setVideo(const std::string &camera) { window.scene.setVideo(camera); }
+void Gui::setVideo(std::unique_ptr<BaseVideo> camera) {
+  window.scene.setVideo(std::move(camera));
+}
 
 /**
  * @brief show

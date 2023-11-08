@@ -3,6 +3,7 @@
 #include <QGraphicsVideoItem>
 #include <QMediaDevices>
 #include <QWidget>
+#include <algorithm>
 #include <iostream>
 #include <qcameradevice.h>
 #include <qobject.h>
@@ -126,16 +127,11 @@ void VideoScene::centerText() {
  *
  * @param video
  */
-void VideoScene::setVideo(const std::string &id) {
-  auto optional = videoFactory(id);
-  if (optional.has_value()) {
-    video = std::move(optional.value());
-    video->setVideoOutput(&videoItem);
-    connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
-    video->start();
-  } else {
-    spdlog::info("No video found.");
-  }
+void VideoScene::setVideo(std::unique_ptr<BaseVideo> video_) {
+  video = std::move(video_);
+  video->setVideoOutput(&videoItem);
+  connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
+  video->start();
 }
 
 /**
