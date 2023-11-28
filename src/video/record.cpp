@@ -1,12 +1,16 @@
-#include <QObject>
 #include <QVideoSink>
+#include <cstdint>
+#include <qobject.h>
 
 #include "./video/record.hpp"
 
-Recorder::Recorder(QVideoSink *sink, QObject *parent) : QObject(parent) {
-  connect(sink, &QVideoSink::videoFrameChanged, this, &Recorder::print);
+// TODO: docstrings!
+
+Recorder::Recorder(QVideoSink *sink, QObject *parent)
+    : QObject(parent), sink(sink), timer(parent) {
+  /* connect(&timer, &QTimer::timeout, this, &Recorder::save); */
 }
 
-void Recorder::print(const QVideoFrame &frame) {
-  spdlog::info("Frame received");
-}
+void Recorder::save(const QVideoFrame &frame) { spdlog::info("Frame saved."); }
+
+void Recorder::start() { timer.start(); }

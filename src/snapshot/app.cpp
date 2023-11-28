@@ -6,7 +6,9 @@
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>
 #include <iostream>
+#include <memory>
 #include <qapplication.h>
+#include <qvideosink.h>
 #include <string>
 #include <video/find.hpp>
 #include <video/record.hpp>
@@ -68,7 +70,7 @@ int App::run() {
   }
   enableDebugMode();
   list();
-  connectCamera();
+  connectVideo();
   showGui();
   startRecorder();
   return exec();
@@ -117,7 +119,7 @@ void App::list() {
  *
  * Connect to the camera specified in the config file, if it is found.
  */
-void App::connectCamera() {
+void App::connectVideo() {
   std::string id = settings.get<std::string>("camera");
   auto optional = videoFactory(id);
   if (optional.has_value()) {
@@ -158,17 +160,15 @@ void App::startRecorder() {
   if (!settings.get<bool>("record")) {
     return;
   }
-  QVideoSink *sink;
+
   if (window) {
-    sink = window->scene.videoItem.videoSink();
-    recorder = std::make_unique<Recorder>(sink);
+    recorder = std::make_unique<Recorder>(window->scene.videoItem.videoSink());
+    spdlog::info("Recorder with a gui sink created.");
   } else {
-    spdlog::error("Recorder without gui not implemented.");
-    /* The gui holds on to the BaseVideo object. If there is no GUI, there is
-     * also no BaseVideo object. A solution could be to create a BaseVideo
-     * on she heap and move it to the GUI when it is created. If no GUI is
-     * created, the App holds on to the BaseVideo object and passes it
-     * QVideoSink to the Recorder. */
-    /* recorder = std::make_unique<Recorder>() */
+    sink = std::make_unique<QVideoSink>();
+    video->setVideoSink(sink.get());
+    recorder = std::make_unique<Recorder>(sink.get());
+    spdlog::info("Recorder without a gui sink created.");
   }
+  recorder->start();
 }

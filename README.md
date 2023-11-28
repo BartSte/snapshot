@@ -280,38 +280,12 @@ more information.
 
 - [ ] Add recording snapshot at an interval
 
-  - Find a way to capture frames at a given interval for the QMediaPlayer and
-    the QCaptureSession classes.
-    - QMediaPlayer:
-      - I think I need to set a QVideoSink to capture the video frames. By
-        calling the QVideoSink::videoFrame() method, I can get the current
-        frame.
-  - Create a App that inherits from QApplication, this app contains the
-    functionalities:
-    - --list -> call the printCameras function
-    - --camera -> call the connect function. This function creates the
-      BaseVideo object as a pointer App.camera. And starts the camera.
-    - --record -> call the record function. This function alters the BaseVideo
-      object such that it will record when it is connected.
-    - --gui -> call the show function (gui is created on the stack). The
-      pointers to the camera and the recorder are moved to the gui. This is
-      needed for the gui to display the camera imagery.
-
-  Using the strategy above, we create 1 QApplication that is used for all
-  functionalities. When we do not need a gui, we do not need to create it (by
-  not calling the show function), making the app faster.
-
-  - Only 1 QVideoSink can be connected to a QMediaPlayer or a
-    QMediaCaptureSession. When the GUI is not active, a new QVideoSink can be
-    set by the Recoder. When the GUI is active, the QMediaPlayer/QMediaCaptureSession
-    its videosink is set by the QGraphcisVideoItem. If this one is overridden by
-    the recorder, the GUI will not display the video.
-
-  - For the QMediaCaptureSession, it is also possible to capture frames using a
-    QImageCapture class. Or a video using QMediaRecorder. However, for the
-    QMediaPlayer I can only find the QVideoSink. Therefore, I will make a
-    Recorder class that takes a pointer to a QVideoSink as an input, and stores
-    a QVideoFrame on the disk at an interval.
+  - The recorder can take a pointer to a QVideoSink of the gui, the gui owns
+    this pointer.
+  - The recorder can create its own QVideoSink on the stack when no gui is
+    avaiable and use this for recording.
+  - Create a save function that saves a frame to disk.
+  - Create a timer that calls the save function at a given interval.
 
 - [ ] Immediately opening of gui, do not wait till connected
 - [ ] When connection is lost, what happens? Display connection status

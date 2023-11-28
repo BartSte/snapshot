@@ -6,6 +6,7 @@
 #include <helpers/argparse.hpp>
 #include <memory>
 #include <qapplication.h>
+#include <qvideosink.h>
 #include <video/record.hpp>
 #include <gui/mainwindow.hpp>
 
@@ -28,6 +29,7 @@ class App : public QApplication {
   std::unique_ptr<Recorder> recorder;
   std::unique_ptr<BaseVideo> video;
   std::unique_ptr<MainWindow> window;
+  std::unique_ptr<QVideoSink> sink;
   ArgParse parser;
   ptree settings;
 
@@ -35,7 +37,7 @@ class App : public QApplication {
   bool printHelp();
   void enableDebugMode();
   void list();
-  void connectCamera();
+  void connectVideo();
   void startRecorder();
   void showGui();
 };
