@@ -43,10 +43,12 @@ void BaseVideo::setState(const VideoState &newState) {
 }
 
 /**
- * @brief TODO
+ * @brief Constructor
  *
- * @param url
- * @param parent
+ * Used to create a MediaPlayer from a url.
+ *
+ * @param url The url of the stream.
+ * @param parent The parent QObject. Default is nullptr.
  */
 MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
     : BaseVideo(parent), player() {
@@ -56,10 +58,12 @@ MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
 }
 
 /**
- * @brief TODO
+ * @brief Constructor
  *
- * @param path
- * @param parent
+ * Used to create a MediaPlayer from a path to a file.
+ *
+ * @param path The path to the file.
+ * @param parent The parent QObject. Default is nullptr.
  */
 MediaPlayer::MediaPlayer(const QString &path, QObject *parent)
     : MediaPlayer(QUrl::fromLocalFile(path), parent) {}
@@ -90,9 +94,11 @@ void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
 }
 
 /**
- * @brief TODO
+ * @brief setVideoSink
  *
- * @param sink 
+ * Adapter for QMediaPlayer::setVideoSink().
+ *
+ * @param sink a pointer to the QVideoSink.
  */
 void MediaPlayer::setVideoSink(QVideoSink *sink) {
   player.setVideoSink(sink);
@@ -138,9 +144,11 @@ void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
 }
 
 /**
- * @brief TODO
+ * @brief setVideoSink
  *
- * @param sink 
+ * Adapter for QMediaCaptureSession::setVideoSink().
+ *
+ * @param sink A pointer to the QVideoSink.
  */
 void Camera::setVideoSink(QVideoSink *sink) {
   session.setVideoSink(sink);

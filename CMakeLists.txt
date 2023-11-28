@@ -27,8 +27,14 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # Helpers
 add_library(
   helpers
-  src/helpers/argparse.cpp src/helpers/argparse.hpp src/helpers/config.cpp
-  src/helpers/config.hpp src/helpers/logger.cpp src/helpers/logger.hpp)
+  src/helpers/argparse.cpp
+  src/helpers/argparse.hpp
+  src/helpers/config.cpp
+  src/helpers/config.hpp
+  src/helpers/logger.cpp
+  src/helpers/logger.hpp
+  src/helpers/time.cpp
+  src/helpers/time.hpp)
 target_include_directories(
   helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                     ${Boost_INCLUDE_DIRS}})
@@ -85,6 +91,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 add_executable(
   tests
-  tests/main.cpp tests/ resources/resources.qrc tests/video_test/find_test.cpp
-  tests/helpers_test/argparse_test.cpp tests/helpers_test/config_test.cpp)
+  tests/main.cpp
+  tests/
+  resources/resources.qrc
+  tests/video_test/find_test.cpp
+  tests/helpers_test/argparse_test.cpp
+  tests/helpers_test/config_test.cpp
+  tests/helpers_test/time_test.cpp)
 target_link_libraries(tests gtest gmock video gui helpers)
