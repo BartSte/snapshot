@@ -18,7 +18,7 @@ TEST(argparseTest, parseTest) {
                    const_cast<char *>("--loglevel=DEBUG"),
                    const_cast<char *>("--pattern=[foo]"),
                    const_cast<char *>("--duration=10d"),
-                   const_cast<char *>("--frames=1hour")};
+                   const_cast<char *>("--interval=1hour")};
 
   ArgParse parser(argc, argv);
   cxxopts::ParseResult result = parser.parse();
@@ -30,5 +30,5 @@ TEST(argparseTest, parseTest) {
   EXPECT_EQ(result["loglevel"].as<std::string>(), "DEBUG");
   EXPECT_EQ(result["pattern"].as<std::string>(), "[foo]");
   EXPECT_EQ(result["duration"].as<std::string>(), "10d");
-  EXPECT_EQ(result["frames"].as<std::string>(), "1hour");
+  EXPECT_EQ(result["interval"].as<std::string>(), "1hour");
 }

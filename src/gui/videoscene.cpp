@@ -130,7 +130,7 @@ void VideoScene::centerText() {
 void VideoScene::setVideo(std::unique_ptr<BaseVideo> video) {
   this->video = std::move(video);
   this->video->setVideoOutput(&videoItem);
-  connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
+  connect(this->video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
   this->video->start();
 }
 

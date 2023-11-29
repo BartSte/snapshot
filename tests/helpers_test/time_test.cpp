@@ -7,35 +7,28 @@ using ms = std::chrono::milliseconds;
 extern const std::string valid_units[12];
 extern std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier;
 
-TEST(timeTest, stringToMilliseconds) {
+TEST(timeTest, stringToMs) {
   std::chrono::duration<int64_t> multiplier;
   std::string strings[] = {"1", " 1 ", "001"};
   for (auto unit : valid_units) {
     for (auto str : strings) {
       multiplier = unit_vs_multiplier[unit.front()];
-      ASSERT_EQ(stringToMilliseconds(str + unit),
-                ms(std::stoi(str) * multiplier));
+      ASSERT_EQ(stringToMs(str + unit), ms(std::stoi(str) * multiplier));
     }
   }
 }
 
-TEST(timeTest, stringToMillisecondsNoUnit) {
-  std::string strings[] = {"1", " 1 ", "123"};
+TEST(timeTest, stringToMsNoUnit) {
+  std::string strings[] = {"1", " 1 ", "123", "001"};
   for (std::string str : strings) {
-    try {
-      stringToMilliseconds(str);
-      FAIL();
-    } catch (std::invalid_argument &error) {
-      SUCCEED();
-    } catch (...) {
-      FAIL();
-    }
+    ms actual = stringToMs(str);
+    ASSERT_EQ(actual, ms(std::stoi(str)));
   }
 }
 
-TEST(timeTest, stringToMillisecondsEmptyString) {
+TEST(timeTest, stringToMsEmptyString) {
   try {
-    stringToMilliseconds("");
+    stringToMs("");
     FAIL();
   } catch (std::invalid_argument &error) {
     SUCCEED();
@@ -44,11 +37,11 @@ TEST(timeTest, stringToMillisecondsEmptyString) {
   }
 }
 
-TEST(timeTest, stringToMillisecondsInvalidString) {
+TEST(timeTest, stringToMsInvalidString) {
   std::string strings[] = {"a", "1a", "a1", "1dayss"};
   for (auto str : strings) {
     try {
-      stringToMilliseconds(str);
+      stringToMs(str);
       FAIL();
     } catch (std::invalid_argument &error) {
       SUCCEED();
@@ -58,12 +51,12 @@ TEST(timeTest, stringToMillisecondsInvalidString) {
   }
 }
 
-TEST(timeTest, stringToMillisecondsDecimals) {
+TEST(timeTest, stringToMsDecimals) {
   std::string strings[] = {"1.2", " 1.2 ", "001.2"};
   for (auto unit : valid_units) {
     for (auto str : strings) {
       try {
-        stringToMilliseconds(str + unit);
+        stringToMs(str + unit);
         FAIL();
       } catch (std::invalid_argument &error) {
         SUCCEED();

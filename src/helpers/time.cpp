@@ -10,9 +10,9 @@
 
 using ms = std::chrono::milliseconds;
 
-extern const std::string valid_units[12] = {
-    "s",    "m",   "h",       "d",       "second", "minute",
-    "hour", "day", "seconds", "minutes", "hours",  "days"};
+const std::string valid_units[12] = {"s",       "m",       "h",     "d",
+                                     "second",  "minute",  "hour",  "day",
+                                     "seconds", "minutes", "hours", "days"};
 
 std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier = {
     {'s', std::chrono::seconds(1)},
@@ -55,8 +55,6 @@ bool hasForbiddenChars(const std::string &str) {
 void check(std::string str) {
   if (str.empty()) {
     throw std::invalid_argument("Empty string");
-  } else if (isNumber(str)) {
-    throw std::invalid_argument("Number without unit: " + str);
   } else if (hasForbiddenChars(str)) {
     throw std::invalid_argument("Invalid character found: " + str);
   }
@@ -76,15 +74,19 @@ void check(std::string str) {
  *
  * @return the number of milliseconds.
  */
-ms stringToMilliseconds(std::string str) {
-
+ms stringToMs(std::string str) {
   str.erase(std::remove_if(str.begin(), str.end(), isspace), str.end());
   check(str);
-  std::string unit = parseUnit(str);
-  std::string number = parseNumber(str);
 
-  ms multiplier = unit_vs_multiplier[unit.front()];
-  return ms(std::stoll(number) * multiplier.count());
+  if (isNumber(str)) {
+    return ms(std::stoi(str));
+
+  } else {
+    std::string unit = parseUnit(str);
+    std::string number = parseNumber(str);
+    ms multiplier = unit_vs_multiplier[unit.front()];
+    return ms(std::stoll(number) * multiplier.count());
+  }
 }
 
 /**

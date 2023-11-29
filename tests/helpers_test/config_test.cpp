@@ -16,7 +16,6 @@ extern const boost::filesystem::path ROOT;
  */
 TEST(configTest, parseConfig) {
   path path = ROOT / "static" / "config_test.json";
-
   ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);

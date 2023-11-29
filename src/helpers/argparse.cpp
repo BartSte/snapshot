@@ -42,10 +42,10 @@ ArgParse::ArgParse(int argc, char *argv[])
      "that the recording will continue until the user stops it.",
      DEFAULT_STRING("0"))
 
-    ("frames", "The interval in which frames are saved. The following formats "
-     "are supported: s, second, seconds, m, minute, minutes, h, hour, hours, "
-     "d, day, days. For example, 10s = 10 seconds. The default is 0, meaning "
-     "that no frames are saved.",
+    ("interval", "The interval in which frames are saved. The following "
+     "formats are supported: s, second, seconds, m, minute, minutes, h, hour, "
+     "hours, " "d, day, days. For example, 10s = 10 seconds. The default is 0,"
+     " meaning that no frames are saved.",
      DEFAULT_STRING("0"))
 
     ("c,camera", "Select a camera by the name shown by the list command",
