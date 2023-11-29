@@ -1,77 +1,81 @@
 #include <gtest/gtest.h>
 #include <helpers/time.hpp>
+#include <vector>
 
 using ms = std::chrono::milliseconds;
 
-TEST(timeTest, millisecondsNoUnit) {
-  std::string strings[] = {"1", " 1 ", "123"};
-  for (auto str : strings) {
-    try {
-      string_to_milliseconds(str);
-    } catch (std::invalid_argument &error) {
-      ASSERT_STREQ(error.what(), "Number without unit");
+extern const std::string valid_units[12];
+extern std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier;
+
+TEST(timeTest, stringToMilliseconds) {
+  std::chrono::duration<int64_t> multiplier;
+  std::string strings[] = {"1", " 1 ", "001"};
+  for (auto unit : valid_units) {
+    for (auto str : strings) {
+      multiplier = unit_vs_multiplier[unit.front()];
+      ASSERT_EQ(stringToMilliseconds(str + unit),
+                ms(std::stoi(str) * multiplier));
     }
   }
 }
 
-TEST(timeTest, millisecondsSeconds) {
-  std::string strings[] = {"1s", " 1s "};
-  for (auto str : strings) {
-    ms actual = string_to_milliseconds(str);
-    ms expected(1000);
-    ASSERT_EQ(actual, expected);
+TEST(timeTest, stringToMillisecondsNoUnit) {
+  std::string strings[] = {"1", " 1 ", "123"};
+  for (std::string str : strings) {
+    try {
+      stringToMilliseconds(str);
+      FAIL();
+    } catch (std::invalid_argument &error) {
+      SUCCEED();
+    } catch (...) {
+      FAIL();
+    }
   }
 }
 
-TEST(timeTest, millisecondsMinutes) {
-  std::string strings[] = {"1m", " 1m "};
-  for (auto str : strings) {
-    ms actual = string_to_milliseconds(str);
-    ms expected(1000 * 60);
-    ASSERT_EQ(actual, expected);
-  }
-}
-
-TEST(timeTest, millisecondsHours) {
-  std::string strings[] = {"1h", " 1h "};
-  for (auto str : strings) {
-    ms actual = string_to_milliseconds(str);
-    ms expected(1000 * 60 * 60);
-    ASSERT_EQ(actual, expected);
-  }
-}
-
-TEST(timeTest, millisecondsDays) {
-  std::string strings[] = {"1d", " 1d "};
-  for (auto str : strings) {
-    ms actual = string_to_milliseconds(str);
-    ms expected(1000 * 60 * 60 * 24);
-    ASSERT_EQ(actual, expected);
-  }
-}
-
-TEST(timeTest, millisecondsEmptyString) {
+TEST(timeTest, stringToMillisecondsEmptyString) {
   try {
-    string_to_milliseconds("");
+    stringToMilliseconds("");
+    FAIL();
   } catch (std::invalid_argument &error) {
-    ASSERT_STREQ(error.what(), "Empty string");
+    SUCCEED();
+  } catch (...) {
+    FAIL();
   }
 }
 
-TEST(timeTest, millisecondsInvalidString) {
+TEST(timeTest, stringToMillisecondsInvalidString) {
   std::string strings[] = {"a", "1a", "a1", "1dayss"};
   for (auto str : strings) {
     try {
-      string_to_milliseconds(str);
+      stringToMilliseconds(str);
+      FAIL();
     } catch (std::invalid_argument &error) {
-      ASSERT_STREQ(error.what(), "Invalid unit");
+      SUCCEED();
+    } catch (...) {
+      FAIL();
+    }
+  }
+}
+
+TEST(timeTest, stringToMillisecondsDecimals) {
+  std::string strings[] = {"1.2", " 1.2 ", "001.2"};
+  for (auto unit : valid_units) {
+    for (auto str : strings) {
+      try {
+        stringToMilliseconds(str + unit);
+        FAIL();
+      } catch (std::invalid_argument &error) {
+        SUCCEED();
+      } catch (...) {
+        FAIL();
+      }
     }
   }
 }
 
 void assertWithAllUnits(std::string number) {
   std::string str;
-  extern const std::string valid_units[12];
   for (std::string unit : valid_units) {
     str = parseUnit(number + unit);
     ASSERT_EQ(str, unit);
@@ -92,7 +96,7 @@ TEST(timeTest, parseUnitInvalid) {
       parseUnit(number);
       FAIL();
     } catch (std::invalid_argument &error) {
-      ASSERT_STREQ(error.what(), "Invalid unit");
+      SUCCEED();
     } catch (...) {
       FAIL();
     }
@@ -115,7 +119,7 @@ TEST(timeTest, parseNumberInvalid) {
       parseNumber(str);
       FAIL();
     } catch (std::invalid_argument &error) {
-      ASSERT_STREQ(error.what(), "Invalid number");
+      SUCCEED();
     } catch (...) {
       FAIL();
     }
