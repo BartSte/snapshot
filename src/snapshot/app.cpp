@@ -163,15 +163,20 @@ void App::startRecorder() {
     return;
   }
 
+  QVideoSink *sink_raw;
+  path path_save(settings.get<std::string>("folder"));
   if (window) {
-    recorder = std::make_unique<Recorder>(window->scene.videoItem.videoSink());
-    spdlog::info("Recorder with a gui sink created.");
+    sink_raw = window->scene.videoItem.videoSink();
+    spdlog::info("Recorder uses the QVideoSink from the gui.");
+
   } else {
     sink = std::make_unique<QVideoSink>();
     video->setVideoSink(sink.get());
-    recorder = std::make_unique<Recorder>(sink.get());
-    spdlog::info("Recorder without a gui sink created.");
+    sink_raw = sink.get();
+    spdlog::info("Recorder uses a new QVideoSink.");
   }
+
+  recorder = std::make_unique<Recorder>(sink.get(), path_save);
 
   ms duration = stringToMs(settings.get<std::string>("duration"));
   ms interval = stringToMs(settings.get<std::string>("interval"));

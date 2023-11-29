@@ -8,5 +8,6 @@
     "loglevel": "info",
     "pattern": "pattern",
     "duration": "0",
-    "interval": "0"
+    "interval": "0",
+    "folder": "$PWD/snapshot"
 }

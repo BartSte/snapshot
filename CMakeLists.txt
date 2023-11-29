@@ -51,7 +51,9 @@ add_library(
   src/video/state.cpp
   src/video/state.hpp
   src/video/record.cpp
-  src/video/record.hpp)
+  src/video/record.hpp
+  src/video/image_saver.cpp
+  src/video/image_saver.hpp)
 target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
 target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)
