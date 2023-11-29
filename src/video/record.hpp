@@ -19,6 +19,9 @@ class Recorder : public QObject {
  protected:
   QVideoSink *sink;
   QTimer timer;
+  ms elapsed;
+  ms duration;
+  void stopAfterDuration();
 
  public:
   explicit Recorder(QVideoSink *sink, QObject *parent = nullptr);
