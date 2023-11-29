@@ -1,7 +1,12 @@
 {
-    "gui": false,
+    "help": false,
     "list": false,
+    "gui": false,
+    "debug": false,
+    "record": false,
     "camera": "default",
     "loglevel": "info",
-    "pattern": "pattern"
+    "pattern": "pattern",
+    "duration": "0",
+    "interval": "0"
 }

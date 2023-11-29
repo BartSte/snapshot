@@ -280,6 +280,8 @@ more information.
 
 - [ ] Add recording snapshot at an interval
 
+  - [x] Interval is added to timer.
+  - [ ] Add duration (kill the app after a given duration).
   - The recorder can take a pointer to a QVideoSink of the gui, the gui owns
     this pointer.
   - The recorder can create its own QVideoSink on the stack when no gui is

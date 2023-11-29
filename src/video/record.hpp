@@ -19,11 +19,10 @@ class Recorder : public QObject {
  protected:
   QVideoSink *sink;
   QTimer timer;
-  ms duration;
-  ms interval;
 
  public:
   explicit Recorder(QVideoSink *sink, QObject *parent = nullptr);
-  void save(const QVideoFrame &frame);
-  void start();
+  void save();
+  void start(ms interval = ms(0), ms duration = ms(0),
+             ms min_interval = ms(1000));
 };

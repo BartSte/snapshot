@@ -5,6 +5,7 @@
 #include <gui/mainwindow.hpp>
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>
+#include <helpers/time.hpp>
 #include <iostream>
 #include <memory>
 #include <qapplication.h>
@@ -17,6 +18,7 @@
 
 using ptree = boost::property_tree::ptree;
 using path = boost::filesystem::path;
+using ms = std::chrono::milliseconds;
 
 const path App::ROOT = boost::dll::program_location().parent_path();
 const path App::PATH_CONFIG = App::ROOT / "static/config.json";
@@ -170,5 +172,8 @@ void App::startRecorder() {
     recorder = std::make_unique<Recorder>(sink.get());
     spdlog::info("Recorder without a gui sink created.");
   }
-  recorder->start();
+
+  ms duration = stringToMs(settings.get<std::string>("duration"));
+  ms interval = stringToMs(settings.get<std::string>("interval"));
+  recorder->start(interval, duration);
 }
