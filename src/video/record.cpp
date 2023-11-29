@@ -6,17 +6,40 @@
 #include "./video/record.hpp"
 
 using ms = std::chrono::milliseconds;
+using path = boost::filesystem::path;
 
-Recorder::Recorder(QVideoSink *sink, QObject *parent)
-    : QObject(parent), sink(sink), timer(parent) {
+/**
+ * @brief Recorder
+ *
+ * Create a new recorder.
+ *
+ * @param sink a video sink to record from
+ * @param parent a optional parent QObject
+ */
+Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
+    : QObject(parent),
+      sink(sink),
+      timer(parent),
+      elapsed(0),
+      duration(0),
+      image_saver(save_path) {
   connect(&timer, &QTimer::timeout, this, &Recorder::save);
+  connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
 }
 
-void Recorder::save() { spdlog::info("Frame saved."); }
+void Recorder::save() {
+  image_saver.save();
+}
 
+/**
+ * @brief stopAfterDuration
+ *
+ * Stop recording after the duration has elapsed. If the duration is 0, the
+ * timer is never stopped.
+ */
 void Recorder::stopAfterDuration() {
   elapsed += timer.intervalAsDuration();
-  if (elapsed >= duration) {
+  if (elapsed >= duration && duration.count() != 0) {
     spdlog::info("Recording finished. The elapsed time is {} ms.",
                  elapsed.count());
     timer.stop();
@@ -33,23 +56,36 @@ void Recorder::stopAfterDuration() {
  * @param min_interval minimum time between frames
  */
 void Recorder::start(ms interval, ms duration, ms min_interval) {
+  if (!isValidInterval(interval, min_interval)) {
+    return;
+  }
+  this->duration = duration;
+  timer.start(interval);
+}
+
+/**
+ * @brief isValidInterval
+ *
+ * Check if the interval is valid. If the interval is 0, the recording is
+ *
+ *
+ * @param interval
+ * @param min_interval
+ * @return
+ */
+bool Recorder::isValidInterval(ms interval, ms min_interval) {
   if (interval.count() == 0) {
     spdlog::info("Interval is 0, recording no frames.");
+    return false;
 
   } else if (interval < min_interval) {
     spdlog::warn(
         "Interval is less than the minimum interval of {} ms. Recording is "
         "not started.",
         min_interval.count());
+    return false;
 
   } else {
-    this->duration = duration;
-    if (duration.count() == 0) {
-      spdlog::info("Recording indefinitely.");
-    } else {
-      spdlog::info("Recording for {} ms.", duration.count());
-      connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
-    }
-    timer.start(interval);
+    return true;
   }
 }

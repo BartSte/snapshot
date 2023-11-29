@@ -23,6 +23,7 @@ ArgParse::ArgParse(int argc, char *argv[])
 
   fs::path home(getHome());
   fs::path path_config(home / ".config" / "snapshot" / "config.json");
+  fs::path path_save(fs::current_path() / "snapshot");
 
   // clang-format off
   options.add_options()
@@ -35,6 +36,10 @@ ArgParse::ArgParse(int argc, char *argv[])
     ("d,debug", "Enable debug mode. Plays an internal video and show the gui.")
 
     ("r,record", "Record")
+
+    ("folder", "Folder to save the images to. The default is $PWD/snapshot. "
+     "The folder will be created if it does not exist.",
+     DEFAULT_STRING(path_save.string()))
 
     ("duration", "Duration of the recording in seconds. The following formats "
      "are supported: s, second, seconds, m, minute, minutes, h, hour, hours, "
