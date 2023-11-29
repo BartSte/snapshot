@@ -21,28 +21,28 @@ std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier = {
     {'d', std::chrono::hours(24)}};
 
 /**
- * @brief Convert a string to a duration in milliseconds.
+ * @brief isNumber
  *
- * @param timeString A string representing a time duration. The following
- * formats are valid:
- * - A number followed by a unit (e.g. 10s or 5minutes). The following units
- *   are supported: second, seconds, minute, minutes, hour, hours, day, days.
- *   Their abbreviations are also supported: s, m, h, d, respectively.
- * - White space (tabs and spaces) are ignored.
- * - All other formats are invalid and will throw an exception, including
- *   perionds and commas.
+ * Returns true if the string consists only of a number. Positive integers are
+ * supported.
  *
- * @return the number of milliseconds.
+ * @param str
+ * @return
  */
-ms string_to_milliseconds(std::string str) {
+bool isNumber(const std::string &str) {
+  return !str.empty() && std::all_of(str.begin(), str.end(), ::isdigit);
+}
 
-  str.erase(std::remove_if(str.begin(), str.end(), isspace), str.end());
-  check(str);
-  std::string unit = parseUnit(str);
-  std::string number = parseNumber(str);
-
-  ms multiplier = unit_vs_multiplier[unit.front()];
-  return ms(std::stoll(number) * multiplier.count());
+/**
+ * @brief hasForbiddenChars
+ *
+ * Returns true if the string contains any of the following characters: .,;:?!-
+ *
+ * @param str
+ * @return
+ */
+bool hasForbiddenChars(const std::string &str) {
+  return str.find_first_of(".,;:?!-") != std::string::npos;
 }
 
 /**
@@ -56,21 +56,35 @@ void check(std::string str) {
   if (str.empty()) {
     throw std::invalid_argument("Empty string");
   } else if (isNumber(str)) {
-    throw std::invalid_argument("Number without unit");
+    throw std::invalid_argument("Number without unit: " + str);
+  } else if (hasForbiddenChars(str)) {
+    throw std::invalid_argument("Invalid character found: " + str);
   }
 }
 
 /**
- * @brief isNumber
+ * @brief Convert a string to a duration in milliseconds.
  *
- * Returns true if the string consists only of a number. Positive integers are
- * supported.
+ * @param timeString A string representing a time duration. The following
+ * formats are valid:
+ * - A number followed by a unit (e.g. 10s or 5minutes). The following units
+ *   are supported: second, seconds, minute, minutes, hour, hours, day, days.
+ *   Their abbreviations are also supported: s, m, h, d, respectively.
+ * - White space (tabs and spaces) are ignored.
+ * - All other formats are invalid and will throw an exception, including
+ *   perionds and commas.
  *
- * @param str
- * @return
+ * @return the number of milliseconds.
  */
-bool isNumber(const std::string &str) {
-  return !str.empty() && std::all_of(str.begin(), str.end(), ::isdigit);
+ms stringToMilliseconds(std::string str) {
+
+  str.erase(std::remove_if(str.begin(), str.end(), isspace), str.end());
+  check(str);
+  std::string unit = parseUnit(str);
+  std::string number = parseNumber(str);
+
+  ms multiplier = unit_vs_multiplier[unit.front()];
+  return ms(std::stoll(number) * multiplier.count());
 }
 
 /**
@@ -92,7 +106,7 @@ std::string parseUnit(std::string str) {
       return unit;
     }
   }
-  throw std::invalid_argument("Invalid unit");
+  throw std::invalid_argument("Invalid unit: " + str);
 }
 
 /**
@@ -111,6 +125,6 @@ std::string parseNumber(std::string str) {
   if (isNumber(str)) {
     return str;
   } else {
-    throw std::invalid_argument("Invalid number");
+    throw std::invalid_argument("Invalid number: " + str);
   }
 }
