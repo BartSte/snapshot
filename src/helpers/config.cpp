@@ -35,7 +35,7 @@ pt::ptree config::parseUserDefault(const std::string &path_user,
     config::merge(config, config_user);
 
   } else {
-    spdlog::info("User config file does not exist.");
+    spdlog::debug("User config file does not exist.");
   }
   return config;
 }

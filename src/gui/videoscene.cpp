@@ -127,8 +127,8 @@ void VideoScene::centerText() {
  *
  * @param video
  */
-void VideoScene::setVideo(std::unique_ptr<BaseVideo> video) {
-  this->video = std::move(video);
+void VideoScene::setVideo(std::shared_ptr<BaseVideo> video) {
+  this->video = video;
   this->video->setVideoOutput(&videoItem);
   connect(this->video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
   this->video->start();

@@ -83,7 +83,7 @@ QUrl findStream(const std::string &url) {
     }
   }
 
-  spdlog::info("No valid stream found.");
+  spdlog::debug("No valid stream found.");
   return QUrl();
 }
 
@@ -212,7 +212,7 @@ QString findFile(const std::string &path) {
     spdlog::info("File found: {}", path);
     return QString::fromStdString(path);
   } else {
-    spdlog::info("No file found.");
+    spdlog::debug("No file found.");
     return QString();
   }
 }

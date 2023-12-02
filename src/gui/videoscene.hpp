@@ -10,7 +10,7 @@
 
 class VideoScene : public QGraphicsScene {
  private:
-  std::unique_ptr<BaseVideo> video;
+  std::shared_ptr<BaseVideo> video;
 
   void updatePixmap();
   void scalePixmap();
@@ -34,7 +34,7 @@ class VideoScene : public QGraphicsScene {
 
   void setPixmap(const std::string &path);
   void setText(const std::string &text);
-  void setVideo(std::unique_ptr<BaseVideo> video_);
+  void setVideo(std::shared_ptr<BaseVideo> video_);
   void update();
   void print(const QVideoFrame &frame) { spdlog::info("Test"); }
 };

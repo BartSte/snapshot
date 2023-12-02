@@ -40,5 +40,5 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   scene.setSceneRect(viewRect);
   scene.update();
 
-  spdlog::info("View rect: {}x{}", viewRect.width(), viewRect.height());
+  spdlog::debug("View rect: {}x{}", viewRect.width(), viewRect.height());
 }
