@@ -1,10 +1,10 @@
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <qvideoframe.h>
 #include <spdlog/spdlog.h>
 
 #include "./video/image_saver.hpp"
 
-ImageSaver::ImageSaver(boost::filesystem::path directory)
+ImageSaver::ImageSaver(std::filesystem::path directory)
     : directory(directory) {}
 
 ImageSaver::~ImageSaver() {}

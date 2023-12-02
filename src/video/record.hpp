@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <qobject.h>
@@ -15,7 +16,7 @@
 
 class Recorder : public QObject {
   using ms = std::chrono::milliseconds;
-  using path = boost::filesystem::path;
+  using path = std::filesystem::path;
 
   Q_OBJECT
 

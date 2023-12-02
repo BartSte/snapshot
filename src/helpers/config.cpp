@@ -1,4 +1,4 @@
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
@@ -10,7 +10,6 @@
 #include "./helpers/config.hpp"
 
 namespace pt = boost::property_tree;
-namespace fs = boost::filesystem;
 
 /**
  * @brief parseUserDefault
@@ -30,7 +29,7 @@ pt::ptree config::parseUserDefault(const std::string &path_user,
   pt::ptree config = config::parse(path_default);
   spdlog::debug("Reading default config file from {}", path_default);
 
-  if (fs::exists(path_user)) {
+  if (std::filesystem::exists(path_user)) {
     spdlog::debug("Reading user config file from {}", path_user);
     pt::ptree config_user = config::parse(path_user);
     config::merge(config, config_user);

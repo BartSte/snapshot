@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <helpers/argparse.hpp>
@@ -15,7 +15,7 @@
 class App : public QApplication {
 
   using ptree = boost::property_tree::ptree;
-  using path = boost::filesystem::path;
+  using path = std::filesystem::path;
 
  public:
   App(int argc, char *argv[]);

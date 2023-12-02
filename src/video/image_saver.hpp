@@ -1,15 +1,15 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <qvideoframe.h>
 
 class ImageSaver {
 
  protected:
-  boost::filesystem::path directory;
+  std::filesystem::path directory;
 
  public:
-  explicit ImageSaver(boost::filesystem::path directory);
+  explicit ImageSaver(std::filesystem::path directory);
   ~ImageSaver();
 
   void save();

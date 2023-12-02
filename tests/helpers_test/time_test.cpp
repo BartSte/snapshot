@@ -1,34 +1,35 @@
+#include <chrono>
 #include <gtest/gtest.h>
 #include <helpers/time.hpp>
 #include <vector>
 
-using ms = std::chrono::milliseconds;
+using sec = std::chrono::seconds;
 
 extern const std::string valid_units[12];
 extern std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier;
 
-TEST(timeTest, stringToMs) {
+TEST(timeTest, stringToSec) {
   std::chrono::duration<int64_t> multiplier;
   std::string strings[] = {"1", " 1 ", "001"};
   for (auto unit : valid_units) {
     for (auto str : strings) {
       multiplier = unit_vs_multiplier[unit.front()];
-      ASSERT_EQ(stringToMs(str + unit), ms(std::stoi(str) * multiplier));
+      ASSERT_EQ(stringToSec(str + unit), sec(std::stoi(str) * multiplier));
     }
   }
 }
 
-TEST(timeTest, stringToMsNoUnit) {
+TEST(timeTest, stringToSecNoUnit) {
   std::string strings[] = {"1", " 1 ", "123", "001"};
   for (std::string str : strings) {
-    ms actual = stringToMs(str);
-    ASSERT_EQ(actual, ms(std::stoi(str)));
+    sec actual = stringToSec(str);
+    ASSERT_EQ(actual, sec(std::stoi(str)));
   }
 }
 
-TEST(timeTest, stringToMsEmptyString) {
+TEST(timeTest, stringToSecEmptyString) {
   try {
-    stringToMs("");
+    stringToSec("");
     FAIL();
   } catch (std::invalid_argument &error) {
     SUCCEED();
@@ -37,11 +38,11 @@ TEST(timeTest, stringToMsEmptyString) {
   }
 }
 
-TEST(timeTest, stringToMsInvalidString) {
+TEST(timeTest, stringToSecInvalidString) {
   std::string strings[] = {"a", "1a", "a1", "1dayss"};
   for (auto str : strings) {
     try {
-      stringToMs(str);
+      stringToSec(str);
       FAIL();
     } catch (std::invalid_argument &error) {
       SUCCEED();
@@ -51,12 +52,12 @@ TEST(timeTest, stringToMsInvalidString) {
   }
 }
 
-TEST(timeTest, stringToMsDecimals) {
+TEST(timeTest, stringToSecDecimals) {
   std::string strings[] = {"1.2", " 1.2 ", "001.2"};
   for (auto unit : valid_units) {
     for (auto str : strings) {
       try {
-        stringToMs(str + unit);
+        stringToSec(str + unit);
         FAIL();
       } catch (std::invalid_argument &error) {
         SUCCEED();

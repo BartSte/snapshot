@@ -1,6 +1,7 @@
 #include <boost/dll.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <chrono>
 #include <cxxopts.hpp>
 #include <gui/mainwindow.hpp>
 #include <helpers/config.hpp>
@@ -13,14 +14,16 @@
 #include <string>
 #include <video/find.hpp>
 #include <video/record.hpp>
+#include <helpers/path.hpp>
 
 #include "./app.hpp"
 
 using ptree = boost::property_tree::ptree;
-using path = boost::filesystem::path;
+using path = std::filesystem::path;
+using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
 
-const path App::ROOT = boost::dll::program_location().parent_path();
+const path App::ROOT = program_location();
 const path App::PATH_CONFIG = App::ROOT / "static/config.json";
 const path App::DEBUG_VIDEO = App::ROOT / "static/sample.mp4";
 
@@ -178,7 +181,7 @@ void App::startRecorder() {
 
   recorder = std::make_unique<Recorder>(sink.get(), path_save);
 
-  ms duration = stringToMs(settings.get<std::string>("duration"));
-  ms interval = stringToMs(settings.get<std::string>("interval"));
-  recorder->start(interval, duration);
+  sec duration = stringToSec(settings.get<std::string>("duration"));
+  sec interval = stringToSec(settings.get<std::string>("interval"));
+  recorder->start(ms(interval), ms(duration));
 }
