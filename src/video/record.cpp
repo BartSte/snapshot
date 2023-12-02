@@ -1,9 +1,10 @@
 #include <QVideoSink>
 #include <chrono>
 #include <cstdint>
-#include <qobject.h>
 #include <filesystem>
+#include <qobject.h>
 #include <qtimer.h>
+#include <spdlog/spdlog.h>
 
 #include "./video/record.hpp"
 
@@ -30,7 +31,11 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
 }
 
 void Recorder::save() {
-  image_saver.save();
+  if (sink) {
+    image_saver.save(sink->videoFrame());
+  } else {
+    spdlog::critical("QVideoSink is a nullptr.");
+  }
 }
 
 /**
@@ -77,7 +82,7 @@ void Recorder::start(ms interval, ms duration, ms min_interval) {
  */
 bool Recorder::isValidInterval(ms interval, ms min_interval) {
   if (interval.count() == 0) {
-    spdlog::info("Interval is 0, recording no frames.");
+    spdlog::warn("Interval is 0, recording no frames.");
     return false;
 
   } else if (interval < min_interval) {

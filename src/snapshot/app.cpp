@@ -6,15 +6,14 @@
 #include <gui/mainwindow.hpp>
 #include <helpers/config.hpp>
 #include <helpers/logger.hpp>
+#include <helpers/path.hpp>
 #include <helpers/time.hpp>
 #include <iostream>
 #include <memory>
 #include <qapplication.h>
-#include <qvideosink.h>
 #include <string>
 #include <video/find.hpp>
 #include <video/record.hpp>
-#include <helpers/path.hpp>
 
 #include "./app.hpp"
 
@@ -149,7 +148,7 @@ void App::showGui() {
 
   window = std::make_unique<MainWindow>();
   if (video) {
-    window->scene.setVideo(std::move(video));
+    window->scene.setVideo(video);
   }
   window->show();
 }
@@ -166,20 +165,9 @@ void App::startRecorder() {
     return;
   }
 
-  QVideoSink *sink_raw;
   path path_save(settings.get<std::string>("folder"));
-  if (window) {
-    sink_raw = window->scene.videoItem.videoSink();
-    spdlog::info("Recorder uses the QVideoSink from the gui.");
-
-  } else {
-    sink = std::make_unique<QVideoSink>();
-    video->setVideoSink(sink.get());
-    sink_raw = sink.get();
-    spdlog::info("Recorder uses a new QVideoSink.");
-  }
-
-  recorder = std::make_unique<Recorder>(sink.get(), path_save);
+  QVideoSink *sink_ptr = video->getVideoSink();
+  recorder = std::make_unique<Recorder>(sink_ptr, path_save);
 
   sec duration = stringToSec(settings.get<std::string>("duration"));
   sec interval = stringToSec(settings.get<std::string>("interval"));

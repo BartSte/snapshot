@@ -12,5 +12,5 @@ class ImageSaver {
   explicit ImageSaver(std::filesystem::path directory);
   ~ImageSaver();
 
-  void save();
+  void save(const QVideoFrame &frame);
 };

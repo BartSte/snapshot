@@ -9,6 +9,7 @@
 #include <qmetaobject.h>
 #include <qobject.h>
 #include <qurl.h>
+#include <qvideosink.h>
 #include <spdlog/spdlog.h>
 #include <string>
 
@@ -25,7 +26,7 @@ using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
  * @param parent The parent QObject. Default is nullptr.
  */
 BaseVideo::BaseVideo(QObject *parent)
-    : QObject(parent), state(VideoState::Stopped) {}
+    : QObject(parent), sink(parent), state(VideoState::Stopped) {}
 
 /**
  * @brief setState
@@ -55,6 +56,7 @@ MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
   connect(&player, &QMediaPlayer::playbackStateChanged, this,
           &MediaPlayer::setState);
   player.setSource(url);
+  setVideoSink(&sink);
 }
 
 /**
@@ -93,6 +95,8 @@ void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
   player.setVideoOutput(videoItem);
 }
 
+QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
+
 /**
  * @brief setVideoSink
  *
@@ -100,8 +104,10 @@ void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
  *
  * @param sink a pointer to the QVideoSink.
  */
-void MediaPlayer::setVideoSink(QVideoSink *sink) {
-  player.setVideoSink(sink);
+void MediaPlayer::setVideoSink(QVideoSink *sink_ptr) {
+  player.setVideoSink(sink_ptr);
+  //TODO: detect when another videosink than this->sink is set. If so should I
+  //remove it from the stack?
 }
 
 /**
@@ -129,6 +135,7 @@ Camera::Camera(const QCameraDevice &device, QObject *parent)
   connect(&camera, &QCamera::activeChanged, this, &Camera::setState);
   camera.setCameraDevice(device);
   session.setCamera(&camera);
+  setVideoSink(&sink);
 }
 
 void Camera::start() { camera.start(); }
@@ -143,6 +150,8 @@ void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
   session.setVideoOutput(videoItem);
 }
 
+QVideoSink *Camera::getVideoSink() { return session.videoSink(); }
+
 /**
  * @brief setVideoSink
  *
@@ -150,9 +159,7 @@ void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
  *
  * @param sink A pointer to the QVideoSink.
  */
-void Camera::setVideoSink(QVideoSink *sink) {
-  session.setVideoSink(sink);
-}
+void Camera::setVideoSink(QVideoSink *sink) { session.setVideoSink(sink); }
 
 /**
  * @brief updateResolution

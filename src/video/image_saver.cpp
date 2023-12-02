@@ -9,6 +9,6 @@ ImageSaver::ImageSaver(std::filesystem::path directory)
 
 ImageSaver::~ImageSaver() {}
 
-void ImageSaver::save() {
+void ImageSaver::save(const QVideoFrame &frame) {
   spdlog::info("Frame saved to directory {}.", directory.string());
 }
