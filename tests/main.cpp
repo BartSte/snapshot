@@ -1,10 +1,9 @@
-#include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
+#include <filesystem>
 #include <gtest/gtest.h>
+#include <helpers/path.hpp>
 
-using path = boost::filesystem::path;
-
-extern const path ROOT = boost::dll::program_location().parent_path();
+extern const std::filesystem::path ROOT = program_location();
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

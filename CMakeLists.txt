@@ -34,7 +34,9 @@ add_library(
   src/helpers/logger.cpp
   src/helpers/logger.hpp
   src/helpers/time.cpp
-  src/helpers/time.hpp)
+  src/helpers/time.hpp
+  src/helpers/path.cpp
+  src/helpers/path.hpp)
 target_include_directories(
   helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                     ${Boost_INCLUDE_DIRS}})

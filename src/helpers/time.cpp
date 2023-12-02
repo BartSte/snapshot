@@ -8,7 +8,7 @@
 
 #include "./helpers/time.hpp"
 
-using ms = std::chrono::milliseconds;
+using sec = std::chrono::seconds;
 
 const std::string valid_units[12] = {"s",       "m",       "h",     "d",
                                      "second",  "minute",  "hour",  "day",
@@ -61,7 +61,7 @@ void check(std::string str) {
 }
 
 /**
- * @brief Convert a string to a duration in milliseconds.
+ * @brief Convert a string to a duration in seconds.
  *
  * @param timeString A string representing a time duration. The following
  * formats are valid:
@@ -72,20 +72,20 @@ void check(std::string str) {
  * - All other formats are invalid and will throw an exception, including
  *   perionds and commas.
  *
- * @return the number of milliseconds.
+ * @return the number of seconds.
  */
-ms stringToMs(std::string str) {
+sec stringToSec(std::string str) {
   str.erase(std::remove_if(str.begin(), str.end(), isspace), str.end());
   check(str);
 
   if (isNumber(str)) {
-    return ms(std::stoi(str));
+    return sec(std::stoi(str));
 
   } else {
     std::string unit = parseUnit(str);
     std::string number = parseNumber(str);
-    ms multiplier = unit_vs_multiplier[unit.front()];
-    return ms(std::stoll(number) * multiplier.count());
+    sec multiplier = unit_vs_multiplier[unit.front()];
+    return sec(std::stoll(number) * multiplier.count());
   }
 }
 

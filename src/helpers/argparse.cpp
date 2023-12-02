@@ -1,4 +1,4 @@
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <cxxopts.hpp>
 #include <iostream>
 
@@ -6,7 +6,7 @@
 
 #define DEFAULT_STRING cxxopts::value<std::string>()->default_value
 
-namespace fs = boost::filesystem;
+using path = std::filesystem::path;
 
 /**
  * @brief Construct a new Arg Parse:: Arg Parse object
@@ -21,9 +21,9 @@ ArgParse::ArgParse(int argc, char *argv[])
       description("Command line interface for taking camera snapshots.\n"),
       options(program, description) {
 
-  fs::path home(getHome());
-  fs::path path_config(home / ".config" / "snapshot" / "config.json");
-  fs::path path_save(fs::current_path() / "snapshot");
+  path home(getHome());
+  path path_config(home / ".config" / "snapshot" / "config.json");
+  path path_save(std::filesystem::current_path() / "snapshot");
 
   // clang-format off
   options.add_options()
@@ -37,20 +37,23 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("r,record", "Record")
 
-    ("folder", "Folder to save the images to. The default is $PWD/snapshot. "
-     "The folder will be created if it does not exist.",
+    ("folder", "Folder to save the images to. The default is `./snapshot` in "
+     "the current working directory. The folder will be created if it does not"
+     " exist.",
      DEFAULT_STRING(path_save.string()))
 
     ("duration", "Duration of the recording in seconds. The following formats "
      "are supported: s, second, seconds, m, minute, minutes, h, hour, hours, "
-     "d, day, days. For example, 10s = 10 seconds. The default is 0, meaning "
-     "that the recording will continue until the user stops it.",
+     "d, day, days. For example, 10s = 10 seconds. If no unit is supplied, it "
+     "is iterpreted as seconds. The default is 0, meaning that the recording "
+     "will continue until the user stops it.",
      DEFAULT_STRING("0"))
 
     ("interval", "The interval in which frames are saved. The following "
      "formats are supported: s, second, seconds, m, minute, minutes, h, hour, "
-     "hours, " "d, day, days. For example, 10s = 10 seconds. The default is 0,"
-     " meaning that no frames are saved.",
+     "hours, " "d, day, days. For example, 10s = 10 seconds. If no unit is "
+     "supplied, it is iterpreted as seconds.The default is 0, meaning that no "
+     "frames are saved.",
      DEFAULT_STRING("0"))
 
     ("c,camera", "Select a camera by the name shown by the list command",

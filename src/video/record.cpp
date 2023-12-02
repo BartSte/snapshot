@@ -1,12 +1,14 @@
 #include <QVideoSink>
+#include <chrono>
 #include <cstdint>
 #include <qobject.h>
+#include <filesystem>
 #include <qtimer.h>
 
 #include "./video/record.hpp"
 
 using ms = std::chrono::milliseconds;
-using path = boost::filesystem::path;
+using path = std::filesystem::path;
 
 /**
  * @brief Recorder

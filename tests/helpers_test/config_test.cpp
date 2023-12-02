@@ -1,15 +1,16 @@
 #include <boost/dll.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <gtest/gtest.h>
 #include <helpers/config.hpp>
 #include <memory>
 #include <string>
+#include <helpers/path.hpp>
+#include <filesystem>
 
-using path = boost::filesystem::path;
+using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
-extern const boost::filesystem::path ROOT;
+extern const path ROOT;
 
 /**
  * @brief Tests the parseConfig function.
