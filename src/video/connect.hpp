@@ -39,7 +39,6 @@ class BaseVideo : public QObject {
   virtual void stop() = 0;
   virtual QVideoSink *getVideoSink() = 0;
   virtual void setVideoSink(QVideoSink *sink) = 0;
-  virtual void setVideoOutput(QGraphicsVideoItem *videoItem) = 0;
 };
 
 class MediaPlayer : public BaseVideo {
@@ -55,7 +54,6 @@ class MediaPlayer : public BaseVideo {
   void stop() override;
   QVideoSink *getVideoSink() override;
   void setVideoSink(QVideoSink *sink) override;
-  void setVideoOutput(QGraphicsVideoItem *videoItem) override;
 };
 
 class Camera : public BaseVideo {
@@ -71,7 +69,6 @@ class Camera : public BaseVideo {
   void stop() override;
   QVideoSink *getVideoSink() override;
   void setVideoSink(QVideoSink *sink) override;
-  void setVideoOutput(QGraphicsVideoItem *videoItem) override;
   void updateResolution() override;
 };
 

@@ -21,7 +21,9 @@ using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
 /**
  * @brief Constructor
  *
- * Inherits from QObject.
+ * Inherits from QObject. A QVideoSink is created and set as the video sink.
+ * This is the QVideoSink object that can be used to display and record the
+ * video, using a QGraphicsVideoItem and a Recorder object, respectively.
  *
  * @param parent The parent QObject. Default is nullptr.
  */
@@ -84,17 +86,6 @@ void MediaPlayer::start() { player.play(); }
  */
 void MediaPlayer::stop() { player.stop(); }
 
-/**
- * @brief setVideoOutput
- *
- * Wrapper for QMediaPlayer::setVideoOutput().
- *
- * @param videoItem Pointer to the QGraphicsVideoItem.
- */
-void MediaPlayer::setVideoOutput(QGraphicsVideoItem *videoItem) {
-  player.setVideoOutput(videoItem);
-}
-
 QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
 
 /**
@@ -106,8 +97,6 @@ QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
  */
 void MediaPlayer::setVideoSink(QVideoSink *sink_ptr) {
   player.setVideoSink(sink_ptr);
-  //TODO: detect when another videosink than this->sink is set. If so should I
-  //remove it from the stack?
 }
 
 /**
@@ -144,10 +133,6 @@ void Camera::stop() { camera.stop(); }
 
 void Camera::setState(bool active) {
   BaseVideo::setState(convertState(active));
-}
-
-void Camera::setVideoOutput(QGraphicsVideoItem *videoItem) {
-  session.setVideoOutput(videoItem);
 }
 
 QVideoSink *Camera::getVideoSink() { return session.videoSink(); }
