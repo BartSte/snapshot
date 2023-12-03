@@ -127,11 +127,11 @@ void VideoScene::centerText() {
  *
  * @param video
  */
-void VideoScene::setVideo(std::shared_ptr<BaseVideo> video) {
-  this->video = video;
-  this->video->setVideoOutput(&videoItem);
-  connect(this->video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
-  this->video->start();
+void VideoScene::setVideo(std::shared_ptr<BaseVideo> video_) {
+  video = video_;
+  video->setVideoSink(videoItem.videoSink());
+  connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
+  video->start();
 }
 
 /**
