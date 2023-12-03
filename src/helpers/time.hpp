@@ -6,6 +6,7 @@
 extern const std::string valid_units[12];
 extern std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier;
 
+std::string timestamp();
 std::string parseUnit(std::string str);
 std::string parseNumber(std::string str);
 std::chrono::seconds stringToSec(std::string str);
