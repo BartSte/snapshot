@@ -2,6 +2,8 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <helpers/path.hpp>
+#include <helpers/time.hpp>
 #include <qobject.h>
 #include <qtimer.h>
 #include <spdlog/spdlog.h>
@@ -22,19 +24,47 @@ using path = std::filesystem::path;
 Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
     : QObject(parent),
       sink(sink),
+      directory(save_path),
       timer(parent),
       elapsed(0),
-      duration(0),
-      image_saver(save_path) {
+      duration(0) {
   connect(&timer, &QTimer::timeout, this, &Recorder::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
+  if (!mkdir(directory)) {
+    spdlog::warn("Failed to create directory {}", directory.string());
+  }
 }
 
+/**
+ * @brief TDOD
+ */
 void Recorder::save() {
   if (sink) {
-    image_saver.save(sink->videoFrame());
+    save_frame(sink->videoFrame());
   } else {
     spdlog::critical("QVideoSink is a nullptr.");
+  }
+}
+
+/**
+ * @brief TDDO
+ *
+ * @param frame 
+ */
+void Recorder::save_frame(const QVideoFrame &frame) {
+  if (!frame.isValid()) {
+    spdlog::warn("Invalid frame");
+    return;
+  }
+
+  const QImage image = frame.toImage();
+  const path file_path = directory / path(timestamp() + ".png");
+  bool is_saved = image.save(file_path.string().c_str());
+
+  if (is_saved) {
+    spdlog::info("Saved frame to {}", file_path.string());
+  } else {
+    spdlog::warn("Failed to save frame to {}", file_path.string());
   }
 }
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <filesystem>
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <memory>
 #include <qobject.h>
 #include <qtimer.h>
@@ -12,7 +12,6 @@
 #include <string>
 
 #include "video/connect.hpp"
-#include "video/image_saver.hpp"
 
 class Recorder : public QObject {
   using ms = std::chrono::milliseconds;
@@ -23,12 +22,13 @@ class Recorder : public QObject {
  protected:
   QVideoSink *sink;
   QTimer timer;
-  ImageSaver image_saver;
+  path directory;
   ms elapsed;
   ms duration;
   void stopAfterDuration();
   bool isValidInterval(ms interval, ms min_interval);
   void applyDuration(ms duration);
+  void save_frame(const QVideoFrame &frame);
 
  public:
   explicit Recorder(QVideoSink *sink, path save_path, QObject *p = nullptr);

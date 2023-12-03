@@ -4,3 +4,4 @@
 #include <filesystem>
 
 const std::filesystem::path program_location();
+bool mkdir(const std::filesystem::path &path);
