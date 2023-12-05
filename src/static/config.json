@@ -9,5 +9,5 @@
     "pattern": "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v",
     "duration": "0",
     "interval": "0",
-    "folder": "$PWD/snapshot"
+    "folder": "snapshot"
 }

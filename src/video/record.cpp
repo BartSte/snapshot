@@ -25,13 +25,15 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
     : QObject(parent),
       sink(sink),
       directory(save_path),
+      subdirectory(save_path / timestamp()),
       timer(parent),
       elapsed(0),
       duration(0) {
   connect(&timer, &QTimer::timeout, this, &Recorder::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
+
   if (!mkdir(directory)) {
-    spdlog::warn("Failed to create directory {}", directory.string());
+    spdlog::warn("Failed to create the base directory {}", directory.string());
   }
 }
 
@@ -39,6 +41,10 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
  * @brief TDOD
  */
 void Recorder::save() {
+  if (!mkdir(subdirectory)) {
+    spdlog::warn("Failed to create the subdirectory {}", subdirectory.string());
+  }
+
   if (sink) {
     save_frame(sink->videoFrame());
   } else {
@@ -49,7 +55,7 @@ void Recorder::save() {
 /**
  * @brief TDDO
  *
- * @param frame 
+ * @param frame
  */
 void Recorder::save_frame(const QVideoFrame &frame) {
   if (!frame.isValid()) {
@@ -58,7 +64,7 @@ void Recorder::save_frame(const QVideoFrame &frame) {
   }
 
   const QImage image = frame.toImage();
-  const path file_path = directory / path(timestamp() + ".png");
+  const path file_path = subdirectory / path(timestamp() + ".png");
   bool is_saved = image.save(file_path.string().c_str());
 
   if (is_saved) {

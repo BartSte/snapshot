@@ -23,6 +23,7 @@ class Recorder : public QObject {
   QVideoSink *sink;
   QTimer timer;
   path directory;
+  path subdirectory;
   ms elapsed;
   ms duration;
   void stopAfterDuration();
