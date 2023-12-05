@@ -21,9 +21,12 @@ std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier = {
     {'d', std::chrono::hours(24)}};
 
 /**
- * @brief TODO:
+ * @brief timestamp
  *
- * @return
+ * Returns a string representing the current time in the following format:
+ * <day>-<month>-<year>_<hour>-<minute>-<second> (e.g. 01-01-2021_12-00-00).
+ *
+ * @return a string representing the current time.
  */
 std::string timestamp() {
   time_t rawtime;

@@ -104,10 +104,6 @@ After this, the `snapshot` executable can be found in the `build/bin` directory.
 
 - **TODO**
 
-### Windows
-
-- **TODO**
-
 ### Usage
 
 The `snapshot` executable can be run from the command line. The following
@@ -278,17 +274,7 @@ more information.
 
 # TODO:
 
-- [ ] Add recording snapshot at an interval
-
-  - [x] Interval is added to timer.
-  - [ ] Add duration (kill the app after a given duration).
-  - The recorder can take a pointer to a QVideoSink of the gui, the gui owns
-    this pointer.
-  - The recorder can create its own QVideoSink on the stack when no gui is
-    avaiable and use this for recording.
-  - Create a save function that saves a frame to disk.
-  - Create a timer that calls the save function at a given interval.
-
-- [ ] Immediately opening of gui, do not wait till connected
+- [ ] Immediately opening of gui, do not wait till connected. Instead, show
+      connection status in gui (currently, it shows "No camera found" when
+      trying to connect to a camera).
 - [ ] When connection is lost, what happens? Display connection status
-- [ ] Enable reconnection when disconnected?
