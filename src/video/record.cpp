@@ -43,6 +43,7 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
 void Recorder::save() {
   if (!mkdir(subdirectory)) {
     spdlog::warn("Failed to create the subdirectory {}", subdirectory.string());
+    return;
   }
 
   if (sink) {
