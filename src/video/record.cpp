@@ -14,6 +14,60 @@ using ms = std::chrono::milliseconds;
 using path = std::filesystem::path;
 
 /**
+ * @brief ImageSaver
+ *
+ * A class to save images from a QVideoSink.
+ *
+ * @param sink A video sink to save images from
+ * @param save_dir A directory to save images to
+ * @param parent A optional parent QObject
+ */
+ImageSaver::ImageSaver(QVideoSink *sink, path directory, QObject *parent)
+    : QObject(parent), sink(sink), save_dir(directory) {}
+
+/**
+ * @brief save
+ *
+ * A slot to save a frame from the video sink.
+ */
+void ImageSaver::save() {
+  if (!mkdir(save_dir)) {
+    spdlog::warn("Failed to create the subdirectory {}", save_dir.string());
+    return;
+  }
+
+  if (sink) {
+    saveFrame(sink->videoFrame());
+  } else {
+    spdlog::critical("QVideoSink is a nullptr.");
+  }
+}
+
+/**
+ * @brief saveFrame
+ *
+ * Save a frame to the save directory.
+ *
+ * @param frame the frame to save
+ */
+void ImageSaver::saveFrame(const QVideoFrame &frame) {
+  if (!frame.isValid()) {
+    spdlog::warn("Invalid frame");
+    return;
+  }
+
+  const QImage image = frame.toImage();
+  const path file_path = save_dir / path(timestamp() + ".png");
+  bool is_saved = image.save(file_path.string().c_str());
+
+  if (is_saved) {
+    spdlog::info("Saved frame to {}", file_path.string());
+  } else {
+    spdlog::warn("Failed to save frame to {}", file_path.string());
+  }
+}
+
+/**
  * @brief Recorder
  *
  * Create a new recorder.
@@ -22,57 +76,24 @@ using path = std::filesystem::path;
  * @param parent a optional parent QObject
  */
 Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
-    : QObject(parent),
-      sink(sink),
-      directory(save_path),
-      subdirectory(save_path / timestamp()),
-      timer(parent),
-      elapsed(0),
-      duration(0) {
-  connect(&timer, &QTimer::timeout, this, &Recorder::save);
+    : QObject(parent), timer(parent), elapsed(0), duration(0) {
+
+  path dir = save_path / path(timestamp());
+  if (!mkdir(dir)) {
+    spdlog::warn("Failed to create the base directory {}", dir.string());
+  }
+
+  saver = std::make_unique<ImageSaver>(sink, dir);
+  saver->moveToThread(&worker);
+  connect(&worker, &QThread::finished, saver.get(), &QObject::deleteLater);
+  connect(&timer, &QTimer::timeout, saver.get(), &ImageSaver::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
-
-  if (!mkdir(directory)) {
-    spdlog::warn("Failed to create the base directory {}", directory.string());
-  }
+  worker.start();
 }
 
-/**
- * @brief TDOD
- */
-void Recorder::save() {
-  if (!mkdir(subdirectory)) {
-    spdlog::warn("Failed to create the subdirectory {}", subdirectory.string());
-    return;
-  }
-
-  if (sink) {
-    save_frame(sink->videoFrame());
-  } else {
-    spdlog::critical("QVideoSink is a nullptr.");
-  }
-}
-
-/**
- * @brief TDDO
- *
- * @param frame
- */
-void Recorder::save_frame(const QVideoFrame &frame) {
-  if (!frame.isValid()) {
-    spdlog::warn("Invalid frame");
-    return;
-  }
-
-  const QImage image = frame.toImage();
-  const path file_path = subdirectory / path(timestamp() + ".png");
-  bool is_saved = image.save(file_path.string().c_str());
-
-  if (is_saved) {
-    spdlog::info("Saved frame to {}", file_path.string());
-  } else {
-    spdlog::warn("Failed to save frame to {}", file_path.string());
-  }
+Recorder::~Recorder() {
+  worker.quit();
+  worker.wait();
 }
 
 /**

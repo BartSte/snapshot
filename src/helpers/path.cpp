@@ -13,7 +13,7 @@ bool mkdir(const std::filesystem::path &path) {
   if (std::filesystem::exists(path)) {
     return true;
   } else {
-    spdlog::warn("Creating directory {} to store frames.", path.string());
+    spdlog::info("Creating directory {} to store frames.", path.string());
     return std::filesystem::create_directories(path);
   }
 }

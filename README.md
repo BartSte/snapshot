@@ -278,6 +278,3 @@ more information.
       be done by setting a timer that counts the time since the last frame was
       received. If this time is greater than a certain threshold, the state
       should become searching.
-
-- [ ] The saving of the frames must be done in a separate thread, now the GUI
-      freezes when saving the frames.
