@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <qcameradevice.h>
 #include <qobject.h>
 #include <spdlog/spdlog.h>
@@ -16,6 +17,16 @@ const QString textFont = "Arial";
 const float constRatio = 0.8;
 const float textFontSize = 16;
 const float textOffset = 10;
+
+const std::map<VideoState, std::string> stateVsPixmap = {
+    {VideoState::Stop, ":/disconnected.png"},
+    {VideoState::Search, ":/searching.png"},
+    {VideoState::Start, ""}};
+
+const std::map<VideoState, std::string> stateVsText = {
+    {VideoState::Stop, "No camera available"},
+    {VideoState::Search, "Searching for camera..."},
+    {VideoState::Start, ""}};
 
 /**
  * @brief VideoScene::VideoScene
@@ -30,6 +41,34 @@ VideoScene::VideoScene(QObject *parent)
 }
 
 /**
+ * @brief update
+ *
+ * Update the all QGraphicsItems in the scene.
+ */
+void VideoScene::update() {
+  updatePixmap();
+  updateText();
+  updateVideo();
+}
+
+/**
+ * @brief VideoScene::updatePixmap
+ * Update the QGraphicsPixmapItem when called.
+ */
+void VideoScene::updatePixmap() {
+  std::string path;
+  if (video) {
+    path = stateVsPixmap.at(video->getState());
+  } else {
+    path = stateVsPixmap.at(VideoState::Stop);
+  }
+
+  setPixmap(path);
+  scalePixmap();
+  centerPixmap();
+}
+
+/**
  * @brief VideoScene::setPixmap
  *
  * @param path The path to the image.
@@ -39,15 +78,6 @@ void VideoScene::setPixmap(const std::string &path) {
   QString qpath = QString::fromStdString(path);
   QPixmap pixmap(qpath);
   pixmapItem.setPixmap(pixmap);
-}
-
-/**
- * @brief VideoScene::updatePixmap
- * Update the QGraphicsPixmapItem when called.
- */
-void VideoScene::updatePixmap() {
-  scalePixmap();
-  centerPixmap();
 }
 
 /**
@@ -84,6 +114,15 @@ void VideoScene::centerPixmap() {
 }
 
 /**
+ * @brief VideoScene::updateText
+ * Update the QGraphicsTextItem when called.
+ */
+void VideoScene::updateText() {
+  setText(stateVsText.at(video->getState()));
+  centerText();
+}
+
+/**
  * @brief VideoScene::setText
  *
  * @param text The text to be displayed.
@@ -96,16 +135,10 @@ void VideoScene::setText(const std::string &text) {
   textItem.setPlainText(qtext);
   textItem.setFont(font);
 }
-
-/**
- * @brief VideoScene::updateText
- * Update the QGraphicsTextItem when called.
- */
-void VideoScene::updateText() { centerText(); }
-
 /**
  * @brief VideoScene::positionText
- * Position the text below the QGraphicsPixmapItem, in the center of the scene.
+ * Position the text below the QGraphicsPixmapItem, in the center of the
+ * scene.
  */
 void VideoScene::centerText() {
   float scale = pixmapItem.scale();
@@ -172,15 +205,4 @@ void VideoScene::centerVideo() {
   float y = (sceneRect().height() - heightVideo) / 2;
 
   videoItem.setPos(x, y);
-}
-
-/**
- * @brief update
- *
- * Update the all QGraphicsItems in the scene.
- */
-void VideoScene::update() {
-  updatePixmap();
-  updateText();
-  updateVideo();
 }

@@ -9,6 +9,7 @@
 #include <video/connect.hpp>
 
 class VideoScene : public QGraphicsScene {
+
  private:
   std::shared_ptr<BaseVideo> video;
 

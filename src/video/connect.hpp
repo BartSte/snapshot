@@ -15,7 +15,16 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include "./video/state.hpp"
+enum class VideoState {
+  Stop = 0,
+  Search = 1,
+  Start = 2,
+};
+
+const std::map<VideoState, std::string> videoStateString = {
+    {VideoState::Stop, "Stop"},
+    {VideoState::Search, "Search"},
+    {VideoState::Start, "Start"}};
 
 class BaseVideo : public QObject {
   Q_OBJECT
@@ -23,28 +32,30 @@ class BaseVideo : public QObject {
  signals:
   void stateChanged();
 
- protected:
+ private:
   VideoState state;
-  QVideoSink sink;
-  explicit BaseVideo(QObject *parent = nullptr);
-  void setState(const VideoState &newState);
+  QVideoSink sink; // TODO: refactor
+  void setStart(const QVideoFrame frame);
 
  public:
+  explicit BaseVideo(QObject *parent = nullptr);
   VideoState getState() { return state; }
+  void setState(const VideoState &newState);
+  void setInternalVideoSink();
 
   virtual ~BaseVideo() = default;
   virtual void updateResolution() {}
+  virtual void start();
+  virtual void stop();
 
-  virtual void start() = 0;
-  virtual void stop() = 0;
   virtual QVideoSink *getVideoSink() = 0;
   virtual void setVideoSink(QVideoSink *sink) = 0;
 };
 
 class MediaPlayer : public BaseVideo {
- protected:
+
+ private:
   QMediaPlayer player;
-  void setState(const QMediaPlayer::PlaybackState &state);
 
  public:
   explicit MediaPlayer(const QUrl &url, QObject *parent = nullptr);
@@ -57,10 +68,9 @@ class MediaPlayer : public BaseVideo {
 };
 
 class Camera : public BaseVideo {
- protected:
+ private:
   QCamera camera;
   QMediaCaptureSession session;
-  void setState(bool is_active);
 
  public:
   explicit Camera(const QCameraDevice &device, QObject *parent = nullptr);
