@@ -48,15 +48,6 @@ void BaseVideo::setState(const VideoState &newState) {
 }
 
 /**
- * @brief Set the state to start.
- *
- * The state is set to Started when frames are received from the video source.
- */
-void BaseVideo::setStart(const QVideoFrame frame) {
-  setState(VideoState::Start);
-}
-
-/**
  * @brief Start the video.
  *
  * The state is set to Search until frames are received from the video source.
@@ -65,6 +56,16 @@ void BaseVideo::start() {
   setState(VideoState::Search);
   connect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
           &Camera::setStart);
+}
+
+/**
+ * @brief Set the state to start.
+ *
+ * The state is set to Started when frames are received from the video source.
+ * The `frame` parameter is not used.
+ */
+void BaseVideo::setStart(const QVideoFrame frame) {
+  setState(VideoState::Start);
 }
 
 /**
@@ -79,25 +80,11 @@ void BaseVideo::stop() {
 }
 
 /**
- * @brief setInternalVideoSink
+ * @brief TODO
  *
- * Set the internal video sink to the QVideoSink object.
+ * @return
  */
-void BaseVideo::setInternalVideoSink() { setVideoSink(&sink); }
-
-/**
- * @brief Constructor
- *
- * Used to create a MediaPlayer from a url.
- *
- * @param url The url of the stream.
- * @param parent The parent QObject. Default is nullptr.
- */
-MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
-    : BaseVideo(parent), player() {
-  player.setSource(url);
-  setInternalVideoSink();
-}
+QVideoSink *BaseVideo::getVideoSink() { return &sink; }
 
 /**
  * @brief Constructor
@@ -109,6 +96,44 @@ MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
  */
 MediaPlayer::MediaPlayer(const QString &path, QObject *parent)
     : MediaPlayer(QUrl::fromLocalFile(path), parent) {}
+
+/**
+ * @brief Constructor
+ *
+ * Used to create a MediaPlayer from a url. The video sink of BaseVideo is set
+ * to the video sink of the MediaPlayer. This is done to ensure that the video
+ * sink of the MediaPlayer is not a nullptr. It is possible that the video sink
+ * of the MediaPlayer will change, but the video sink of BaseVideo will not.
+ *
+ * @param url The url of the stream.
+ * @param parent The parent QObject. Default is nullptr.
+ */
+MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
+    : BaseVideo(parent), player() {
+  player.setSource(url);
+  setVideoSink(BaseVideo::getVideoSink());
+}
+
+/**
+ * @brief setVideoSink
+ *
+ * Adapter for QMediaPlayer::setVideoSink().
+ *
+ * @param sink a pointer to the QVideoSink.
+ */
+void MediaPlayer::setVideoSink(QVideoSink *sink_ptr) {
+  player.setVideoSink(sink_ptr);
+}
+
+/**
+ * @brief getVideoSink
+ *
+ * Returns the video sink of the MediaPlayer. This may be different from the
+ * video sink of BaseVideo.
+ *
+ * @return
+ */
+QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
 
 /**
  * @brief start
@@ -130,23 +155,14 @@ void MediaPlayer::stop() {
   player.stop();
 }
 
-QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
-
-/**
- * @brief setVideoSink
- *
- * Adapter for QMediaPlayer::setVideoSink().
- *
- * @param sink a pointer to the QVideoSink.
- */
-void MediaPlayer::setVideoSink(QVideoSink *sink_ptr) {
-  player.setVideoSink(sink_ptr);
-}
-
 /**
  * @brief constructor
  *
- * Connect the QCamera::activeChanged signal to the setState slot.
+ * Connect the camera to the QMediaCaptureSession. The video sink of BaseVideo
+ * is set to the video sink of the QMediaCaptureSession. This is done to ensure
+ * that the video sink of the QMediaCaptureSession is not a nullptr. It is
+ * possible that the video sink of the QMediaCaptureSession will change, but
+ * the video sink of BaseVideo will not.
  *
  * @param device The QCameraDevice to use.
  * @param parent The parent QObject. Default is nullptr.
@@ -155,21 +171,17 @@ Camera::Camera(const QCameraDevice &device, QObject *parent)
     : BaseVideo(), camera(), session() {
   camera.setCameraDevice(device);
   session.setCamera(&camera);
-  setInternalVideoSink();
-}
-
-void Camera::start() {
-  BaseVideo::start();
-  camera.start();
+  setVideoSink(BaseVideo::getVideoSink());
 }
 
 /**
- * @brief TODO
+ * @brief setVideoSink
+ *
+ * Adapter for QMediaCaptureSession::setVideoSink().
+ *
+ * @param sink A pointer to the QVideoSink.
  */
-void Camera::stop() {
-  BaseVideo::stop();
-  camera.stop();
-}
+void Camera::setVideoSink(QVideoSink *sink) { session.setVideoSink(sink); }
 
 /**
  * @brief getVideoSink
@@ -181,13 +193,24 @@ void Camera::stop() {
 QVideoSink *Camera::getVideoSink() { return session.videoSink(); }
 
 /**
- * @brief setVideoSink
+ * @brief start
  *
- * Adapter for QMediaCaptureSession::setVideoSink().
- *
- * @param sink A pointer to the QVideoSink.
+ * Wrapper for Camera::start().
  */
-void Camera::setVideoSink(QVideoSink *sink) { session.setVideoSink(sink); }
+void Camera::start() {
+  BaseVideo::start();
+  camera.start();
+}
+
+/**
+ * @brief stop
+ *
+ * Wrapper for Camera::stop().
+ */
+void Camera::stop() {
+  BaseVideo::stop();
+  camera.stop();
+}
 
 /**
  * @brief updateResolution

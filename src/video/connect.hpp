@@ -2,6 +2,7 @@
 
 #include <QVideoSink>
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
+#include <map>
 #include <memory>
 #include <optional>
 #include <qcamera.h>
@@ -32,23 +33,23 @@ class BaseVideo : public QObject {
  signals:
   void stateChanged();
 
+ private slots:
+  void setStart(const QVideoFrame frame);
+
  private:
   VideoState state;
-  QVideoSink sink; // TODO: refactor
-  void setStart(const QVideoFrame frame);
+  QVideoSink sink;
 
  public:
   explicit BaseVideo(QObject *parent = nullptr);
   VideoState getState() { return state; }
   void setState(const VideoState &newState);
-  void setInternalVideoSink();
 
   virtual ~BaseVideo() = default;
   virtual void updateResolution() {}
   virtual void start();
   virtual void stop();
-
-  virtual QVideoSink *getVideoSink() = 0;
+  virtual QVideoSink *getVideoSink();
   virtual void setVideoSink(QVideoSink *sink) = 0;
 };
 
