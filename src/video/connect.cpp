@@ -9,6 +9,7 @@
 #include <qmetaobject.h>
 #include <qobject.h>
 #include <qurl.h>
+#include <qvideoframe.h>
 #include <qvideosink.h>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -28,7 +29,7 @@ using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
  * @param parent The parent QObject. Default is nullptr.
  */
 BaseVideo::BaseVideo(QObject *parent)
-    : QObject(parent), sink(parent), state(VideoState::Stopped) {}
+    : QObject(parent), sink(parent), state(VideoState::Stop) {}
 
 /**
  * @brief setState
@@ -42,8 +43,47 @@ void BaseVideo::setState(const VideoState &newState) {
   if (state != newState) {
     state = newState;
     emit stateChanged();
+    spdlog::info("Video state changed to {}", videoStateString.at(state));
   }
 }
+
+/**
+ * @brief Set the state to start.
+ *
+ * The state is set to Started when frames are received from the video source.
+ */
+void BaseVideo::setStart(const QVideoFrame frame) {
+  setState(VideoState::Start);
+}
+
+/**
+ * @brief Start the video.
+ *
+ * The state is set to Search until frames are received from the video source.
+ */
+void BaseVideo::start() {
+  setState(VideoState::Search);
+  connect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
+          &Camera::setStart);
+}
+
+/**
+ * @brief Stop the video.
+ *
+ * The state is set to Stop and the video source is disconnected.
+ */
+void BaseVideo::stop() {
+  setState(VideoState::Stop);
+  disconnect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
+             &Camera::setStart);
+}
+
+/**
+ * @brief setInternalVideoSink
+ *
+ * Set the internal video sink to the QVideoSink object.
+ */
+void BaseVideo::setInternalVideoSink() { setVideoSink(&sink); }
 
 /**
  * @brief Constructor
@@ -55,10 +95,8 @@ void BaseVideo::setState(const VideoState &newState) {
  */
 MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
     : BaseVideo(parent), player() {
-  connect(&player, &QMediaPlayer::playbackStateChanged, this,
-          &MediaPlayer::setState);
   player.setSource(url);
-  setVideoSink(&sink);
+  setInternalVideoSink();
 }
 
 /**
@@ -77,14 +115,20 @@ MediaPlayer::MediaPlayer(const QString &path, QObject *parent)
  *
  * Wrapper for QMediaPlayer::play().
  */
-void MediaPlayer::start() { player.play(); }
+void MediaPlayer::start() {
+  BaseVideo::start();
+  player.play();
+}
 
 /**
  * @brief stop
  *
  * Wrapper for QMediaPlayer::stop().
  */
-void MediaPlayer::stop() { player.stop(); }
+void MediaPlayer::stop() {
+  BaseVideo::stop();
+  player.stop();
+}
 
 QVideoSink *MediaPlayer::getVideoSink() { return player.videoSink(); }
 
@@ -100,18 +144,6 @@ void MediaPlayer::setVideoSink(QVideoSink *sink_ptr) {
 }
 
 /**
- * @brief setState
- *
- * Convert the QMediaPlayer::PlaybackState to a VideoState and emit the
- * stateChanged signal if the state has changed.
- *
- * @param playerState The QMediaPlayer::PlaybackState.
- */
-void MediaPlayer::setState(const QMediaPlayer::PlaybackState &playerState) {
-  BaseVideo::setState(convertState(playerState));
-}
-
-/**
  * @brief constructor
  *
  * Connect the QCamera::activeChanged signal to the setState slot.
@@ -121,20 +153,31 @@ void MediaPlayer::setState(const QMediaPlayer::PlaybackState &playerState) {
  */
 Camera::Camera(const QCameraDevice &device, QObject *parent)
     : BaseVideo(), camera(), session() {
-  connect(&camera, &QCamera::activeChanged, this, &Camera::setState);
   camera.setCameraDevice(device);
   session.setCamera(&camera);
-  setVideoSink(&sink);
+  setInternalVideoSink();
 }
 
-void Camera::start() { camera.start(); }
-
-void Camera::stop() { camera.stop(); }
-
-void Camera::setState(bool active) {
-  BaseVideo::setState(convertState(active));
+void Camera::start() {
+  BaseVideo::start();
+  camera.start();
 }
 
+/**
+ * @brief TODO
+ */
+void Camera::stop() {
+  BaseVideo::stop();
+  camera.stop();
+}
+
+/**
+ * @brief getVideoSink
+ *
+ * Wrapper for QMediaCaptureSession::videoSink().
+ *
+ * @return A pointer to the QVideoSink.
+ */
 QVideoSink *Camera::getVideoSink() { return session.videoSink(); }
 
 /**

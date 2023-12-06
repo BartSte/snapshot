@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
         <file>disconnected.png</file>
+        <file>searching.png</file>
     </qresource>
 </RCC>

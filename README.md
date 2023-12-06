@@ -274,7 +274,7 @@ more information.
 
 # TODO:
 
-- [ ] Immediately opening of gui, do not wait till connected. Instead, show
-      connection status in gui (currently, it shows "No camera found" when
-      trying to connect to a camera).
-- [ ] When connection is lost, what happens? Display connection status
+- [ ] When connection is lost, I want the state to become searching. This can
+      be done by setting a timer that counts the time since the last frame was
+      received. If this time is greater than a certain threshold, the state
+      should become searching.

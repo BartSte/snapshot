@@ -50,8 +50,6 @@ add_library(
   src/video/find.hpp
   src/video/connect.cpp
   src/video/connect.hpp
-  src/video/state.cpp
-  src/video/state.hpp
   src/video/record.cpp
   src/video/record.hpp)
 target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
