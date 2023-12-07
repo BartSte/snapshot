@@ -125,7 +125,9 @@ void App::list() {
  */
 void App::connectVideo() {
   std::string id = settings.get<std::string>("camera");
-  auto optional = videoFactory(id);
+  std::string timeout = settings.get<std::string>("timeout");
+  auto optional = videoFactory(id, stringToSec(timeout));
+
   if (optional.has_value()) {
     video = std::move(optional.value());
     video->start();

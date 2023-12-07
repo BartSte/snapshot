@@ -274,7 +274,10 @@ more information.
 
 # TODO:
 
-- [ ] When connection is lost, I want the state to become searching. This can
-      be done by setting a timer that counts the time since the last frame was
-      received. If this time is greater than a certain threshold, the state
-      should become searching.
+- [ ] When the connection is lost, the app will set the state to stop after the
+      duration that is specified in the timeout. In the meantime, we do not
+      want a blank screen, instead, we want to display the last frame that was
+      received.
+
+- [ ] When the state becomes "stop" the recording should be stopped. This is
+      not the case at the moment.

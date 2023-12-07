@@ -1,5 +1,6 @@
 #include <QVideoSink>
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
+#include <chrono>
 #include <qcamera.h>
 #include <qcameradevice.h>
 #include <qlist.h>
@@ -18,6 +19,8 @@
 #include "./video/find.hpp"
 
 using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
+using ms = std::chrono::milliseconds;
+using sec = std::chrono::seconds;
 
 /**
  * @brief Constructor
@@ -28,8 +31,13 @@ using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
  *
  * @param parent The parent QObject. Default is nullptr.
  */
-BaseVideo::BaseVideo(QObject *parent)
-    : QObject(parent), sink(parent), state(VideoState::Stop) {}
+BaseVideo::BaseVideo(ms connectTimeout, QObject *parent)
+    : QObject(parent),
+      stopTimer(connectTimeout, this),
+      sink(this),
+      state(VideoState::Stop) {
+  connect(&stopTimer, &ResetTimer::timeout, this, &BaseVideo::stop);
+}
 
 /**
  * @brief setState
@@ -53,9 +61,12 @@ void BaseVideo::setState(const VideoState &newState) {
  * The state is set to Search until frames are received from the video source.
  */
 void BaseVideo::start() {
+  stopTimer.start();
   setState(VideoState::Search);
   connect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
           &Camera::setStart);
+  connect(getVideoSink(), &QVideoSink::videoFrameChanged, &stopTimer,
+          &ResetTimer::reset);
 }
 
 /**
@@ -94,8 +105,9 @@ QVideoSink *BaseVideo::getVideoSink() { return &sink; }
  * @param path The path to the file.
  * @param parent The parent QObject. Default is nullptr.
  */
-MediaPlayer::MediaPlayer(const QString &path, QObject *parent)
-    : MediaPlayer(QUrl::fromLocalFile(path), parent) {}
+MediaPlayer::MediaPlayer(const QString &path, ms connectTimeout,
+                         QObject *parent)
+    : MediaPlayer(QUrl::fromLocalFile(path), connectTimeout, parent) {}
 
 /**
  * @brief Constructor
@@ -108,8 +120,8 @@ MediaPlayer::MediaPlayer(const QString &path, QObject *parent)
  * @param url The url of the stream.
  * @param parent The parent QObject. Default is nullptr.
  */
-MediaPlayer::MediaPlayer(const QUrl &url, QObject *parent)
-    : BaseVideo(parent), player() {
+MediaPlayer::MediaPlayer(const QUrl &url, ms connectTimeout, QObject *parent)
+    : BaseVideo(connectTimeout, parent), player() {
   player.setSource(url);
   setVideoSink(BaseVideo::getVideoSink());
 }
@@ -167,7 +179,7 @@ void MediaPlayer::stop() {
  * @param device The QCameraDevice to use.
  * @param parent The parent QObject. Default is nullptr.
  */
-Camera::Camera(const QCameraDevice &device, QObject *parent)
+Camera::Camera(const QCameraDevice &device, ms connectTimeout, QObject *parent)
     : BaseVideo(), camera(), session() {
   camera.setCameraDevice(device);
   session.setCamera(&camera);
@@ -245,23 +257,23 @@ void Camera::updateResolution() {
  * @return A unique pointer to the Video object, or std::nullopt if the id is
  * not found.
  */
-VideoPtr videoFactory(const std::string &id) {
+VideoPtr videoFactory(const std::string &id, ms connectTimeout) {
   QUrl url = findStream(id);
   if (url.isValid()) {
     spdlog::info("MediaPlayer for a stream created.");
-    return std::make_unique<MediaPlayer>(url);
+    return std::make_unique<MediaPlayer>(url, connectTimeout);
   }
 
   QString path = findFile(id);
   if (!path.isNull()) {
     spdlog::info("MediaPlayer for a file created.");
-    return std::make_unique<MediaPlayer>(path);
+    return std::make_unique<MediaPlayer>(path, connectTimeout);
   }
 
   QCameraDevice device = findCamera(id);
   if (!device.isNull()) {
     spdlog::info("Camera created.");
-    return std::make_unique<Camera>(device);
+    return std::make_unique<Camera>(device, connectTimeout);
   } else {
     spdlog::warn("No camera found.");
     return std::nullopt;

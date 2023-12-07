@@ -1,5 +1,5 @@
-#include <filesystem>
 #include <cxxopts.hpp>
+#include <filesystem>
 #include <iostream>
 
 #include "./helpers/argparse.hpp"
@@ -41,6 +41,13 @@ ArgParse::ArgParse(int argc, char *argv[])
      "the current working directory. The folder will be created if it does not"
      " exist.",
      DEFAULT_STRING(path_save.string()))
+
+    ("timeout", "Amount of time to wait after stop trying to connect "
+     "to a camera. The following formats are supported: s, second, seconds, m, "
+     "minute, minutes, h, hour, hours, " "d, day, days. For example, 10s = 10 "
+     "seconds. If no unit is supplied, it is iterpreted as seconds. The "
+     "default is 30s.",
+      DEFAULT_STRING("30"))
 
     ("duration", "Duration of the recording in seconds. The following formats "
      "are supported: s, second, seconds, m, minute, minutes, h, hour, hours, "

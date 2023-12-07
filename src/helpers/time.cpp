@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <map>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <string>
 
@@ -150,4 +151,50 @@ std::string parseNumber(std::string str) {
   } else {
     throw std::invalid_argument("Invalid number: " + str);
   }
+}
+
+/**
+ * @brief ResetTimer::ResetTimer
+ *
+ * A timer that can be reset.
+ *
+ * @param parent
+ */
+ResetTimer::ResetTimer(ms duration, QObject *parent, ms interval)
+    : QTimer(parent), duration(duration) {
+  setInterval(interval);
+  connect(this, &QTimer::timeout, this, &ResetTimer::count);
+  connect(this, &QTimer::timeout, this, &ResetTimer::check);
+}
+
+/**
+ * @brief ResetTimer::count
+ *
+ * Increments the elapsed time by the timer's interval.
+ */
+void ResetTimer::count() { elapsed += intervalAsDuration(); }
+
+/**
+ * @brief ResetTimer::check
+ *
+ * Checks if the timer's elapsed time exceeds the duration. If it does, the
+ * timer is stopped and a ResetTimer::timeout signal is emitted.
+ */
+void ResetTimer::check() {
+  if (elapsed >= duration) {
+    spdlog::info("ResetTimer timed out with elapsed time {} ms and a timeout "
+                 "of {} ms",
+                 elapsed.count(), duration.count());
+    stop();
+    emit this->timeout();
+  }
+}
+
+/**
+ * @brief ResetTimer::reset
+ *
+ * Resets the timer's elapsed time to 0.
+ */
+void ResetTimer::reset() {
+  elapsed = ms(0);
 }

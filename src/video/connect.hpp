@@ -1,7 +1,9 @@
 #pragma once
 
+#include "helpers/time.hpp"
 #include <QVideoSink>
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
+#include <chrono>
 #include <map>
 #include <memory>
 #include <optional>
@@ -28,6 +30,9 @@ const std::map<VideoState, std::string> videoStateString = {
     {VideoState::Start, "Start"}};
 
 class BaseVideo : public QObject {
+  using ms = std::chrono::milliseconds;
+  using sec = std::chrono::seconds;
+
   Q_OBJECT
 
  signals:
@@ -39,9 +44,10 @@ class BaseVideo : public QObject {
  private:
   VideoState state;
   QVideoSink sink;
+  ResetTimer stopTimer;
 
  public:
-  explicit BaseVideo(QObject *parent = nullptr);
+  explicit BaseVideo(ms connectTimeout = sec(30), QObject *parent = nullptr);
   VideoState getState() { return state; }
   void setState(const VideoState &newState);
 
@@ -54,13 +60,17 @@ class BaseVideo : public QObject {
 };
 
 class MediaPlayer : public BaseVideo {
+  using ms = std::chrono::milliseconds;
+  using sec = std::chrono::seconds;
 
  private:
   QMediaPlayer player;
 
  public:
-  explicit MediaPlayer(const QUrl &url, QObject *parent = nullptr);
-  explicit MediaPlayer(const QString &url, QObject *parent = nullptr);
+  explicit MediaPlayer(const QUrl &url, ms connectTimeout = sec(30),
+                       QObject *parent = nullptr);
+  explicit MediaPlayer(const QString &path, ms connectTimeout = sec(30),
+                       QObject *parent = nullptr);
   ~MediaPlayer() override = default;
   void start() override;
   void stop() override;
@@ -69,12 +79,16 @@ class MediaPlayer : public BaseVideo {
 };
 
 class Camera : public BaseVideo {
+  using ms = std::chrono::milliseconds;
+  using sec = std::chrono::seconds;
+
  private:
   QCamera camera;
   QMediaCaptureSession session;
 
  public:
-  explicit Camera(const QCameraDevice &device, QObject *parent = nullptr);
+  explicit Camera(const QCameraDevice &device, ms connectTimeout = sec(30),
+                  QObject *parent = nullptr);
   ~Camera() override = default;
   void start() override;
   void stop() override;
@@ -83,4 +97,6 @@ class Camera : public BaseVideo {
   void updateResolution() override;
 };
 
-std::optional<std::unique_ptr<BaseVideo>> videoFactory(const std::string &id);
+std::optional<std::unique_ptr<BaseVideo>> videoFactory(
+    const std::string &id,
+    std::chrono::milliseconds connectTimeout = std::chrono::seconds(30));

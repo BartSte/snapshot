@@ -41,17 +41,12 @@ target_include_directories(
   helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
                     ${Boost_INCLUDE_DIRS}})
 target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only
-                      cxxopts::cxxopts)
+                      cxxopts::cxxopts Qt6::Widgets)
 
 # Video
 add_library(
-  video
-  src/video/find.cpp
-  src/video/find.hpp
-  src/video/connect.cpp
-  src/video/connect.hpp
-  src/video/record.cpp
-  src/video/record.hpp)
+  video src/video/find.cpp src/video/find.hpp src/video/connect.cpp
+        src/video/connect.hpp src/video/record.cpp src/video/record.hpp)
 target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
 target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
                       spdlog::spdlog_header_only)

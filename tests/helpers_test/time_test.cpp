@@ -1,8 +1,11 @@
 #include <chrono>
 #include <gtest/gtest.h>
 #include <helpers/time.hpp>
+#include <thread>
 #include <vector>
+#include <spdlog/spdlog.h>
 
+using ms = std::chrono::milliseconds;
 using sec = std::chrono::seconds;
 
 extern const std::string valid_units[12];
