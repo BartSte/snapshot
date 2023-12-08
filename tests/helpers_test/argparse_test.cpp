@@ -9,8 +9,8 @@
  * @brief Tests the ArgParse::parse() function.
  */
 TEST(argparseTest, parseTest) {
-  int argc = 9;
-  char *argv[9] = {const_cast<char *>("./test"),
+  int argc = 10;
+  char *argv[10] = {const_cast<char *>("./test"),
                    const_cast<char *>("--help"),
                    const_cast<char *>("--gui"),
                    const_cast<char *>("--list"),
@@ -18,7 +18,8 @@ TEST(argparseTest, parseTest) {
                    const_cast<char *>("--loglevel=DEBUG"),
                    const_cast<char *>("--pattern=[foo]"),
                    const_cast<char *>("--duration=10d"),
-                   const_cast<char *>("--interval=1hour")};
+                   const_cast<char *>("--interval=1hour"),
+                   const_cast<char *>("--timeout=10d")};
 
   ArgParse parser(argc, argv);
   cxxopts::ParseResult result = parser.parse();
@@ -31,4 +32,5 @@ TEST(argparseTest, parseTest) {
   EXPECT_EQ(result["pattern"].as<std::string>(), "[foo]");
   EXPECT_EQ(result["duration"].as<std::string>(), "10d");
   EXPECT_EQ(result["interval"].as<std::string>(), "1hour");
+  EXPECT_EQ(result["timeout"].as<std::string>(), "10d");
 }

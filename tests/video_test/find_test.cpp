@@ -1,10 +1,10 @@
 #include <boost/property_tree/ptree.hpp>
-#include <video/find.hpp>
 #include <gtest/gtest.h>
 #include <qcameradevice.h>
 #include <qlist.h>
 #include <qmediadevices.h>
 #include <spdlog/spdlog.h>
+#include <video/find.hpp>
 
 QList<QCameraDevice> getCameras() {
   QList<QCameraDevice> cameras;

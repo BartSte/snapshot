@@ -1,9 +1,11 @@
 #include <chrono>
 #include <gtest/gtest.h>
 #include <helpers/time.hpp>
+#include <qcoreapplication.h>
+#include <qthread.h>
+#include <spdlog/spdlog.h>
 #include <thread>
 #include <vector>
-#include <spdlog/spdlog.h>
 
 using ms = std::chrono::milliseconds;
 using sec = std::chrono::seconds;
@@ -121,4 +123,30 @@ TEST(timeTest, parseNumberInvalid) {
       FAIL();
     }
   }
+}
+
+TEST(timeTest, ResetTimerTest) {
+  ResetTimer timer(ms(100), ms(10));
+  bool called = false;
+  auto callback = [&called]() { called = true; };
+  timer.connect(&timer, &ResetTimer::timeout, callback);
+
+  timer.start();
+  ASSERT_EQ(timer.getElapsed().count(), ms(0).count());
+
+  std::this_thread::sleep_for(ms(10));
+  QCoreApplication::processEvents();
+  ASSERT_EQ(timer.getElapsed().count(), ms(10).count());
+
+  timer.reset();
+  ASSERT_EQ(timer.getElapsed().count(), ms(0).count());
+
+  int cnt = 0;
+  while (cnt < 10) {
+    std::this_thread::sleep_for(ms(10));
+    QCoreApplication::processEvents();
+    ++cnt;
+  }
+  ASSERT_EQ(timer.getElapsed().count(), ms(100).count());
+  ASSERT_TRUE(called);
 }
