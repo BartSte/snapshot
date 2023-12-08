@@ -1,5 +1,3 @@
-#include <QVideoSink>
-#include <QtMultimediaWidgets/qgraphicsvideoitem.h>
 #include <chrono>
 #include <qcamera.h>
 #include <qcameradevice.h>
@@ -33,7 +31,7 @@ using sec = std::chrono::seconds;
  */
 BaseVideo::BaseVideo(ms connectTimeout, QObject *parent)
     : QObject(parent),
-      stopTimer(connectTimeout, this),
+      stopTimer(connectTimeout),
       sink(this),
       state(VideoState::Stop) {
   connect(&stopTimer, &ResetTimer::timeout, this, &BaseVideo::stop);

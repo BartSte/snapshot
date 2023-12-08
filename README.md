@@ -281,3 +281,8 @@ more information.
 
 - [ ] When the state becomes "stop" the recording should be stopped. This is
       not the case at the moment.
+
+- [ ] Add a check that ensures that the disk of a user can not be filled up
+      excessively. Ideas: max number of files, or max disk usage per session.
+
+- [ ] Add tests for all libs.

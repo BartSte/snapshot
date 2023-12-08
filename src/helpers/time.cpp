@@ -160,8 +160,8 @@ std::string parseNumber(std::string str) {
  *
  * @param parent
  */
-ResetTimer::ResetTimer(ms duration, QObject *parent, ms interval)
-    : QTimer(parent), duration(duration) {
+ResetTimer::ResetTimer(ms duration, ms interval, QObject *parent)
+    : QTimer(parent), duration(duration), elapsed(ms(0)) {
   setInterval(interval);
   connect(this, &QTimer::timeout, this, &ResetTimer::count);
   connect(this, &QTimer::timeout, this, &ResetTimer::check);

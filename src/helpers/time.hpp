@@ -21,8 +21,8 @@ class ResetTimer : public QTimer {
   Q_OBJECT
 
  public:
-  explicit ResetTimer(ms duration, QObject *parent = nullptr,
-                      ms interval = ms(1000));
+  explicit ResetTimer(ms duration, ms interval = ms(1000),
+                      QObject *parent = nullptr);
   void reset();
   ms getElapsed() { return elapsed; }
 

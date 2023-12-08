@@ -33,15 +33,9 @@ class BaseVideo : public QObject {
   using ms = std::chrono::milliseconds;
   using sec = std::chrono::seconds;
 
+ private:
   Q_OBJECT
 
- signals:
-  void stateChanged();
-
- private slots:
-  void setStart(const QVideoFrame frame);
-
- private:
   VideoState state;
   QVideoSink sink;
   ResetTimer stopTimer;
@@ -57,6 +51,12 @@ class BaseVideo : public QObject {
   virtual void stop();
   virtual QVideoSink *getVideoSink();
   virtual void setVideoSink(QVideoSink *sink) = 0;
+
+ signals:
+  void stateChanged();
+
+ private slots:
+  void setStart(const QVideoFrame frame);
 };
 
 class MediaPlayer : public BaseVideo {

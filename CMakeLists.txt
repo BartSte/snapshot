@@ -31,8 +31,6 @@ add_library(
   src/helpers/argparse.hpp
   src/helpers/config.cpp
   src/helpers/config.hpp
-  src/helpers/logger.cpp
-  src/helpers/logger.hpp
   src/helpers/time.cpp
   src/helpers/time.hpp
   src/helpers/path.cpp

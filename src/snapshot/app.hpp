@@ -7,10 +7,9 @@
 #include <helpers/argparse.hpp>
 #include <memory>
 #include <qapplication.h>
-#include <qvideosink.h>
+#include <string>
+#include <video/connect.hpp>
 #include <video/record.hpp>
-
-#include "video/connect.hpp"
 
 class App : public QApplication {
 
@@ -20,6 +19,7 @@ class App : public QApplication {
  public:
   App(int argc, char *argv[]);
   ptree parseConfig(const cxxopts::ParseResult &args);
+  void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
   void enableDebugMode();
   void list();
@@ -39,6 +39,4 @@ class App : public QApplication {
 
   ArgParse parser;
   ptree settings;
-
-  void makeVideoSink();
 };
