@@ -21,9 +21,9 @@ using path = std::filesystem::path;
 using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
 
-const path App::ROOT = program_location();
-const path App::PATH_CONFIG = App::ROOT / "static/config.json";
-const path App::DEBUG_VIDEO = App::ROOT / "static/sample.mp4";
+const path App::root = program_location();
+const path App::path_config = App::root / "static/config.json";
+const path App::debug_video = App::root / "static/sample.mp4";
 
 /**
  * @brief Constructor
@@ -69,7 +69,7 @@ void App::setUpLogger(std::string level, std::string pattern) {
  * @return The config stored in a boost::property_tree::ptree
  */
 ptree App::parseConfig(const cxxopts::ParseResult &args) {
-  const std::string path_default = App::PATH_CONFIG.string();
+  const std::string path_default = App::path_config.string();
   const std::string path_user = args["config"].as<std::string>();
 
   ptree config = config::parseUserDefault(path_user, path_default);
@@ -117,7 +117,7 @@ bool App::printHelp() {
 void App::enableDebugMode() {
   if (settings.get<bool>("debug")) {
     settings.put("gui", true);
-    settings.put("camera", DEBUG_VIDEO.string());
+    settings.put("camera", debug_video.string());
   }
 }
 

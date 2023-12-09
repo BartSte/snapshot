@@ -4,7 +4,7 @@
 #include <helpers/path.hpp>
 #include <qcoreapplication.h>
 
-extern const std::filesystem::path ROOT = program_location();
+extern const std::filesystem::path root = program_location();
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

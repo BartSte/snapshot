@@ -74,7 +74,9 @@ void BaseVideo::start() {
  * The `frame` parameter is not used.
  */
 void BaseVideo::setStart(const QVideoFrame frame) {
-  setState(VideoState::Start);
+  if (frame.isValid()) {
+    setState(VideoState::Start);
+  }
 }
 
 /**
@@ -83,9 +85,9 @@ void BaseVideo::setStart(const QVideoFrame frame) {
  * The state is set to Stop and the video source is disconnected.
  */
 void BaseVideo::stop() {
-  setState(VideoState::Stop);
   disconnect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
              &Camera::setStart);
+  setState(VideoState::Stop);
 }
 
 /**
@@ -161,8 +163,8 @@ void MediaPlayer::start() {
  * Wrapper for QMediaPlayer::stop().
  */
 void MediaPlayer::stop() {
-  BaseVideo::stop();
   player.stop();
+  BaseVideo::stop();
 }
 
 /**

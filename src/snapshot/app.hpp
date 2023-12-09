@@ -29,9 +29,9 @@ class App : public QApplication {
   int run();
 
  private:
-  static const path ROOT;
-  static const path PATH_CONFIG;
-  static const path DEBUG_VIDEO;
+  static const path root;
+  static const path path_config;
+  static const path debug_video;
 
   std::unique_ptr<Recorder> recorder;
   std::shared_ptr<BaseVideo> video;

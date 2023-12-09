@@ -89,6 +89,7 @@ add_executable(
   resources/resources.qrc
   tests/test_video/test_find.cpp
   tests/test_video/test_connect.cpp
+  tests/test_video/test_record.cpp
   tests/test_helpers/test_argparse.cpp
   tests/test_helpers/test_config.cpp
   tests/test_helpers/test_time.cpp)
