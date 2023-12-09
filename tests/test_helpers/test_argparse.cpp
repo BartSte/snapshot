@@ -8,7 +8,7 @@
 /**
  * @brief Tests the ArgParse::parse() function.
  */
-TEST(argparseTest, parseTest) {
+TEST(testArgparse, testParse) {
   int argc = 10;
   char *argv[10] = {const_cast<char *>("./test"),
                    const_cast<char *>("--help"),

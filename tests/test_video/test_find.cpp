@@ -19,7 +19,7 @@ QList<QCameraDevice> getCameras() {
  * @brief Tests the listCameras function.
  *
  */
-TEST(findTest, listCameras) {
+TEST(testFind, listCameras) {
   QList<QCameraDevice> cameras = getCameras();
   std::string actual = listCameras(cameras);
   std::string expected = "Index | Name | ID | Is Default | \n"
@@ -28,13 +28,13 @@ TEST(findTest, listCameras) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(findTest, findCameraEmpty) {
+TEST(testFind, findCameraEmpty) {
   std::string name = "";
   QCameraDevice camera = findCamera(name, QList<QCameraDevice>());
   ASSERT_EQ(camera.description().toStdString(), "");
 }
 
-TEST(findTest, findCameraDefault) {
+TEST(testFind, findCameraDefault) {
   std::string name = "default";
   QCameraDevice defaultCamera = QMediaDevices::defaultVideoInput();
   QList<QCameraDevice> cameras = getCameras();
@@ -46,7 +46,7 @@ TEST(findTest, findCameraDefault) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(findTest, findCameraNonDefault) {
+TEST(testFind, findCameraNonDefault) {
   std::string name = "non-default";
   QList<QCameraDevice> cameras = getCameras();
 
@@ -58,7 +58,7 @@ TEST(findTest, findCameraNonDefault) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(findTest, findStream) {
+TEST(testFind, findStream) {
   QUrl stream;
   std::string name;
 

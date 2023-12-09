@@ -13,7 +13,7 @@ using sec = std::chrono::seconds;
 extern const std::string valid_units[12];
 extern std::map<char, std::chrono::duration<int64_t>> unit_vs_multiplier;
 
-TEST(timeTest, stringToSec) {
+TEST(testTime, stringToSec) {
   std::chrono::duration<int64_t> multiplier;
   std::string strings[] = {"1", " 1 ", "001"};
   for (auto unit : valid_units) {
@@ -24,7 +24,7 @@ TEST(timeTest, stringToSec) {
   }
 }
 
-TEST(timeTest, stringToSecNoUnit) {
+TEST(testTime, stringToSecNoUnit) {
   std::string strings[] = {"1", " 1 ", "123", "001"};
   for (std::string str : strings) {
     sec actual = stringToSec(str);
@@ -32,7 +32,7 @@ TEST(timeTest, stringToSecNoUnit) {
   }
 }
 
-TEST(timeTest, stringToSecEmptyString) {
+TEST(testTime, stringToSecEmptyString) {
   try {
     stringToSec("");
     FAIL();
@@ -43,7 +43,7 @@ TEST(timeTest, stringToSecEmptyString) {
   }
 }
 
-TEST(timeTest, stringToSecInvalidString) {
+TEST(testTime, stringToSecInvalidString) {
   std::string strings[] = {"a", "1a", "a1", "1dayss"};
   for (auto str : strings) {
     try {
@@ -57,7 +57,7 @@ TEST(timeTest, stringToSecInvalidString) {
   }
 }
 
-TEST(timeTest, stringToSecDecimals) {
+TEST(testTime, stringToSecDecimals) {
   std::string strings[] = {"1.2", " 1.2 ", "001.2"};
   for (auto unit : valid_units) {
     for (auto str : strings) {
@@ -81,14 +81,14 @@ void assertWithAllUnits(std::string number) {
   }
 }
 
-TEST(timeTest, parseUnitValid) {
+TEST(testTime, parseUnitValid) {
   std::string numbers[] = {"1", "123"};
   for (auto number : numbers) {
     assertWithAllUnits(number);
   }
 }
 
-TEST(timeTest, parseUnitInvalid) {
+TEST(testTime, parseUnitInvalid) {
   std::string numbers[] = {"a", "1a", "a1", "1dayss"};
   for (auto number : numbers) {
     try {
@@ -102,7 +102,7 @@ TEST(timeTest, parseUnitInvalid) {
   }
 }
 
-TEST(timeTest, parseNumberValid) {
+TEST(testTime, parseNumberValid) {
   std::string strings[] = {"1s", "2m", "3hours", "4days", "5abcd", "1.2h"};
   std::string expected[] = {"1", "2", "3", "4", "5", "1.2"};
   for (int i = 0; i < 5; i++) {
@@ -111,7 +111,7 @@ TEST(timeTest, parseNumberValid) {
   }
 }
 
-TEST(timeTest, parseNumberInvalid) {
+TEST(testTime, parseNumberInvalid) {
   std::string strings[] = {"", "s", "m", "hours", "days", "abcd"};
   for (auto str : strings) {
     try {
@@ -125,7 +125,7 @@ TEST(timeTest, parseNumberInvalid) {
   }
 }
 
-TEST(timeTest, ResetTimerTest) {
+TEST(testTime, testResetTimer) {
   ResetTimer timer(ms(100), ms(10));
   bool called = false;
   auto callback = [&called]() { called = true; };

@@ -15,7 +15,7 @@ extern const path ROOT;
 /**
  * @brief Tests the parseConfig function.
  */
-TEST(configTest, parseConfig) {
+TEST(testConfig, parseConfig) {
   path path = ROOT / "static" / "config_test.json";
   ptree config = config::parse(path.string());
 
@@ -29,7 +29,7 @@ TEST(configTest, parseConfig) {
 /**
  * @brief Tests the merge function.
  */
-TEST(configTest, merge) {
+TEST(testConfig, merge) {
   // makeg ptree with 1 key value pair
   ptree user;
   ptree pconfig;
@@ -47,7 +47,7 @@ TEST(configTest, merge) {
 /**
  * @brief The config_user_test should overwrite the config_test settings.
  */
-TEST(configTest, parseConfigs) {
+TEST(testConfig, parseConfigs) {
   path path_user = ROOT / "static" / "config_user_test.json";
   path path_default = ROOT / "static" / "config_test.json";
 
@@ -61,7 +61,7 @@ TEST(configTest, parseConfigs) {
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }
 
-TEST(configTest, parseConfigsTestIncomplete) {
+TEST(testConfig, parseConfigsTestIncomplete) {
   path path_user = ROOT / "static" / "config_user_incomplete_test.json";
   path path_default = ROOT / "static" / "config_test.json";
 

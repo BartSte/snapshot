@@ -19,7 +19,7 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 find_package(cxxopts REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Test)
 
 # Add directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -87,8 +87,16 @@ add_executable(
   tests/main.cpp
   tests/
   resources/resources.qrc
-  tests/video_test/find_test.cpp
-  tests/helpers_test/argparse_test.cpp
-  tests/helpers_test/config_test.cpp
-  tests/helpers_test/time_test.cpp)
-target_link_libraries(tests gtest gmock video gui helpers)
+  tests/test_video/test_find.cpp
+  tests/test_video/test_connect.cpp
+  tests/test_helpers/test_argparse.cpp
+  tests/test_helpers/test_config.cpp
+  tests/test_helpers/test_time.cpp)
+target_link_libraries(
+  tests
+  gtest
+  gmock
+  video
+  gui
+  helpers
+  Qt6::Test)
