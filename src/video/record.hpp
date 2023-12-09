@@ -14,6 +14,11 @@
 
 #include "video/connect.hpp"
 
+enum class RecorderState {
+  Stop = 0,
+  Start = 1,
+};
+
 class ImageSaver : public QObject {
 
   using path = std::filesystem::path;
@@ -45,6 +50,7 @@ class Recorder : public QObject {
   ms elapsed;
   ms duration;
   std::unique_ptr<ImageSaver> saver;
+  RecorderState state;
   void stopAfterDuration();
   bool isValidInterval(ms interval, ms min_interval);
   void applyDuration(ms duration);
@@ -54,4 +60,6 @@ class Recorder : public QObject {
   ~Recorder();
   void start(ms interval = ms(0), ms duration = ms(0),
              ms min_interval = ms(1000));
+  void stop();
+  RecorderState getState();
 };
