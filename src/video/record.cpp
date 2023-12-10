@@ -76,17 +76,18 @@ void ImageSaver::saveFrame(const QVideoFrame &frame) {
  * @param parent a optional parent QObject
  */
 Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
-    : QObject(parent), timer(parent), elapsed(0), duration(0) {
-
-  path dir = save_path / path(timestamp());
-  if (!mkdir(dir)) {
-    spdlog::warn("Failed to create the base directory {}", dir.string());
+    : QObject(parent),
+      timer(parent),
+      directory(save_path / path(timestamp())),
+      saver(sink, directory),
+      elapsed(0),
+      duration(0) {
+  if (!mkdir(directory)) {
+    spdlog::warn("Failed to create the base directory {}", directory.string());
   }
 
-  saver = std::make_unique<ImageSaver>(sink, dir);
-  saver->moveToThread(&worker);
-  connect(&worker, &QThread::finished, saver.get(), &QObject::deleteLater);
-  connect(&timer, &QTimer::timeout, saver.get(), &ImageSaver::save);
+  saver.moveToThread(&worker);
+  connect(&timer, &QTimer::timeout, &saver, &ImageSaver::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
   worker.start();
 }
@@ -124,6 +125,7 @@ void Recorder::start(ms interval, ms duration, ms min_interval) {
   if (!isValidInterval(interval, min_interval)) {
     return;
   }
+  elapsed = ms(0);
   this->duration = duration;
   timer.start(interval);
   state = RecorderState::Start;

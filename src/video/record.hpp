@@ -47,9 +47,10 @@ class Recorder : public QObject {
 
  private:
   QTimer timer;
+  path directory;
+  ImageSaver saver;
   ms elapsed;
   ms duration;
-  std::unique_ptr<ImageSaver> saver;
   RecorderState state;
   void stopAfterDuration();
   bool isValidInterval(ms interval, ms min_interval);
