@@ -3,7 +3,6 @@
 #include <QTest>
 #include <gtest/gtest.h>
 #include <helpers/path.hpp>
-#include <qcoreapplication.h>
 #include <qvideosink.h>
 
 using path = std::filesystem::path;

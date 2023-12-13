@@ -18,11 +18,12 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 # Find packages
 find_package(cxxopts REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Test)
 
 # Add directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # Helpers
 add_library(
@@ -35,41 +36,40 @@ add_library(
   src/helpers/time.hpp
   src/helpers/path.cpp
   src/helpers/path.hpp)
-target_include_directories(
-  helpers INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
-                    ${Boost_INCLUDE_DIRS}})
-target_link_libraries(helpers ${Boost_LIBRARIES} spdlog::spdlog_header_only
-                      cxxopts::cxxopts Qt6::Widgets)
+target_link_libraries(helpers spdlog::spdlog_header_only Qt6::Widgets
+                      Boost::filesystem)
 
 # Video
 add_library(
   video src/video/find.cpp src/video/find.hpp src/video/connect.cpp
         src/video/connect.hpp src/video/record.cpp src/video/record.hpp)
-target_include_directories(video INTERFACE ${Boost_INCLUDE_DIRS}})
-target_link_libraries(video Qt6::Widgets Qt6::Multimedia ${Boost_LIBRARIES}
-                      spdlog::spdlog_header_only)
+target_link_libraries(video helpers spdlog::spdlog_header_only Qt6::Widgets
+                      Qt6::Multimedia)
 
 # GUI
-add_library(gui src/gui/mainwindow.cpp src/gui/mainwindow.ui
-                src/gui/videoscene.cpp src/gui/videoscene.hpp)
+add_library(
+  gui src/gui/mainwindow.cpp src/gui/mainwindow.ui src/gui/videoscene.cpp
+      src/gui/videoscene.hpp)
 target_include_directories(
-  gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include
-                ${Boost_INCLUDE_DIRS}})
+  gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include)
 target_link_libraries(
   gui
   video
+  helpers
+  spdlog::spdlog_header_only
   Qt6::Widgets
   Qt6::Multimedia
-  Qt6::MultimediaWidgets
-  ${Boost_LIBRARIES}
-  spdlog::spdlog_header_only)
+  Qt6::MultimediaWidgets)
 
-# Executable
+# Snapshot
 file(COPY ${CMAKE_SOURCE_DIR}/src/static
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_executable(snapshot src/main.cpp src/snapshot/app.cpp src/snapshot/app.hpp
-                        resources/resources.qrc)
-target_link_libraries(snapshot gui helpers)
+add_library(app src/app/app.cpp src/app/app.hpp)
+target_link_libraries(app gui video helpers)
+
+# Executable
+add_executable(snapshot src/main.cpp resources/resources.qrc)
+target_link_libraries(snapshot app)
 
 # Tests
 file(COPY ${CMAKE_SOURCE_DIR}/tests/static
@@ -85,8 +85,7 @@ FetchContent_MakeAvailable(googletest)
 add_executable(
   tests
   tests/main.cpp
-  tests/
-  resources/resources.qrc
+  tests/test_app/test_app.cpp
   tests/test_video/test_find.cpp
   tests/test_video/test_connect.cpp
   tests/test_video/test_record.cpp
@@ -95,9 +94,7 @@ add_executable(
   tests/test_helpers/test_time.cpp)
 target_link_libraries(
   tests
+  app
   gtest
   gmock
-  video
-  gui
-  helpers
   Qt6::Test)

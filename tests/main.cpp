@@ -1,4 +1,3 @@
-#include <boost/dll.hpp>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <helpers/path.hpp>

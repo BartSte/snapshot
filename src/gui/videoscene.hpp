@@ -37,5 +37,4 @@ class VideoScene : public QGraphicsScene {
   void setText(const std::string &text);
   void setVideo(std::shared_ptr<BaseVideo> video_);
   void update();
-  void print(const QVideoFrame &frame) { spdlog::info("Test"); }
 };

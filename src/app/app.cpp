@@ -89,11 +89,11 @@ int App::run() {
   if (printHelp()) {
     return 0;
   }
-  enableDebugMode();
+  debug();
   list();
-  connectVideo();
-  showGui();
-  startRecorder();
+  connect();
+  show();
+  record();
   return exec();
 }
 
@@ -114,7 +114,7 @@ bool App::printHelp() {
  * If the debug flag is set, enable the gui and set the camera to the debug
  * video.
  */
-void App::enableDebugMode() {
+void App::debug() {
   if (settings.get<bool>("debug")) {
     settings.put("gui", true);
     settings.put("camera", debug_video.string());
@@ -140,7 +140,7 @@ void App::list() {
  *
  * Connect to the camera specified in the config file, if it is found.
  */
-void App::connectVideo() {
+void App::connect() {
   std::string id = settings.get<std::string>("camera");
   std::string timeout = settings.get<std::string>("timeout");
   auto optional = videoFactory(id, stringToSec(timeout));
@@ -160,7 +160,7 @@ void App::connectVideo() {
  *
  * @return exit code
  */
-void App::showGui() {
+void App::show() {
   if (!settings.get<bool>("gui")) {
     return;
   }
@@ -179,7 +179,7 @@ void App::showGui() {
  *
  * @return exit code
  */
-void App::startRecorder() {
+void App::record() {
   if (!settings.get<bool>("record")) {
     return;
   }

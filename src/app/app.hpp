@@ -18,14 +18,6 @@ class App : public QApplication {
 
  public:
   App(int argc, char *argv[]);
-  ptree parseConfig(const cxxopts::ParseResult &args);
-  void setUpLogger(std::string level, std::string pattern);
-  bool printHelp();
-  void enableDebugMode();
-  void list();
-  void connectVideo();
-  void startRecorder();
-  void showGui();
   int run();
 
  private:
@@ -33,10 +25,18 @@ class App : public QApplication {
   static const path path_config;
   static const path debug_video;
 
+  ArgParse parser;
+  ptree settings;
   std::unique_ptr<Recorder> recorder;
   std::shared_ptr<BaseVideo> video;
   std::unique_ptr<MainWindow> window;
 
-  ArgParse parser;
-  ptree settings;
+  ptree parseConfig(const cxxopts::ParseResult &args);
+  void setUpLogger(std::string level, std::string pattern);
+  bool printHelp();
+  void debug();
+  void list();
+  void connect();
+  void record();
+  void show();
 };
