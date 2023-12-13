@@ -23,11 +23,16 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Test)
 
 # Add directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/tests)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Helpers
 add_library(
   helpers
+  src/helpers/argv.cpp
+  src/helpers/argv.hpp
+  src/helpers/cout_redirect.cpp
+  src/helpers/cout_redirect.hpp
   src/helpers/argparse.cpp
   src/helpers/argparse.hpp
   src/helpers/config.cpp
@@ -47,9 +52,8 @@ target_link_libraries(video helpers spdlog::spdlog_header_only Qt6::Widgets
                       Qt6::Multimedia)
 
 # GUI
-add_library(
-  gui src/gui/mainwindow.cpp src/gui/mainwindow.ui src/gui/videoscene.cpp
-      src/gui/videoscene.hpp)
+add_library(gui src/gui/mainwindow.cpp src/gui/mainwindow.ui
+                src/gui/videoscene.cpp src/gui/videoscene.hpp)
 target_include_directories(
   gui INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/gui_autogen/include)
 target_link_libraries(
@@ -92,9 +96,4 @@ add_executable(
   tests/test_helpers/test_argparse.cpp
   tests/test_helpers/test_config.cpp
   tests/test_helpers/test_time.cpp)
-target_link_libraries(
-  tests
-  app
-  gtest
-  gmock
-  Qt6::Test)
+target_link_libraries(tests app gtest gmock Qt6::Test)
