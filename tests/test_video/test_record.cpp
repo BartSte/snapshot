@@ -18,8 +18,14 @@ class TestRecorder : public QObject {
   Q_OBJECT
   path tmp_dir;
   QString debug_video_qstr;
+  std::unique_ptr<QApplication> app;
 
  private slots:
+
+  void initTestCase() {
+    int argc = 0;
+    app = std::make_unique<QApplication>(argc, nullptr);
+  }
 
   void init() {
     debug_video_qstr = QString::fromStdString(debug_video.string());

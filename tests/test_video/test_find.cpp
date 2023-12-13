@@ -1,5 +1,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <gtest/gtest.h>
+#include <qapplication.h>
 #include <qcameradevice.h>
 #include <qlist.h>
 #include <qmediadevices.h>
@@ -35,6 +36,8 @@ TEST(testFind, findCameraEmpty) {
 }
 
 TEST(testFind, findCameraDefault) {
+  int argc = 0;
+  QApplication app(argc, nullptr);
   std::string name = "default";
   QCameraDevice defaultCamera = QMediaDevices::defaultVideoInput();
   QList<QCameraDevice> cameras = getCameras();

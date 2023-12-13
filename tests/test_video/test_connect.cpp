@@ -3,6 +3,7 @@
 #include <chrono>
 #include <filesystem>
 #include <gtest/gtest.h>
+#include <qapplication.h>
 #include <video/connect.hpp>
 
 using ms = std::chrono::milliseconds;
@@ -12,9 +13,17 @@ extern const std::filesystem::path root;
 const std::filesystem::path debug_video = root / "static" / "sample.mp4";
 
 class TestMediaPlayer : public QObject {
+
+ private:
   Q_OBJECT
+  std::unique_ptr<QApplication> app;
 
  private slots:
+
+  void initTestCase() {
+    int argc = 0;
+    app = std::make_unique<QApplication>(argc, nullptr);
+  }
 
   /**
    * @brief Tests the start function.
@@ -35,9 +44,9 @@ class TestMediaPlayer : public QObject {
     /**
      * @brief Tests the timeout function.
      *
-     * A MediaPlayer is created with a non-existing file. The timeout is set to
-     * 1000ms. The player should be in the Search state for 1000ms and then go
-     * to the Stop state.
+     * A MediaPlayer is created with a non-existing file. The timeout is set
+     * to 1000ms. The player should be in the Search state for 1000ms and then
+     * go to the Stop state.
      */
     player.stop();
     QTest::qWait(250);

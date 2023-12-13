@@ -1,7 +1,8 @@
 #include <chrono>
 #include <gtest/gtest.h>
+#include <helpers/argv.hpp>
 #include <helpers/time.hpp>
-#include <qcoreapplication.h>
+#include <qapplication.h>
 #include <qthread.h>
 #include <spdlog/spdlog.h>
 #include <thread>
@@ -126,6 +127,9 @@ TEST(testTime, parseNumberInvalid) {
 }
 
 TEST(testTime, testResetTimer) {
+  int argc = 1;
+  Argv argv({"test"});
+  QApplication app(argc, argv.get());
   ResetTimer timer(ms(100), ms(10));
   bool called = false;
   auto callback = [&called]() { called = true; };
