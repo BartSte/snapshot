@@ -6,12 +6,13 @@
 class Argv {
 
  private:
-  const int argc;
+  int argc;
   char **argv;
 
  public:
   explicit Argv(std::vector<std::string> vec);
   ~Argv();
-  int size();
+  int getArgc();
   char **get();
+  void append(std::string str);
 };

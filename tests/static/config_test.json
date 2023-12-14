@@ -7,6 +7,7 @@
     "camera": "default",
     "loglevel": "info",
     "pattern": "pattern",
+    "timeout": "30",
     "duration": "0",
     "interval": "0",
     "folder": "snapshot"

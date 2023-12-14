@@ -94,7 +94,11 @@ int App::run() {
   connect();
   show();
   record();
-  return exec();
+  if (window || recorder) {
+    return exec();
+  } else {
+    return 0;
+  }
 }
 
 /**

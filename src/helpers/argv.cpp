@@ -33,6 +33,27 @@ Argv::~Argv() {
   delete[] argv;
 }
 
-int Argv::size() { return argc; }
+/**
+ * @brief Append a string to the array.
+ *
+ * @param str String to append.
+ * @return char** The new array.
+ */
+void Argv::append(std::string str) {
+  ++argc;
+
+  char **new_argv = new char *[argc + 1];
+  for (int i = 0; i < argc - 1; i++) {
+    new_argv[i] = argv[i];
+  }
+  new_argv[argc - 1] = new char[str.size() + 1];
+  snprintf(new_argv[argc - 1], str.size() + 1, "%s", str.c_str());
+  new_argv[argc] = nullptr;
+
+  delete[] argv;
+  argv = new_argv;
+}
+
+int Argv::getArgc() { return argc; }
 
 char **Argv::get() { return argv; }
