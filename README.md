@@ -285,4 +285,7 @@ more information.
 - [ ] Add a check that ensures that the disk of a user can not be filled up
       excessively. Ideas: max number of files, or max disk usage per session.
 
-- [ ] Add tests for all libs.
+- [ ] The TestMediaPlayer fails. I think it restarts it self after being
+stopped? Is this because it recieved a frame and turned to Start agagin?
+
+- [ ] The redirectstdout class screws up the logging. It should be fixed.

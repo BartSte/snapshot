@@ -41,18 +41,18 @@ class TestMediaPlayer : public QObject {
     QTest::qWait(250);
     QCOMPARE(player.getState(), VideoState::Start);
 
-    /**
-     * @brief Tests the timeout function.
-     *
-     * A MediaPlayer is created with a non-existing file. The timeout is set
-     * to 1000ms. The player should be in the Search state for 1000ms and then
-     * go to the Stop state.
-     */
     player.stop();
     QTest::qWait(250);
     QCOMPARE(player.getState(), VideoState::Stop);
-  };
+  }
 
+  /**
+   * @brief Tests the timeout function.
+   *
+   * A MediaPlayer is created with a non-existing file. The timeout is set
+   * to 1000ms. The player should be in the Search state for 1000ms and then
+   * go to the Stop state.
+   */
   void timeout() {
     MediaPlayer player(QString("non_existing_file.mp4"), ms(1000));
 
