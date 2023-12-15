@@ -18,7 +18,7 @@ class App : public QApplication {
 
  public:
   App(int argc, char *argv[]);
-  int run();
+  int exec();
 
  private:
   static const path root;
@@ -39,4 +39,5 @@ class App : public QApplication {
   void connect();
   void record();
   void show();
+  static void sigintHandler(int signal);
 };

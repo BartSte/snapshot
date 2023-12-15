@@ -118,7 +118,11 @@ void VideoScene::centerPixmap() {
  * Update the QGraphicsTextItem when called.
  */
 void VideoScene::updateText() {
-  setText(stateVsText.at(video->getState()));
+  if (video) {
+    setText(stateVsText.at(video->getState()));
+  } else {
+    setText(stateVsText.at(VideoState::Stop));
+  }
   centerText();
 }
 

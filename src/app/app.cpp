@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <qapplication.h>
+#include <signal.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <video/find.hpp>
@@ -36,10 +37,25 @@ const path App::debug_video = App::root / "static/sample.mp4";
  */
 App::App(int argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
+  signal(SIGINT, sigintHandler);
   auto args = parser.parse();
   settings = parseConfig(args);
   setUpLogger(settings.get<std::string>("loglevel"),
               settings.get<std::string>("pattern"));
+}
+
+/**
+ * @brief sigintHandler
+ *
+ * Handle the SIGINT signal.
+ *
+ * @param signal An integer representing the signal.
+ */
+void App::sigintHandler(int signal) {
+  if (signal == SIGINT) {
+    spdlog::info("SIGINT received, exiting...");
+    App::instance()->quit();
+  }
 }
 
 /**
@@ -85,7 +101,7 @@ ptree App::parseConfig(const cxxopts::ParseResult &args) {
  *
  * @return exit code
  */
-int App::run() {
+int App::exec() {
   if (printHelp()) {
     return 0;
   }
@@ -95,7 +111,7 @@ int App::run() {
   show();
   record();
   if (window || recorder) {
-    return exec();
+    return QApplication::exec();
   } else {
     return 0;
   }

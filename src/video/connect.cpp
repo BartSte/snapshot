@@ -277,7 +277,7 @@ VideoPtr videoFactory(const std::string &id, ms connectTimeout) {
     spdlog::info("Camera created.");
     return std::make_unique<Camera>(device, connectTimeout);
   } else {
-    spdlog::warn("No camera found.");
+    spdlog::info("No camera found.");
     return std::nullopt;
   }
 }
