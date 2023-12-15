@@ -16,7 +16,7 @@ extern const path root;
  * @brief Tests the parseConfig function.
  */
 TEST(testConfig, parseConfig) {
-  path path = root / "static" / "config_test.json";
+  path path = root / "static" / "config_default_test.json";
   ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
@@ -45,11 +45,11 @@ TEST(testConfig, merge) {
 }
 
 /**
- * @brief The config_user_test should overwrite the config_test settings.
+ * @brief The config_user_test should overwrite the config_default_test settings.
  */
 TEST(testConfig, parseConfigs) {
   path path_user = root / "static" / "config_user_test.json";
-  path path_default = root / "static" / "config_test.json";
+  path path_default = root / "static" / "config_default_test.json";
 
   ptree config =
       config::parseUserDefault(path_user.string(), path_default.string());
@@ -63,7 +63,7 @@ TEST(testConfig, parseConfigs) {
 
 TEST(testConfig, parseConfigsTestIncomplete) {
   path path_user = root / "static" / "config_user_incomplete_test.json";
-  path path_default = root / "static" / "config_test.json";
+  path path_default = root / "static" / "config_default_test.json";
 
   ptree config =
       config::parseUserDefault(path_user.string(), path_default.string());

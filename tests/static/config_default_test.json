@@ -4,11 +4,11 @@
     "gui": false,
     "debug": false,
     "record": false,
-    "camera": "non-existing-camera",
-    "loglevel": "debug",
-    "pattern": "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v",
+    "camera": "default",
+    "loglevel": "info",
+    "pattern": "pattern",
     "timeout": "30",
     "duration": "0",
     "interval": "0",
-    "folder": "test_snapshots"
+    "folder": "snapshot"
 }

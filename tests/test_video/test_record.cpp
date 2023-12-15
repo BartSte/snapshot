@@ -1,9 +1,9 @@
-#include "video/record.hpp"
 #include <QObject>
 #include <QTest>
 #include <gtest/gtest.h>
 #include <helpers/path.hpp>
 #include <qvideosink.h>
+#include <video/record.hpp>
 
 using path = std::filesystem::path;
 using dir_iterator = std::filesystem::directory_iterator;

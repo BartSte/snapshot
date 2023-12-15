@@ -79,6 +79,8 @@ TEST(testConnect, TestMediaPlayer) {
  * available, so the function should return an empty optional.
  */
 TEST(testConnect, TestVideoFactory) {
+  int argc = 0;
+  QApplication app(argc, nullptr);
   VideoPtr null = videoFactory("non-existing-camera");
   VideoPtr file = videoFactory(debug_video.string());
   VideoPtr stream = videoFactory("rtsp://localhost:1234/test");
