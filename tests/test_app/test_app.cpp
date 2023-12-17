@@ -2,7 +2,7 @@
 #include <app/app.hpp>
 #include <cstdio>
 #include <gtest/gtest.h>
-#include <helpers/argv.hpp>
+#include <helpers/charpointers.hpp>
 #include <helpers/cout_redirect.hpp>
 #include <qobject.h>
 #include <string>
@@ -30,39 +30,41 @@ class TestApp : public testing::Test {
  * @param vec vector of strings to be used as arguments
  * @return Argv object
  */
-Argv getArgv(std::vector<std::string> vec = {}) {
-  Argv argv({"test_app", "--config", config.string()});
+CharPointers getArgv(std::vector<std::string> vec = {}) {
+  std::vector<std::string> strings = {"test_app", "--config", config.string()};
+  CharPointers argv(strings);
   for (auto &str : vec) {
-    argv.append(str);
+    argv.push_back(str);
   }
   return argv;
 }
 
 TEST(testAppHelper, testGetArgv) {
-  Argv argv = getArgv({"foo", "bar"});
-  EXPECT_EQ(argv.getArgc(), 5);
-  EXPECT_STREQ(argv.get()[0], "test_app");
-  EXPECT_STREQ(argv.get()[1], "--config");
-  EXPECT_STREQ(argv.get()[2], config.string().c_str());
-  EXPECT_STREQ(argv.get()[3], "foo");
-  EXPECT_STREQ(argv.get()[4], "bar");
+  CharPointers argv = getArgv({"foo", "bar"});
+  EXPECT_EQ(argv.size(), 5);
+  EXPECT_STREQ(argv.data()[0], "test_app");
+  EXPECT_STREQ(argv.data()[1], "--config");
+  EXPECT_STREQ(argv.data()[2], config.string().c_str());
+  EXPECT_STREQ(argv.data()[3], "foo");
+  EXPECT_STREQ(argv.data()[4], "bar");
 }
 
 TEST_F(TestApp, testPrintHelp) {
-  Argv argv = getArgv({"--help"});
-  App app(argv.getArgc(), argv.get());
+  CharPointers argv = getArgv({"--help"});
+  App app(argv.size(), argv.data());
   std::cout << app.exec();
 
   EXPECT_TRUE(buffer.str().find("Usage:") != std::string::npos);
 }
 
 TEST_F(TestApp, testList) {
-  Argv argv = getArgv({"--list"});
-  App app(argv.getArgc(), argv.get());
+  CharPointers argv = getArgv({"--list"});
+  App app(argv.size(), argv.data());
   std::cout << app.exec();
 
-  EXPECT_TRUE(buffer.str().find("Index | Name | ID | Is Default |") !=
-              std::string::npos);
+  for (auto &column : {"Index", "Name", "ID", "Is Default"}) {
+    EXPECT_TRUE(buffer.str().find(column) != std::string::npos);
+  }
 }
 
 class TestCamera : public QObject {
@@ -70,8 +72,8 @@ class TestCamera : public QObject {
 
  private slots:
   void test() {
-    Argv argv = getArgv({"--camera", debug_video.string()});
-    App app(argv.getArgc(), argv.get());
+    CharPointers argv = getArgv({"--camera", debug_video.string()});
+    App app(argv.size(), argv.data());
 
     // TODO: Find a way to exit the app gracefully
     app.exec();

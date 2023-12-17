@@ -1,6 +1,6 @@
 #include <chrono>
 #include <gtest/gtest.h>
-#include <helpers/argv.hpp>
+#include <helpers/charpointers.hpp>
 #include <helpers/time.hpp>
 #include <qapplication.h>
 #include <qthread.h>
@@ -128,8 +128,8 @@ TEST(testTime, parseNumberInvalid) {
 
 TEST(testTime, testResetTimer) {
   int argc = 1;
-  Argv argv({"test"});
-  QApplication app(argc, argv.get());
+  CharPointers argv({"test"});
+  QApplication app(argc, argv.data());
   ResetTimer timer(ms(100), ms(10));
   bool called = false;
   auto callback = [&called]() { called = true; };

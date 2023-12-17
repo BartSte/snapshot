@@ -29,8 +29,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Helpers
 add_library(
   helpers
-  src/helpers/argv.cpp
-  src/helpers/argv.hpp
+  src/helpers/charpointers.cpp
+  src/helpers/charpointers.hpp
   src/helpers/cout_redirect.cpp
   src/helpers/cout_redirect.hpp
   src/helpers/argparse.cpp
@@ -93,6 +93,7 @@ add_executable(
   tests/test_video/test_find.cpp
   tests/test_video/test_connect.cpp
   tests/test_video/test_record.cpp
+  tests/test_helpers/test_charpointers.cpp
   tests/test_helpers/test_argparse.cpp
   tests/test_helpers/test_config.cpp
   tests/test_helpers/test_time.cpp)
