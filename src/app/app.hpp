@@ -18,7 +18,7 @@ class App : public QApplication {
 
  public:
   App(int argc, char *argv[]);
-  int exec();
+  int run();
 
  private:
   static const path root;

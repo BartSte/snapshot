@@ -101,7 +101,7 @@ ptree App::parseConfig(const cxxopts::ParseResult &args) {
  *
  * @return exit code
  */
-int App::exec() {
+int App::run() {
   if (printHelp()) {
     return 0;
   }
@@ -111,7 +111,7 @@ int App::exec() {
   show();
   record();
   if (window || recorder) {
-    return QApplication::exec();
+    return exec();
   } else {
     return 0;
   }

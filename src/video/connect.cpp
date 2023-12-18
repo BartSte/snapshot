@@ -13,8 +13,8 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include "./video/connect.hpp"
-#include "./video/find.hpp"
+#include "./connect.hpp"
+#include "./find.hpp"
 
 using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
 using ms = std::chrono::milliseconds;

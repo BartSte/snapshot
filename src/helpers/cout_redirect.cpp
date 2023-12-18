@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "helpers/cout_redirect.hpp"
+#include "./cout_redirect.hpp"
 
 /**
  * @class cout_redirect

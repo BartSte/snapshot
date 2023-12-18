@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "./helpers/charpointers.hpp"
+#include "./charpointers.hpp"
 
 /**
  * @brief Construct a vector of char pointers from a vector of strings.
@@ -10,15 +10,16 @@
  */
 CharPointers::CharPointers(const std::vector<std::string> &strings) {
   pointers.reserve(strings.size());
-  std::for_each(strings.begin(), strings.end(),
-                [this](const std::string &s) { push_back(s); });
+  auto func = [this](const std::string &s) { push_back(s); };
+  std::for_each(strings.begin(), strings.end(), func);
 }
 
 /**
  * @brief Destroy the char * within the vector.
  */
 CharPointers::~CharPointers() {
-  std::for_each(pointers.begin(), pointers.end(), [](char *p) { delete[] p; });
+  auto func = [](char *p) { delete[] p; };
+  std::for_each(pointers.begin(), pointers.end(), func);
 }
 
 /**

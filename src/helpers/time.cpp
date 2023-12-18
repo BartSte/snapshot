@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "./helpers/time.hpp"
+#include "./time.hpp"
 
 using sec = std::chrono::seconds;
 

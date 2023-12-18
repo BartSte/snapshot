@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "./helpers/config.hpp"
+#include "./config.hpp"
 
 namespace pt = boost::property_tree;
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "helpers/time.hpp"
 #include <QVideoSink>
 #include <QtMultimediaWidgets/qgraphicsvideoitem.h>
 #include <chrono>
+#include <helpers/time.hpp>
 #include <map>
 #include <memory>
 #include <optional>

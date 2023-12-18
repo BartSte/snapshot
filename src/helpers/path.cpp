@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
-#include "./helpers/path.hpp"
+#include "./path.hpp"
 
 using path = std::filesystem::path;
 using dir_iterator = std::filesystem::directory_iterator;

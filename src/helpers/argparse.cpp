@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <iostream>
 
-#include "./helpers/argparse.hpp"
+#include "./argparse.hpp"
 
 #define DEFAULT_STRING cxxopts::value<std::string>()->default_value
 

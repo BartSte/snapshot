@@ -1,3 +1,4 @@
+#include "video/connect.hpp"
 #include <QTest>
 #include <app/app.hpp>
 #include <cstdio>
@@ -52,7 +53,7 @@ TEST(testAppHelper, testGetArgv) {
 TEST_F(TestApp, testPrintHelp) {
   CharPointers argv = getArgv({"--help"});
   App app(argv.size(), argv.data());
-  std::cout << app.exec();
+  std::cout << app.run();
 
   EXPECT_TRUE(buffer.str().find("Usage:") != std::string::npos);
 }
@@ -60,7 +61,7 @@ TEST_F(TestApp, testPrintHelp) {
 TEST_F(TestApp, testList) {
   CharPointers argv = getArgv({"--list"});
   App app(argv.size(), argv.data());
-  std::cout << app.exec();
+  std::cout << app.run();
 
   for (auto &column : {"Index", "Name", "ID", "Is Default"}) {
     EXPECT_TRUE(buffer.str().find(column) != std::string::npos);
@@ -74,10 +75,10 @@ class TestCamera : public QObject {
   void test() {
     CharPointers argv = getArgv({"--camera", debug_video.string()});
     App app(argv.size(), argv.data());
-
-    // TODO: Find a way to exit the app gracefully
-    app.exec();
-    QTest::qWait(2100);
+    int exitCode = app.run();
+    QTest::qWait(2000);
+    app.quit();
+    app.exit(exitCode);
   }
 };
 

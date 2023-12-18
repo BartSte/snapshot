@@ -8,7 +8,7 @@
 #include <qtimer.h>
 #include <spdlog/spdlog.h>
 
-#include "./video/record.hpp"
+#include "./record.hpp"
 
 using ms = std::chrono::milliseconds;
 using path = std::filesystem::path;
