@@ -11,9 +11,9 @@
 
 using path = std::filesystem::path;
 
-extern const std::filesystem::path root;
-const path config = root / "static" / "config_test.json";
-const path debug_video = root / "static" / "sample.mp4";
+extern const std::filesystem::path static_dir;
+const path config = static_dir / "config_test.json";
+const path debug_video = static_dir / "sample.mp4";
 
 class TestApp : public testing::Test {
  protected:

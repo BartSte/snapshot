@@ -7,10 +7,11 @@
 #include <video/connect.hpp>
 
 using ms = std::chrono::milliseconds;
+using path = std::filesystem::path;
 using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
 
-extern const std::filesystem::path root;
-const std::filesystem::path debug_video = root / "static" / "sample.mp4";
+extern const std::filesystem::path static_dir;
+const path debug_video = static_dir / "sample.mp4";
 
 class TestMediaPlayer : public QObject {
 

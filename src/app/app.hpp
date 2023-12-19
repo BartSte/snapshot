@@ -22,6 +22,7 @@ class App : public QApplication {
 
  private:
   static const path root;
+  static const path static_dir;
   static const path path_config;
   static const path debug_video;
 

@@ -23,8 +23,9 @@ using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
 
 const path App::root = program_location();
-const path App::path_config = App::root / "static/config.json";
-const path App::debug_video = App::root / "static/sample.mp4";
+const path App::static_dir = App::root / ".." / "static";
+const path App::path_config = App::static_dir / "config.json";
+const path App::debug_video = App::static_dir / "sample.mp4";
 
 /**
  * @brief Constructor
