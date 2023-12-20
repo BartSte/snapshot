@@ -1,3 +1,5 @@
+#include <video/find.hpp>
+
 #include <QCameraDevice>
 #include <QFile>
 #include <QMediaDevices>
@@ -8,8 +10,6 @@
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
-
-#include "./find.hpp"
 
 using Table = std::vector<std::vector<std::string>>;
 

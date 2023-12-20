@@ -1,3 +1,5 @@
+#include <video/record.hpp>
+
 #include <QVideoSink>
 #include <chrono>
 #include <cstdint>
@@ -7,8 +9,6 @@
 #include <qobject.h>
 #include <qtimer.h>
 #include <spdlog/spdlog.h>
-
-#include "./record.hpp"
 
 using ms = std::chrono::milliseconds;
 using path = std::filesystem::path;

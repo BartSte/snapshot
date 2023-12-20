@@ -2,10 +2,10 @@
 
 #include <QCameraDevice>
 #include <QMainWindow>
+#include <gui/videoscene.hpp>
 #include <string>
 
-#include "./gui/videoscene.hpp"
-#include "./ui_mainwindow.h"
+#include <ui_mainwindow.h>
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
 

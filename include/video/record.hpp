@@ -11,8 +11,7 @@
 #include <qvideosink.h>
 #include <spdlog/spdlog.h>
 #include <string>
-
-#include "./connect.hpp"
+#include <video/connect.hpp>
 
 enum class RecorderState {
   Stop = 0,

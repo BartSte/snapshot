@@ -1,3 +1,5 @@
+#include <gui/videoscene.hpp>
+
 #include <QCamera>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
@@ -10,8 +12,6 @@
 #include <qobject.h>
 #include <spdlog/spdlog.h>
 #include <video/connect.hpp>
-
-#include "./gui/videoscene.hpp"
 
 const QString textFont = "Arial";
 const float constRatio = 0.8;

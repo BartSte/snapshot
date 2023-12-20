@@ -1,7 +1,7 @@
+#include <helpers/charpointers.hpp>
+
 #include <algorithm>
 #include <vector>
-
-#include "./charpointers.hpp"
 
 /**
  * @brief Construct a vector of char pointers from a vector of strings.

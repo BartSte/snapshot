@@ -1,9 +1,9 @@
+#include <gui/mainwindow.hpp>
+
 #include <QMainWindow>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <video/find.hpp>
-
-#include "./gui/mainwindow.hpp"
 
 const char *TITLE = "Snap shot machine";
 

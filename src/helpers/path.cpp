@@ -1,8 +1,8 @@
+#include <helpers/path.hpp>
+
 #include <boost/dll.hpp>
 #include <filesystem>
 #include <spdlog/spdlog.h>
-
-#include "./path.hpp"
 
 using path = std::filesystem::path;
 using dir_iterator = std::filesystem::directory_iterator;

@@ -1,3 +1,5 @@
+#include <video/connect.hpp>
+
 #include <chrono>
 #include <qcamera.h>
 #include <qcameradevice.h>
@@ -12,9 +14,7 @@
 #include <qvideosink.h>
 #include <spdlog/spdlog.h>
 #include <string>
-
-#include "./connect.hpp"
-#include "./find.hpp"
+#include <video/find.hpp>
 
 using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
 using ms = std::chrono::milliseconds;

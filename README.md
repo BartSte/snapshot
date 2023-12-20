@@ -287,3 +287,9 @@ more information.
 
 - [ ] The --folder argument is not expanded. This means that ~ and $HOME are
       not expanded. This should be fixed.
+
+- [ ] Implement the following project structure: - [cmake struct](https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html)
+      Also, maybe it is better to have 1 lib that contains helpers, gui and
+      video. Instead of 3 libs that combine into 1 lib, that is used by the
+      executable. Alternatively, we can link the executable to the 3 libs
+      directly?

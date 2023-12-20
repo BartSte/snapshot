@@ -1,3 +1,5 @@
+#include <helpers/time.hpp>
+
 #include <algorithm>
 #include <bits/chrono.h>
 #include <chrono>
@@ -6,8 +8,6 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <string>
-
-#include "./time.hpp"
 
 using sec = std::chrono::seconds;
 
@@ -195,6 +195,4 @@ void ResetTimer::check() {
  *
  * Resets the timer's elapsed time to 0.
  */
-void ResetTimer::reset() {
-  elapsed = ms(0);
-}
+void ResetTimer::reset() { elapsed = ms(0); }

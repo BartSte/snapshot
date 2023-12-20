@@ -1,3 +1,5 @@
+#include <snapshotapp.hpp>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
 #include <chrono>
@@ -14,8 +16,6 @@
 #include <string>
 #include <video/find.hpp>
 #include <video/record.hpp>
-
-#include "./snapshotapp.hpp"
 
 using ptree = boost::property_tree::ptree;
 using path = std::filesystem::path;
