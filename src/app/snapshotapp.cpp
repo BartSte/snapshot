@@ -15,7 +15,7 @@
 #include <video/find.hpp>
 #include <video/record.hpp>
 
-#include "./app.hpp"
+#include "./snapshotapp.hpp"
 
 using ptree = boost::property_tree::ptree;
 using path = std::filesystem::path;

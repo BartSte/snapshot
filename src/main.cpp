@@ -1,4 +1,4 @@
-#include <app/app.hpp>
+#include <snapshotapp.hpp>
 
 int main(int argc, char *argv[]) {
   App app(argc, argv);

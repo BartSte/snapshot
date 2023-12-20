@@ -1,7 +1,3 @@
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOMOC ON)
-
 find_package(Qt6 REQUIRED COMPONENTS Test)
 include(GoogleTest)
 include(FetchContent)

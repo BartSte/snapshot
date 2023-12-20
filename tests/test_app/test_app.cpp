@@ -1,13 +1,13 @@
-#include "video/connect.hpp"
 #include <QTest>
-#include <app/app.hpp>
 #include <cstdio>
 #include <gtest/gtest.h>
 #include <helpers/charpointers.hpp>
 #include <helpers/cout_redirect.hpp>
 #include <qobject.h>
+#include <snapshotapp.hpp>
 #include <string>
 #include <vector>
+#include <video/connect.hpp>
 
 using path = std::filesystem::path;
 
