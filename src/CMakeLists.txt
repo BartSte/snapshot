@@ -2,23 +2,11 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 
+file(COPY ${CMAKE_SOURCE_DIR}/static DESTINATION ${CMAKE_BINARY_DIR})
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
 
-add_library(
-  snapshotapp
-  snapshotapp.cpp
-  gui/mainwindow.cpp
-  gui/videoscene.cpp
-  helpers/argparse.cpp
-  helpers/charpointers.cpp
-  helpers/config.cpp
-  helpers/cout_redirect.cpp
-  helpers/path.cpp
-  helpers/time.cpp
-  video/connect.cpp
-  video/find.cpp
-  video/record.cpp
-  ${INCLUDES})
+add_library(snapshotapp ${SOURCES} ${INCLUDES})
 target_include_directories(
   snapshotapp
   PUBLIC ${CMAKE_SOURCE_DIR}/include ${Boost_INCLUDE_DIRS}
