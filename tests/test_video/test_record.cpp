@@ -1,3 +1,4 @@
+#include "snapshotapp.hpp"
 #include <QObject>
 #include <QTest>
 #include <gtest/gtest.h>
@@ -7,9 +8,6 @@
 
 using path = std::filesystem::path;
 using dir_iterator = std::filesystem::directory_iterator;
-
-extern const std::filesystem::path static_dir;
-const path debug_video = static_dir / "sample.mp4";
 
 class TestRecorder : public QObject {
   using ms = std::chrono::milliseconds;
@@ -28,7 +26,7 @@ class TestRecorder : public QObject {
   }
 
   void init() {
-    debug_video_qstr = QString::fromStdString(debug_video.string());
+    debug_video_qstr = QString::fromStdString(App::debug_video.string());
     tmp_dir = std::filesystem::temp_directory_path();
     tmp_dir /= "test_record";
     std::filesystem::remove_all(tmp_dir);

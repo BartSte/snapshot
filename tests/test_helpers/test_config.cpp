@@ -5,18 +5,17 @@
 #include <helpers/config.hpp>
 #include <helpers/path.hpp>
 #include <memory>
+#include <snapshotapp.hpp>
 #include <string>
 
 using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
-extern const path static_dir;
-
 /**
  * @brief Tests the parseConfig function.
  */
 TEST(testConfig, parseConfig) {
-  path path = static_dir / "config_default_test.json";
+  path path = App::static_dir / "config_default_test.json";
   ptree config = config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), false);
@@ -49,8 +48,8 @@ TEST(testConfig, merge) {
  * settings.
  */
 TEST(testConfig, parseConfigs) {
-  path path_user = static_dir / "config_user_test.json";
-  path path_default = static_dir / "config_default_test.json";
+  path path_user = App::static_dir / "config_user_test.json";
+  path path_default = App::static_dir / "config_default_test.json";
 
   ptree config =
       config::parseUserDefault(path_user.string(), path_default.string());
@@ -63,8 +62,8 @@ TEST(testConfig, parseConfigs) {
 }
 
 TEST(testConfig, parseConfigsTestIncomplete) {
-  path path_user = static_dir / "config_user_incomplete_test.json";
-  path path_default = static_dir / "config_default_test.json";
+  path path_user = App::static_dir / "config_user_incomplete_test.json";
+  path path_default = App::static_dir / "config_default_test.json";
 
   ptree config =
       config::parseUserDefault(path_user.string(), path_default.string());

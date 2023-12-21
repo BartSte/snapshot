@@ -11,9 +11,7 @@
 
 using path = std::filesystem::path;
 
-extern const std::filesystem::path static_dir;
-const path config = static_dir / "config_test.json";
-const path debug_video = static_dir / "sample.mp4";
+const path config = App::static_dir / "config_test.json";
 
 class TestApp : public testing::Test {
  protected:
@@ -73,7 +71,7 @@ class TestCamera : public QObject {
 
  private slots:
   void test() {
-    CharPointers argv = getArgv({"--camera", debug_video.string()});
+    CharPointers argv = getArgv({"--camera", App::debug_video.string()});
     App app(argv.size(), argv.data());
     int exitCode = app.run();
     QTest::qWait(2000);

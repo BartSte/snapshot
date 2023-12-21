@@ -17,15 +17,15 @@ class App : public QApplication {
   using path = std::filesystem::path;
 
  public:
-  App(int argc, char *argv[]);
-  int run();
-
- private:
   static const path root;
   static const path static_dir;
   static const path path_config;
   static const path debug_video;
 
+  App(int argc, char *argv[]);
+  int run();
+
+ private:
   ArgParse parser;
   ptree settings;
   std::unique_ptr<Recorder> recorder;

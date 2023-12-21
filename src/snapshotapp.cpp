@@ -86,7 +86,7 @@ void App::setUpLogger(std::string level, std::string pattern) {
  * @return The config stored in a boost::property_tree::ptree
  */
 ptree App::parseConfig(const cxxopts::ParseResult &args) {
-  const std::string path_default = App::path_config.string();
+  const std::string path_default = path_config.string();
   const std::string path_user = args["config"].as<std::string>();
 
   ptree config = config::parseUserDefault(path_user, path_default);

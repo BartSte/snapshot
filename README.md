@@ -288,8 +288,7 @@ more information.
 - [ ] The --folder argument is not expanded. This means that ~ and $HOME are
       not expanded. This should be fixed.
 
-- [ ] Implement the following project structure: - [cmake struct](https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html)
-      Also, maybe it is better to have 1 lib that contains helpers, gui and
-      video. Instead of 3 libs that combine into 1 lib, that is used by the
-      executable. Alternatively, we can link the executable to the 3 libs
-      directly?
+- [ ] Is it really the best idea to copy the static folder to build and use the
+      relative path of the executable to find the static folder? A better idea
+      might be to use CMAKE for this? I tried adding the static folder to the
+      target_include_directories, but this does not work when the path changes.
