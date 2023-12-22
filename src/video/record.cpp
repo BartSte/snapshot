@@ -23,7 +23,7 @@ using path = std::filesystem::path;
  * @param parent A optional parent QObject
  */
 ImageSaver::ImageSaver(QVideoSink *sink, path directory, QObject *parent)
-    : QObject(parent), sink(sink), save_dir(directory) {}
+    : QObject(parent), sink(sink), save_dir(directory), bytesSaved(0) {}
 
 /**
  * @brief save
@@ -61,9 +61,36 @@ void ImageSaver::saveFrame(const QVideoFrame &frame) {
   bool is_saved = image.save(file_path.string().c_str());
 
   if (is_saved) {
+    addBytesSaved(image.sizeInBytes());
     spdlog::info("Saved frame to {}", file_path.string());
+    spdlog::debug("Saved {} bytes in total.", bytesSaved);
   } else {
     spdlog::warn("Failed to save frame to {}", file_path.string());
+  }
+}
+
+/**
+ * @brief getBytesSaved
+ *
+ * Get the number of bytes saved.
+ *
+ * @return the number of bytes saved
+ */
+uint64_t ImageSaver::getBytesSaved() { return bytesSaved; }
+
+/**
+ * @brief addBytesSaved
+ *
+ * Add bytes to the number of bytes saved. UINT64_MAX is set as the value when
+ * the number of bytes saved overflows.
+ *
+ * @param bytes the number of bytes to add
+ */
+void ImageSaver::addBytesSaved(uint64_t bytes) {
+  if (bytesSaved + bytes < bytesSaved) {
+    bytesSaved = UINT64_MAX;
+  } else {
+    bytesSaved += bytes;
   }
 }
 
@@ -81,7 +108,8 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
       directory(save_path / path(timestamp())),
       saver(sink, directory),
       elapsed(0),
-      duration(0) {
+      duration(0),
+      maxBytes(UINT64_MAX) {
   if (!mkdir(directory)) {
     spdlog::warn("Failed to create the base directory {}", directory.string());
   }
@@ -89,6 +117,7 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
   saver.moveToThread(&worker);
   connect(&timer, &QTimer::timeout, &saver, &ImageSaver::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
+  connect(&timer, &QTimer::timeout, this, &Recorder::stopMaxBytes);
   worker.start();
 }
 
@@ -113,6 +142,21 @@ void Recorder::stopAfterDuration() {
 }
 
 /**
+ * @brief stopMaxBytes
+ *
+ * Stop recording after the maximum number of bytes has been saved.
+ *
+ */
+void Recorder::stopMaxBytes() {
+  if (saver.getBytesSaved() >= maxBytes) {
+    spdlog::info("Recording finished. The maximum number of bytes is {}, and "
+                 "the number of bytes saved is {}.",
+                 maxBytes, saver.getBytesSaved());
+    stop();
+  }
+}
+
+/**
  * @brief start
  *
  * Start recording.
@@ -121,12 +165,14 @@ void Recorder::stopAfterDuration() {
  * @param interval time between frames
  * @param min_interval minimum time between frames
  */
-void Recorder::start(ms interval, ms duration, ms min_interval) {
+void Recorder::start(ms interval, ms duration, ms min_interval,
+                     uint64_t bytes) {
   if (!isValidInterval(interval, min_interval)) {
     return;
   }
   elapsed = ms(0);
   this->duration = duration;
+  maxBytes = bytes;
   timer.start(interval);
   state = RecorderState::Start;
 }

@@ -10,5 +10,6 @@
     "timeout": "30",
     "duration": "0",
     "interval": "0",
-    "folder": "snapshot"
+    "folder": "snapshot",
+    "max-bytes": "10000000000"
 }

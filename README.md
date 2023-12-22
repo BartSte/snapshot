@@ -282,13 +282,8 @@ more information.
 - [ ] When the state becomes "stop" the recording should be stopped. This is
       not the case at the moment.
 
-- [ ] Add a check that ensures that the disk of a user can not be filled up
-      excessively. Ideas: max number of files, or max disk usage per session.
-
 - [ ] The --folder argument is not expanded. This means that ~ and $HOME are
       not expanded. This should be fixed.
 
-- [ ] Is it really the best idea to copy the static folder to build and use the
-      relative path of the executable to find the static folder? A better idea
-      might be to use CMAKE for this? I tried adding the static folder to the
-      target_include_directories, but this does not work when the path changes.
+- [ ] Add a test for max-bytes. Also add the feature of adding units to the
+      number. For example: 1kb, 1mb, 1gb, 1tb

@@ -63,6 +63,12 @@ ArgParse::ArgParse(int argc, char *argv[])
      "frames are saved.",
      DEFAULT_STRING("0"))
 
+    ("max-bytes", "The maximal number of bytes that may be saved within 1 "
+     "session. The maximal number of bytes is 2^64 - 1. The default is "
+     "10000000000 (10 GB), which is large but will avoid your disk filling "
+     "up when you forget to stop the recording.",
+     DEFAULT_STRING("10000000000"))
+
     ("c,camera", "Select a camera by the name shown by the list command",
      DEFAULT_STRING("default"))
 

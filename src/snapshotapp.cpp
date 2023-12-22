@@ -211,5 +211,6 @@ void App::record() {
 
   sec duration = stringToSec(settings.get<std::string>("duration"));
   sec interval = stringToSec(settings.get<std::string>("interval"));
-  recorder->start(ms(interval), ms(duration));
+  uint64_t maxBytes = settings.get<uint64_t>("max-bytes");
+  recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
 }
