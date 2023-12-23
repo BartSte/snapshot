@@ -93,9 +93,11 @@ void BaseVideo::stop() {
 }
 
 /**
- * @brief TODO
+ * @brief getVideoSink
  *
- * @return
+ * Returns the video sink of BaseVideo.
+ *
+ * @return A pointer to the QVideoSink of BaseVideo.
  */
 QVideoSink *BaseVideo::getVideoSink() { return &sink; }
 

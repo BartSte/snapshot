@@ -11,5 +11,5 @@
     "duration": "0",
     "interval": "0",
     "folder": "snapshot",
-    "max-bytes": "10000000000"
+    "max-bytes": "10e9"
 }

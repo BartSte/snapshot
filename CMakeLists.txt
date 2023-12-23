@@ -4,6 +4,8 @@ project(
   VERSION 0.0.0
   LANGUAGES CXX)
 
+option(BUILD_TESTS "Build tests" ON)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -21,5 +23,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 add_subdirectory(src)
 add_subdirectory(app)
-add_subdirectory(tests)
 
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

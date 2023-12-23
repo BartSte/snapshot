@@ -12,3 +12,5 @@ file(COPY static DESTINATION ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE TEST_SOURCES "*.cpp")
 add_executable(tests ${TEST_SOURCES})
 target_link_libraries(tests snapshotapp gtest gmock Qt6::Test)
+add_test(NAME tests COMMAND tests)
+

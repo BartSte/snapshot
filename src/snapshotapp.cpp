@@ -91,6 +91,7 @@ ptree App::parseConfig(const cxxopts::ParseResult &args) {
 
   ptree config = config::parseUserDefault(path_user, path_default);
   config::merge(config, args);
+  config::check(config); // throws if invalid
 
   return config;
 }
@@ -211,6 +212,7 @@ void App::record() {
 
   sec duration = stringToSec(settings.get<std::string>("duration"));
   sec interval = stringToSec(settings.get<std::string>("interval"));
-  uint64_t maxBytes = settings.get<uint64_t>("max-bytes");
+  std::string maxBytesString = settings.get<std::string>("max-bytes");
+  uint64_t maxBytes = config::scientificToUint64(maxBytesString);
   recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
 }

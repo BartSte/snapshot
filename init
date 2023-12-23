@@ -3,6 +3,7 @@
 cmake -G "Ninja" -S . -B ./build \
     -Wdev \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_TESTS=ON \
     -DCMAKE_CXX_COMPILER=$(which clang++) \
     -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always \
     $@

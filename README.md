@@ -285,5 +285,5 @@ more information.
 - [ ] The --folder argument is not expanded. This means that ~ and $HOME are
       not expanded. This should be fixed.
 
-- [ ] Add a test for max-bytes. Also add the feature of adding units to the
-      number. For example: 1kb, 1mb, 1gb, 1tb
+- [ ] Write tests for invalid config settings that triggers the config::check
+      function. Also improve the error messages and do a graceful exit.

@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <gtest/gtest.h>
 #include <helpers/charpointers.hpp>
-#include <helpers/cout_redirect.hpp>
+#include <helpers/coutredirect.hpp>
 #include <qobject.h>
 #include <snapshotapp.hpp>
 #include <string>

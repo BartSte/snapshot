@@ -1,10 +1,10 @@
-#include <helpers/cout_redirect.hpp>
+#include <helpers/coutredirect.hpp>
 
 #include <iostream>
 #include <string>
 
 /**
- * @class cout_redirect
+ * @class coutredirect
  * @brief
  *
  */
