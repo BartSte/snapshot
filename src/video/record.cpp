@@ -118,7 +118,6 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
   connect(&timer, &QTimer::timeout, &saver, &ImageSaver::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopMaxBytes);
-  worker.start();
 }
 
 Recorder::~Recorder() {
@@ -174,6 +173,7 @@ void Recorder::start(ms interval, ms duration, ms min_interval,
   this->duration = duration;
   maxBytes = bytes;
   timer.start(interval);
+  worker.start();
   state = RecorderState::Start;
 }
 
@@ -184,6 +184,8 @@ void Recorder::start(ms interval, ms duration, ms min_interval,
  */
 void Recorder::stop() {
   timer.stop();
+  worker.quit();
+  worker.wait();
   state = RecorderState::Stop;
 }
 

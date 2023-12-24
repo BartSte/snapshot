@@ -84,6 +84,30 @@ class TestRecorder : public QObject {
     ASSERT_EQ(numberOfFilesRecursive(tmp_dir), 1);
   }
 
+  void testRecordStartStop() {
+    MediaPlayer player(debug_video_qstr);
+    QVideoSink *sink = player.getVideoSink();
+    Recorder recorder(sink, tmp_dir);
+
+    player.start();
+    QTest::qWait(250);
+    QCOMPARE(player.getState(), VideoState::Start);
+
+    recorder.start(ms(1000), ms(1000));
+    QCOMPARE(recorder.getState(), RecorderState::Start);
+    QTest::qWait(250);
+    recorder.stop();
+    QCOMPARE(recorder.getState(), RecorderState::Stop);
+    QTest::qWait(250);
+    recorder.start(ms(1000), ms(1000));
+    QCOMPARE(recorder.getState(), RecorderState::Start);
+    QTest::qWait(250);
+    recorder.stop();
+    QCOMPARE(recorder.getState(), RecorderState::Stop);
+
+    player.stop();
+  }
+
   /**
    * @brief Test Recorder::start
    *

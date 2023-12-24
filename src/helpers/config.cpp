@@ -60,8 +60,8 @@ boost::property_tree::ptree config::parse(const std::string &path) {
 /**
  * @brief merge
  *
- * Merges two boost::property_tree::ptree objects. The first one takes
- * precedence over the second if there are duplicate keys.
+ * Merges two boost::property_tree::ptree objects. The second one takes
+ * precedence over the first, if there are duplicate keys.
  *
  * @param config The first config.
  * @param config_user The second config.
@@ -101,6 +101,11 @@ void config::check(const pt::ptree &config) {
   config::checkLogLevel(config);
   config::checkChrono(config);
   config::checkScientificNotation(config);
+  // TODO: when the user config is not found it normally means the user did not
+  // create it. However, when --config argument is used to set the path of the
+  // config file, and it cannot be found, it means the user made a mistake.
+  // Throw an exception in this case. Furtermore, instead of hardcoding the
+  // path to the config, you can specify its path in het default config file.
 }
 
 /**

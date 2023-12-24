@@ -69,7 +69,7 @@ TEST_F(GTestApp, testList) {
   }
 }
 
-class TestCamera : public QObject {
+class QTestApp : public QObject {
   Q_OBJECT
 
  private:
@@ -103,7 +103,7 @@ class TestCamera : public QObject {
   /**
    * @brief Test the --record argument
    *
-   * Normally, the --record starts the event loop. For testing, the event loope
+   * Normally, the --record starts the event loop. For testing, the event loop
    * is not started. Instead, qWait is used to run the event loop, as this
    * makes execution simpler.
    */
@@ -116,10 +116,28 @@ class TestCamera : public QObject {
     QTest::qWait(4000);
     QCOMPARE(numberOfFilesRecursive(tmpDir), 2);
   }
+
+  /**
+   * @brief Test the --record and the --max-bytes arguments.
+   *
+   * Normally, the --record starts the event loop. For testing, the event loop
+   * is not started. Instead, qWait is used to run the event loop, as this
+   * makes execution simpler. The number of bytes is set to 1, which is so low
+   * that only 1 frame can be recorded.
+   */
+  void testRecordMaxBytes() {
+    CharPointers argv = getArgv(
+        {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
+         "--max-bytes", "1", "--folder", tmpDir.string()});
+    App app(argv.size(), argv.data());
+    int exitCode = app.run();
+    QTest::qWait(2000);
+    QCOMPARE(numberOfFilesRecursive(tmpDir), 1);
+  }
 };
 
 TEST(testApp, testCameraRecord) {
-  TestCamera test;
+  QTestApp test;
   ASSERT_EQ(QTest::qExec(&test), 0);
 }
 
