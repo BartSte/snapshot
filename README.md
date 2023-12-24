@@ -287,3 +287,5 @@ more information.
 
 - [ ] Write tests for invalid config settings that triggers the config::check
       function. Also improve the error messages and do a graceful exit.
+
+- [ ] The camera is still started when no --gui/--record is added.

@@ -50,7 +50,8 @@ class TestRecorder : public QObject {
     saver.save();
     player.stop();
     QCOMPARE(player.getState(), VideoState::Stop);
-    ASSERT_EQ(number_of_files(tmp_dir), 1);
+    ASSERT_EQ(numberOfItems(tmp_dir), 1);
+    ASSERT_EQ(numberOfFilesRecursive(tmp_dir), 1);
   }
 
   /**
@@ -79,7 +80,8 @@ class TestRecorder : public QObject {
     QCOMPARE(player.getState(), VideoState::Stop);
 
     // 1 image should be saved in the temporary directory.
-    QCOMPARE(number_of_files(tmp_dir), 1);
+    QCOMPARE(numberOfItems(tmp_dir), 1);
+    ASSERT_EQ(numberOfFilesRecursive(tmp_dir), 1);
   }
 
   /**

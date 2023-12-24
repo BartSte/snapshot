@@ -55,7 +55,12 @@ App::App(int argc, char *argv[])
 void App::sigintHandler(int signal) {
   if (signal == SIGINT) {
     spdlog::info("SIGINT received, exiting...");
-    App::instance()->quit();
+    auto app = App::instance();
+    if (app == nullptr) {
+      spdlog::warn("QApplication is a nullptr.");
+    } else {
+      App::instance()->quit();
+    }
   }
 }
 
@@ -112,7 +117,9 @@ int App::run() {
   connect();
   show();
   record();
-  if (window || recorder) {
+
+  bool noEventLoop = settings.get<bool>("no-event-loop");
+  if ((window || recorder) && !noEventLoop) {
     return exec();
   } else {
     return 0;

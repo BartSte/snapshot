@@ -37,6 +37,8 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("r,record", "Record")
 
+    ("n,no-event-loop", "Used for testing. Does not start the event loop.")
+
     ("folder", "Folder to save the images to. The default is `./snapshot` in "
      "the current working directory. The folder will be created if it does not"
      " exist.",
