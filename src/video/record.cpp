@@ -62,6 +62,7 @@ void ImageSaver::saveFrame(const QVideoFrame &frame) {
 
   if (is_saved) {
     addBytesSaved(image.sizeInBytes());
+    emit frameSaved();
     spdlog::info("Saved frame to {}", file_path.string());
     spdlog::debug("Saved {} bytes in total.", bytesSaved);
   } else {
@@ -117,7 +118,7 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
   saver.moveToThread(&worker);
   connect(&timer, &QTimer::timeout, &saver, &ImageSaver::save);
   connect(&timer, &QTimer::timeout, this, &Recorder::stopAfterDuration);
-  connect(&timer, &QTimer::timeout, this, &Recorder::stopMaxBytes);
+  connect(&saver, &ImageSaver::frameSaved, this, &Recorder::stopMaxBytes);
 }
 
 Recorder::~Recorder() {

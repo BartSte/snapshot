@@ -289,6 +289,3 @@ more information.
       function. Also improve the error messages and do a graceful exit.
 
 - [ ] The camera is still started when no --gui/--record is added.
-
-- [ ] When a config is applied in the settings, and it cannot be found, throw
-      an error.

@@ -1,12 +1,30 @@
 #include <helpers/argparse.hpp>
 
+#include <boost/property_tree/ptree.hpp>
 #include <cxxopts.hpp>
 #include <filesystem>
-#include <iostream>
+#include <string>
 
-#define DEFAULT_STRING cxxopts::value<std::string>()->default_value
+#define DEFAULT cxxopts::value<std::string>()->default_value
 
 using path = std::filesystem::path;
+using ptree = boost::property_tree::ptree;
+
+/**
+ * @brief Convert a vector of cxxopts::KeyValue to a boost::property_tree::ptree.
+ *
+ * Usefull when you do not want to use cxxopts ist KeyValues type.
+ *
+ * @param args a vector of cxxopts::KeyValue
+ * @return a ptree
+ */
+ptree ArgParse::asPtree(const std::vector<cxxopts::KeyValue> &args) {
+  ptree tree;
+  for (auto &arg : args) {
+    tree.put(arg.key(), arg.value());
+  }
+  return tree;
+}
 
 /**
  * @brief Construct a new Arg Parse:: Arg Parse object
@@ -39,50 +57,50 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("n,no-event-loop", "Used for testing. Does not start the event loop.")
 
+    ("c,camera", "Select a camera by the name shown by the list command",
+     DEFAULT("default"))
+
     ("folder", "Folder to save the images to. The default is `./snapshot` in "
      "the current working directory. The folder will be created if it does not"
      " exist.",
-     DEFAULT_STRING(path_save.string()))
+     DEFAULT(path_save.string()))
 
     ("timeout", "Amount of time to wait after stop trying to connect "
      "to a camera. The following formats are supported: s, second, seconds, m, "
      "minute, minutes, h, hour, hours, " "d, day, days. For example, 10s = 10 "
      "seconds. If no unit is supplied, it is iterpreted as seconds. The "
      "default is 30s.",
-      DEFAULT_STRING("30"))
+      DEFAULT("30s"))
 
     ("duration", "Duration of the recording in seconds. The following formats "
      "are supported: s, second, seconds, m, minute, minutes, h, hour, hours, "
      "d, day, days. For example, 10s = 10 seconds. If no unit is supplied, it "
      "is iterpreted as seconds. The default is 0, meaning that the recording "
      "will continue until the user stops it.",
-     DEFAULT_STRING("0"))
+     DEFAULT("0s"))
 
     ("interval", "The interval in which frames are saved. The following "
      "formats are supported: s, second, seconds, m, minute, minutes, h, hour, "
      "hours, " "d, day, days. For example, 10s = 10 seconds. If no unit is "
      "supplied, it is iterpreted as seconds.The default is 0, meaning that no "
      "frames are saved.",
-     DEFAULT_STRING("0"))
+     DEFAULT("0s"))
 
     ("max-bytes", "The maximal number of bytes that may be saved within 1 "
      "session. The maximal number of bytes is 2^64 - 1. The default is "
      "10e9 (10 GB), which is large but will avoid your disk filling "
      "up when you forget to stop the recording. Scientific notation is "
      "supported.",
-     DEFAULT_STRING("10e9"))
-
-    ("c,camera", "Select a camera by the name shown by the list command",
-     DEFAULT_STRING("default"))
+     DEFAULT("10e9"))
 
     ("config", "Path to the config file",
-    DEFAULT_STRING(path_config.string()))
+    DEFAULT(path_config.string()))
 
     ("loglevel", "Set the loglevel to CRITICAL, ERROR, WARNING, INFO, or DEBUG",
-    DEFAULT_STRING("warning"))
+    DEFAULT("warning"))
 
     ("pattern", "Set the log pattern (see spdlog docs for details)",
-    DEFAULT_STRING("[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"));
+    DEFAULT("[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"));
   // clang-format on
 }
 

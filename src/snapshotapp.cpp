@@ -24,7 +24,6 @@ using ms = std::chrono::milliseconds;
 
 const path App::root = program_location();
 const path App::static_dir = App::root / ".." / "static";
-const path App::path_config = App::static_dir / "config.json";
 const path App::debug_video = App::static_dir / "sample.mp4";
 
 /**
@@ -39,8 +38,14 @@ const path App::debug_video = App::static_dir / "sample.mp4";
 App::App(int argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
   signal(SIGINT, sigintHandler);
-  auto args = parser.parse();
-  settings = parseConfig(args);
+
+  cxxopts::ParseResult args = parser.parse();
+
+  std::string path_config = args["config"].as<std::string>();
+  ptree defaults = ArgParse::asPtree(args.defaults());
+  ptree cli = ArgParse::asPtree(args.arguments());
+  settings = parseConfig(path_config, defaults, cli);
+
   setUpLogger(settings.get<std::string>("loglevel"),
               settings.get<std::string>("pattern"));
 }
@@ -83,22 +88,25 @@ void App::setUpLogger(std::string level, std::string pattern) {
 }
 
 /**
- * @brief getConfig
+ * @brief Returns the settings for the application.
  *
- * Parses the config file and merges it with the cli arguments.
+ * Parses the user config file from `path_config` and merges it with the
+ * defaults. The result is merged with the cli arguments. If the config is
+ * invalid, an exception is thrown.
  *
- * @param args The cli arguments
- * @return The config stored in a boost::property_tree::ptree
+ * @param path_config The path to the user config file.
+ * @param defaults The defaults.
+ *
+ * @return The settings.
  */
-ptree App::parseConfig(const cxxopts::ParseResult &args) {
-  const std::string path_default = path_config.string();
-  const std::string path_user = args["config"].as<std::string>();
+ptree App::parseConfig(const std::string &path_config, const ptree &defaults,
+                       const ptree &cli) {
+  ptree config_user = config::parse(path_config);
+  ptree result = config::merge(defaults, config_user);
+  result = config::merge(result, cli);
+  config::check(result); // throws if invalid
 
-  ptree config = config::parseUserDefault(path_user, path_default);
-  config::merge(config, args);
-  config::check(config); // throws if invalid
-
-  return config;
+  return result;
 }
 
 /**
@@ -223,3 +231,12 @@ void App::record() {
   uint64_t maxBytes = config::scientificToUint64(maxBytesString);
   recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
 }
+
+/**
+ * @brief getSettings
+ *
+ * Returns the settings.
+ *
+ * @return The settings.
+ */
+ptree App::getSettings() { return settings; }

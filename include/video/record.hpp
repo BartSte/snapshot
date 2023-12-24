@@ -24,6 +24,9 @@ class ImageSaver : public QObject {
 
   Q_OBJECT
 
+ signals:
+  void frameSaved();
+
  public slots:
   void save();
 

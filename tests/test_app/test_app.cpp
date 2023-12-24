@@ -12,6 +12,7 @@
 #include <video/connect.hpp>
 
 using path = std::filesystem::path;
+using ptree = boost::property_tree::ptree;
 
 class GTestApp : public testing::Test {
  protected:
@@ -49,6 +50,37 @@ TEST(testApp, testGetArgv) {
   EXPECT_STREQ(argv.data()[2], config.string().c_str());
   EXPECT_STREQ(argv.data()[3], "foo");
   EXPECT_STREQ(argv.data()[4], "bar");
+}
+
+TEST_F(GTestApp, testParseConfig) {
+  CharPointers argv = getArgv();
+  App app(argv.size(), argv.data());
+  ptree settings = app.getSettings();
+
+  // Changed by config
+  ASSERT_EQ(settings.get<bool>("no-event-loop"), true);
+  ASSERT_EQ(settings.get<std::string>("camera"), "non-existing-camera");
+  ASSERT_EQ(settings.get<std::string>("loglevel"), "debug");
+  ASSERT_EQ(settings.get<std::string>("max-bytes"), "1e9");
+
+  // Changed by cli
+  path test_config = App::static_dir / "config_test.json";
+  ASSERT_EQ(settings.get<std::string>("config"), test_config.string());
+
+  // Defaults
+  path cwd = std::filesystem::current_path();
+  path folder = cwd / "snapshot";
+  std::string pattern = "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v";
+  ASSERT_EQ(settings.get<bool>("help"), false);
+  ASSERT_EQ(settings.get<bool>("gui"), false);
+  ASSERT_EQ(settings.get<bool>("list"), false);
+  ASSERT_EQ(settings.get<bool>("debug"), false);
+  ASSERT_EQ(settings.get<bool>("record"), false);
+  ASSERT_EQ(settings.get<std::string>("folder"), folder.string());
+  ASSERT_EQ(settings.get<std::string>("timeout"), "30s");
+  ASSERT_EQ(settings.get<std::string>("duration"), "0s");
+  ASSERT_EQ(settings.get<std::string>("interval"), "0s");
+  ASSERT_EQ(settings.get<std::string>("pattern"), pattern);
 }
 
 TEST_F(GTestApp, testPrintHelp) {

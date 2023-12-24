@@ -19,10 +19,10 @@ class App : public QApplication {
  public:
   static const path root;
   static const path static_dir;
-  static const path path_config;
   static const path debug_video;
 
   App(int argc, char *argv[]);
+  ptree getSettings();
   int run();
 
  private:
@@ -32,7 +32,8 @@ class App : public QApplication {
   std::shared_ptr<BaseVideo> video;
   std::unique_ptr<MainWindow> window;
 
-  ptree parseConfig(const cxxopts::ParseResult &args);
+  ptree parseConfig(const std::string &path_config, const ptree &defaults,
+                    const ptree &cli);
   void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
   void debug();
