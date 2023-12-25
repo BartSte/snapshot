@@ -26,6 +26,16 @@ TEST(testConfig, parseConfig) {
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }
 
+TEST(testConfig, parseConfigInvalid) {
+  path path = "/foo/bar/config.json";
+  try {
+    config::parse(path.string(), true);
+    FAIL();
+  } catch (std::invalid_argument &e) {
+    SUCCEED();
+  }
+}
+
 /**
  * @brief Tests the merge function.
  */

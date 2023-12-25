@@ -23,14 +23,13 @@ using ptree = boost::property_tree::ptree;
  *
  * @return The parsed config as a boost::property_tree::ptree.
  */
-boost::property_tree::ptree config::parse(const std::string &path) {
+boost::property_tree::ptree config::parse(const std::string &path, bool check) {
   ptree tree;
   if (std::filesystem::exists(path)) {
     spdlog::debug("Reading config file from {}", path);
     boost::property_tree::json_parser::read_json(path, tree);
-  } else {
-    spdlog::debug("Config file at {} does not exist.", path);
-    tree.clear();
+  } else if (check) {
+    throw std::invalid_argument("Config file at " + path + " does not exist.");
   }
   return tree;
 }

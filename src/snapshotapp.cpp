@@ -94,6 +94,9 @@ void App::setUpLogger(std::string level, std::string pattern) {
  * defaults. The result is merged with the cli arguments. If the config is
  * invalid, an exception is thrown.
  *
+ * The existence of the user config file is only checked if it differs from the
+ * default path.
+ *
  * @param path_config The path to the user config file.
  * @param defaults The defaults.
  *
@@ -101,9 +104,12 @@ void App::setUpLogger(std::string level, std::string pattern) {
  */
 ptree App::parseConfig(const std::string &path_config, const ptree &defaults,
                        const ptree &cli) {
-  ptree config_user = config::parse(path_config);
+  bool customConfigPath(cli.count("config"));
+  ptree config_user = config::parse(path_config, customConfigPath);
+
   ptree result = config::merge(defaults, config_user);
   result = config::merge(result, cli);
+
   config::check(result); // throws if invalid
 
   return result;
