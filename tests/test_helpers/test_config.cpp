@@ -13,11 +13,11 @@ using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
 /**
- * @brief Tests the config::parse function.
+ * @brief Tests the Config::parse function.
  */
 TEST(testConfig, parseConfig) {
   path path = App::static_dir / "config_user_test.json";
-  ptree config = config::parse(path.string());
+  ptree config = Config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), true);
   ASSERT_EQ(config.get<bool>("list"), true);
@@ -29,7 +29,7 @@ TEST(testConfig, parseConfig) {
 TEST(testConfig, parseConfigInvalid) {
   path path = "/foo/bar/config.json";
   try {
-    config::parse(path.string(), true);
+    Config::parse(path.string(), true);
     FAIL();
   } catch (std::invalid_argument &e) {
     SUCCEED();
@@ -48,7 +48,7 @@ TEST(testConfig, merge) {
   pconfig.put("foo", false);
   pconfig.put("bar", false);
 
-  ptree result = config::merge(pconfig, user);
+  ptree result = Config::merge(pconfig, user);
 
   ASSERT_EQ(result.get<bool>("foo"), true);
   ASSERT_EQ(result.get<bool>("bar"), false);
@@ -90,7 +90,7 @@ void tryCatchFail(std::function<void()> function) {
 
 TEST(testConfig, testCheckLogLevel) {
   ptree config;
-  auto func = [&config]() { config::checkLogLevel(config); };
+  auto func = [&config]() { Config::checkLogLevel(config); };
 
   config.put("loglevel", "foo");
   tryCatchSucceed(func);
@@ -101,7 +101,7 @@ TEST(testConfig, testCheckLogLevel) {
 
 TEST(testConfig, testCheckChrono) {
   ptree config;
-  auto func = [&config]() { config::checkChrono(config); };
+  auto func = [&config]() { Config::checkChrono(config); };
 
   config.put("timeout", "foo");
   config.put("interval", "foo");
@@ -116,7 +116,7 @@ TEST(testConfig, testCheckChrono) {
 
 TEST(testConfig, testCheckScientificNotation) {
   ptree config;
-  auto func = [&config]() { config::checkScientificNotation(config); };
+  auto func = [&config]() { Config::checkScientificNotation(config); };
 
   config.put("max-bytes", "foo");
   tryCatchSucceed(func);
@@ -128,16 +128,16 @@ TEST(testConfig, testCheckScientificNotation) {
 }
 
 TEST(testConfig, testScientificNotation) {
-  tryCatchSucceed([]() { config::scientificToUint64("foo"); });
+  tryCatchSucceed([]() { Config::scientificToUint64("foo"); });
 
   try {
-    uint64_t value = config::scientificToUint64("1e10");
+    uint64_t value = Config::scientificToUint64("1e10");
     ASSERT_EQ(value, 10000000000);
 
-    value = config::scientificToUint64("1e-10");
+    value = Config::scientificToUint64("1e-10");
     ASSERT_EQ(value, 0);
 
-    value = config::scientificToUint64("-1e0");
+    value = Config::scientificToUint64("-1e0");
     ASSERT_EQ(value, UINT64_MAX);
   } catch (std::invalid_argument &e) {
     FAIL();

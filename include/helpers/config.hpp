@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace config {
+namespace Config {
 
 using ptree = boost::property_tree::ptree;
 

@@ -1,5 +1,6 @@
 #include <helpers/argparse.hpp>
 
+#include <helpers/path.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <cxxopts.hpp>
 #include <filesystem>
@@ -39,8 +40,7 @@ ArgParse::ArgParse(int argc, char *argv[])
       description("Command line interface for taking camera snapshots.\n"),
       options(program, description) {
 
-  path home(getHome());
-  path path_config(home / ".config" / "snapshot" / "config.json");
+  path path_config(Path::expand("${HOME}/.config/snapshot/config.json"));
   path path_save(std::filesystem::current_path() / "snapshot");
 
   // clang-format off
@@ -102,21 +102,6 @@ ArgParse::ArgParse(int argc, char *argv[])
     ("pattern", "Set the log pattern (see spdlog docs for details)",
     DEFAULT("[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"));
   // clang-format on
-}
-
-/**
- * @brief Get the home directory
- *
- * Cross platform home directory expansion.
- *
- * @return The home directory
- */
-std::string ArgParse::getHome() {
-  std::string home = getenv("HOME");
-  if (home.empty()) {
-    home = getenv("USERPROFILE");
-  }
-  return home;
 }
 
 /**

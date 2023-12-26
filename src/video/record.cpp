@@ -31,7 +31,7 @@ ImageSaver::ImageSaver(QVideoSink *sink, path directory, QObject *parent)
  * A slot to save a frame from the video sink.
  */
 void ImageSaver::save() {
-  if (!mkdir(save_dir)) {
+  if (!Path::mkdir(save_dir)) {
     spdlog::warn("Failed to create the subdirectory {}", save_dir.string());
     return;
   }
@@ -111,7 +111,7 @@ Recorder::Recorder(QVideoSink *sink, path save_path, QObject *parent)
       elapsed(0),
       duration(0),
       maxBytes(UINT64_MAX) {
-  if (!mkdir(directory)) {
+  if (!Path::mkdir(directory)) {
     spdlog::warn("Failed to create the base directory {}", directory.string());
   }
 

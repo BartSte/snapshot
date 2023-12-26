@@ -22,7 +22,7 @@ using path = std::filesystem::path;
 using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
 
-const path App::root = program_location();
+const path App::root = Path::program_location();
 const path App::static_dir = App::root / ".." / "static";
 const path App::debug_video = App::static_dir / "sample.mp4";
 
@@ -105,12 +105,12 @@ void App::setUpLogger(std::string level, std::string pattern) {
 ptree App::parseConfig(const std::string &path_config, const ptree &defaults,
                        const ptree &cli) {
   bool customConfigPath(cli.count("config"));
-  ptree config_user = config::parse(path_config, customConfigPath);
+  ptree config_user = Config::parse(path_config, customConfigPath);
 
-  ptree result = config::merge(defaults, config_user);
-  result = config::merge(result, cli);
+  ptree result = Config::merge(defaults, config_user);
+  result = Config::merge(result, cli);
 
-  config::check(result); // throws if invalid
+  Config::check(result); // throws if invalid
 
   return result;
 }
@@ -227,14 +227,14 @@ void App::record() {
     return;
   }
 
-  path path_save(settings.get<std::string>("folder"));
+  path path_save(Path::expand(settings.get<std::string>("folder")));
   QVideoSink *sink_ptr = video->getVideoSink();
   recorder = std::make_unique<Recorder>(sink_ptr, path_save);
 
   sec duration = stringToSec(settings.get<std::string>("duration"));
   sec interval = stringToSec(settings.get<std::string>("interval"));
   std::string maxBytesString = settings.get<std::string>("max-bytes");
-  uint64_t maxBytes = config::scientificToUint64(maxBytesString);
+  uint64_t maxBytes = Config::scientificToUint64(maxBytesString);
   recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
 }
 

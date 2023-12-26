@@ -146,7 +146,7 @@ class QTestApp : public QObject {
     App app(argv.size(), argv.data());
     int exitCode = app.run();
     QTest::qWait(4000);
-    QCOMPARE(numberOfFilesRecursive(tmpDir), 2);
+    QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 2);
   }
 
   /**
@@ -164,7 +164,7 @@ class QTestApp : public QObject {
     App app(argv.size(), argv.data());
     int exitCode = app.run();
     QTest::qWait(2000);
-    QCOMPARE(numberOfFilesRecursive(tmpDir), 1);
+    QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 1);
   }
 };
 

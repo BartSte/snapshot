@@ -282,10 +282,9 @@ more information.
 - [ ] When the state becomes "stop" the recording should be stopped. This is
       not the case at the moment.
 
-- [ ] The --folder argument is not expanded. This means that ~ and $HOME are
-      not expanded. This should be fixed.
-
-- [ ] Write tests for invalid config settings that triggers the config::check
+- [ ] Write tests for invalid config settings that triggers the Config::check
       function. Also improve the error messages and do a graceful exit.
 
 - [ ] The camera is still started when no --gui/--record is added.
+
+- [ ] Quit the application when both the gui and the recorder are stopped.

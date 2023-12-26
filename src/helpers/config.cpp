@@ -23,7 +23,7 @@ using ptree = boost::property_tree::ptree;
  *
  * @return The parsed config as a boost::property_tree::ptree.
  */
-boost::property_tree::ptree config::parse(const std::string &path, bool check) {
+boost::property_tree::ptree Config::parse(const std::string &path, bool check) {
   ptree tree;
   if (std::filesystem::exists(path)) {
     spdlog::debug("Reading config file from {}", path);
@@ -45,7 +45,7 @@ boost::property_tree::ptree config::parse(const std::string &path, bool check) {
  *
  * @return The merged config.
  */
-ptree config::merge(ptree destination, const ptree &source) {
+ptree Config::merge(ptree destination, const ptree &source) {
   for (const auto &key_value : source) {
     destination.put(key_value.first, key_value.second.data());
   }
@@ -59,10 +59,10 @@ ptree config::merge(ptree destination, const ptree &source) {
  *
  * @param config The config.
  */
-void config::check(const ptree &config) {
-  config::checkLogLevel(config);
-  config::checkChrono(config);
-  config::checkScientificNotation(config);
+void Config::check(const ptree &config) {
+  Config::checkLogLevel(config);
+  Config::checkChrono(config);
+  Config::checkScientificNotation(config);
 }
 
 /**
@@ -72,7 +72,7 @@ void config::check(const ptree &config) {
  *
  * @param config The config.
  */
-void config::checkLogLevel(const ptree &config) {
+void Config::checkLogLevel(const ptree &config) {
   const std::string actual = config.get<std::string>("loglevel");
   const std::vector<std::string> expected = {
       "trace", "debug", "info", "warn", "warning", "error", "critical"};
@@ -90,7 +90,7 @@ void config::checkLogLevel(const ptree &config) {
  *
  * @param config The config.
  */
-void config::checkChrono(const ptree &config) {
+void Config::checkChrono(const ptree &config) {
   std::vector<std::string> keys = {"timeout", "duration", "interval"};
   for (const auto &key : keys) {
     const std::string str = config.get<std::string>(key);
@@ -106,7 +106,7 @@ void config::checkChrono(const ptree &config) {
  *
  * @param config The config.
  */
-void config::checkScientificNotation(const ptree &config) {
+void Config::checkScientificNotation(const ptree &config) {
   const std::string str = config.get<std::string>("max-bytes");
   uint64_t value = scientificToUint64(str); // throws if invalid
   if (str.find('-') != std::string::npos) {
@@ -123,7 +123,7 @@ void config::checkScientificNotation(const ptree &config) {
  * @param str The string to convert.
  * @return The converted number.
  */
-uint64_t config::scientificToUint64(const std::string &str) {
+uint64_t Config::scientificToUint64(const std::string &str) {
   try {
     return static_cast<uint64_t>(std::stod(str));
   } catch (...) {
