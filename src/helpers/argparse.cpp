@@ -151,7 +151,7 @@ void checkChrono(const ptree &config) {
   std::vector<std::string> keys = {"timeout", "duration", "interval"};
   for (const auto &key : keys) {
     const std::string str = config.get<std::string>(key);
-    sec value = stringToSec(str); // throws if invalid
+    stringToSec(str); // throws if invalid
   }
 }
 

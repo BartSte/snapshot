@@ -27,8 +27,8 @@ class ResetTimer : public QTimer {
   ms getElapsed() { return elapsed; }
 
  private:
-  ms elapsed;
   ms duration;
+  ms elapsed;
   void count();
   void check();
 

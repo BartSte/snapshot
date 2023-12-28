@@ -1,10 +1,10 @@
-#include "snapshotapp.hpp"
 #include <QString>
 #include <QTest>
 #include <chrono>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <qapplication.h>
+#include <snapshotapp.hpp>
 #include <video/connect.hpp>
 
 using ms = std::chrono::milliseconds;
@@ -88,12 +88,16 @@ TEST(testConnect, TestVideoFactory) {
 
   try {
     MediaPlayer *file_ptr = dynamic_cast<MediaPlayer *>(file->get());
+    ASSERT_NE(file_ptr, nullptr);
+    SUCCEED();
   } catch (std::bad_cast &e) {
     FAIL() << "file is not a MediaPlayer";
   }
 
   try {
     MediaPlayer *stream_ptr = dynamic_cast<MediaPlayer *>(stream->get());
+    ASSERT_NE(stream_ptr, nullptr);
+    SUCCEED();
   } catch (std::bad_cast &e) {
     FAIL() << "stream is not a MediaPlayer";
   }

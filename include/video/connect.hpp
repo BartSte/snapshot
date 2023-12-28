@@ -36,9 +36,9 @@ class BaseVideo : public QObject {
  private:
   Q_OBJECT
 
-  VideoState state;
-  QVideoSink sink;
   ResetTimer stopTimer;
+  QVideoSink sink;
+  VideoState state;
 
  public:
   explicit BaseVideo(ms connectTimeout = sec(30), QObject *parent = nullptr);

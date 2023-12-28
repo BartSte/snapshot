@@ -128,7 +128,7 @@ class QTestApp : public QObject {
   void testCamera() {
     CharPointers argv = getArgv({"--camera", App::debug_video.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.exec();
+    app.exec();
     QTest::qWait(2000);
   }
 
@@ -144,7 +144,7 @@ class QTestApp : public QObject {
         {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
          "--duration", "2s", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.exec();
+    app.exec();
     QTest::qWait(4000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 2);
   }
@@ -162,7 +162,7 @@ class QTestApp : public QObject {
         {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
          "--max-bytes", "1", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.exec();
+    app.exec();
     QTest::qWait(2000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 1);
   }

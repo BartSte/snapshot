@@ -34,7 +34,7 @@ const std::map<VideoState, std::string> stateVsText = {
  * @param mainWindow A pointer to a QWidget.
  */
 VideoScene::VideoScene(QObject *parent)
-    : QGraphicsScene(parent), pixmapItem(), textItem(), videoItem() {
+    : QGraphicsScene(parent), textItem(), videoItem(), pixmapItem() {
   addItem(&pixmapItem);
   addItem(&textItem);
   addItem(&videoItem);
