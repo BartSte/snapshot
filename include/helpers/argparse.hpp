@@ -11,12 +11,11 @@ class ArgParse {
 
  public:
   static ptree asPtree(const std::vector<cxxopts::KeyValue> &args);
+  static void check(const ptree &config);
 
   ArgParse(int argc, char *argv[]);
   cxxopts::ParseResult parse();
   std::string help();
-
-  ~ArgParse();
 
  private:
   int argc;
@@ -24,6 +23,4 @@ class ArgParse {
   std::string program;
   std::string description;
   cxxopts::Options options;
-
-  std::string getHome();
 };

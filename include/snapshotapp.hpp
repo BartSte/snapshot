@@ -23,7 +23,7 @@ class App : public QApplication {
 
   App(int argc, char *argv[]);
   ptree getSettings();
-  int run();
+  int exec();
 
  private:
   ArgParse parser;
@@ -32,8 +32,8 @@ class App : public QApplication {
   std::shared_ptr<BaseVideo> video;
   std::unique_ptr<MainWindow> window;
 
-  ptree parseConfig(const std::string &path_config, const ptree &defaults,
-                    const ptree &cli);
+  int run();
+  ptree parseSettings();
   void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
   void debug();

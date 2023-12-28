@@ -274,17 +274,15 @@ more information.
 
 # TODO:
 
+- [ ] When the state becomes "stop" the recording should be stopped. This is
+      not the case at the moment.
+
+- [ ] The camera is still started when no --gui/--record is added.
+
+- [ ] Quit the application when both the gui and the recorder are stopped.
+
 - [ ] When the connection is lost, the app will set the state to stop after the
       duration that is specified in the timeout. In the meantime, we do not
       want a blank screen, instead, we want to display the last frame that was
       received.
 
-- [ ] When the state becomes "stop" the recording should be stopped. This is
-      not the case at the moment.
-
-- [ ] Write tests for invalid config settings that triggers the Config::check
-      function. Also improve the error messages and do a graceful exit.
-
-- [ ] The camera is still started when no --gui/--record is added.
-
-- [ ] Quit the application when both the gui and the recorder are stopped.

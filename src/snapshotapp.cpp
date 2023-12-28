@@ -38,16 +38,6 @@ const path App::debug_video = App::static_dir / "sample.mp4";
 App::App(int argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
   signal(SIGINT, sigintHandler);
-
-  cxxopts::ParseResult args = parser.parse();
-
-  std::string path_config = args["config"].as<std::string>();
-  ptree defaults = ArgParse::asPtree(args.defaults());
-  ptree cli = ArgParse::asPtree(args.arguments());
-  settings = parseConfig(path_config, defaults, cli);
-
-  setUpLogger(settings.get<std::string>("loglevel"),
-              settings.get<std::string>("pattern"));
 }
 
 /**
@@ -70,6 +60,95 @@ void App::sigintHandler(int signal) {
 }
 
 /**
+ * @brief handles exceptions
+ *
+ * Exceptions are caught and logged as errors.
+ *
+ * @return the exit code
+ */
+int App::exec() {
+  try {
+    return run();
+  } catch (std::exception &e) {
+    spdlog::error("{}", e.what());
+    return 1;
+  }
+}
+
+/**
+ * @brief exec
+ *
+ * Executes the program.
+ *
+ * @return exit code
+ */
+int App::run() {
+  settings = getSettings();
+
+  setUpLogger(settings.get<std::string>("loglevel"),
+              settings.get<std::string>("pattern"));
+
+  if (printHelp()) {
+    return 0;
+  }
+  debug();
+  list();
+  connect();
+  show();
+  record();
+
+  bool noEventLoop = settings.get<bool>("no-event-loop");
+  if ((window || recorder) && !noEventLoop) {
+    return QApplication::exec();
+  } else {
+    if (noEventLoop)
+      spdlog::warn("Event loop disabled by user.");
+    return 0;
+  }
+}
+
+/**
+ * @brief getSettings
+ *
+ * Returns the settings.
+ *
+ * @return The settings.
+ */
+ptree App::getSettings() {
+  if (settings.empty()) {
+    settings = parseSettings();
+  }
+  return settings;
+}
+
+/**
+ * @brief Combines the user config file, the defaults, and the cli arguments
+ * into 1 ptree.
+ *
+ * If the user config supplies a custom config file path, an exeption is thrown
+ * when the file does not exist. After parsing, the config is checked for
+ * validity.
+ *
+ * @return The settings.
+ */
+ptree App::parseSettings() {
+  cxxopts::ParseResult args = parser.parse();
+
+  std::string pathConfig = args["config"].as<std::string>();
+  ptree defaults = ArgParse::asPtree(args.defaults());
+  ptree cli = ArgParse::asPtree(args.arguments());
+  bool customConfigPath(cli.count("config"));
+  ptree configUser = Config::parse(pathConfig, customConfigPath);
+
+  ptree result = Config::merge(defaults, configUser);
+  result = Config::merge(result, cli);
+
+  ArgParse::check(result);
+
+  return result;
+}
+
+/**
  * @brief setUpLogger
  *
  * Set the loglevel and the pattern of the logger.
@@ -85,59 +164,6 @@ void App::setUpLogger(std::string level, std::string pattern) {
   spdlog::set_pattern(pattern);
   spdlog::debug("Loglevel: {}", level);
   spdlog::debug("Pattern: {}", pattern);
-}
-
-/**
- * @brief Returns the settings for the application.
- *
- * Parses the user config file from `path_config` and merges it with the
- * defaults. The result is merged with the cli arguments. If the config is
- * invalid, an exception is thrown.
- *
- * The existence of the user config file is only checked if it differs from the
- * default path.
- *
- * @param path_config The path to the user config file.
- * @param defaults The defaults.
- *
- * @return The settings.
- */
-ptree App::parseConfig(const std::string &path_config, const ptree &defaults,
-                       const ptree &cli) {
-  bool customConfigPath(cli.count("config"));
-  ptree config_user = Config::parse(path_config, customConfigPath);
-
-  ptree result = Config::merge(defaults, config_user);
-  result = Config::merge(result, cli);
-
-  Config::check(result); // throws if invalid
-
-  return result;
-}
-
-/**
- * @brief exec
- *
- * Executes the program.
- *
- * @return exit code
- */
-int App::run() {
-  if (printHelp()) {
-    return 0;
-  }
-  debug();
-  list();
-  connect();
-  show();
-  record();
-
-  bool noEventLoop = settings.get<bool>("no-event-loop");
-  if ((window || recorder) && !noEventLoop) {
-    return exec();
-  } else {
-    return 0;
-  }
 }
 
 /**
@@ -234,15 +260,7 @@ void App::record() {
   sec duration = stringToSec(settings.get<std::string>("duration"));
   sec interval = stringToSec(settings.get<std::string>("interval"));
   std::string maxBytesString = settings.get<std::string>("max-bytes");
-  uint64_t maxBytes = Config::scientificToUint64(maxBytesString);
+  uint64_t maxBytes = static_cast<uint64_t>(std::stod(maxBytesString));
+
   recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
 }
-
-/**
- * @brief getSettings
- *
- * Returns the settings.
- *
- * @return The settings.
- */
-ptree App::getSettings() { return settings; }

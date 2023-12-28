@@ -1,18 +1,21 @@
 #include <helpers/argparse.hpp>
 
-#include <helpers/path.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <cxxopts.hpp>
 #include <filesystem>
+#include <helpers/path.hpp>
+#include <helpers/time.hpp>
 #include <string>
 
 #define DEFAULT cxxopts::value<std::string>()->default_value
 
+using sec = std::chrono::seconds;
 using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
 /**
- * @brief Convert a vector of cxxopts::KeyValue to a boost::property_tree::ptree.
+ * @brief Convert a vector of cxxopts::KeyValue to a
+ * boost::property_tree::ptree.
  *
  * Usefull when you do not want to use cxxopts ist KeyValues type.
  *
@@ -118,4 +121,82 @@ cxxopts::ParseResult ArgParse::parse() { return options.parse(argc, argv); }
  */
 std::string ArgParse::help() { return options.help(); }
 
-ArgParse::~ArgParse() {}
+/**
+ * @brief checkLogLevel
+ *
+ * Checks if the loglevel is valid. If not, an exception is thrown.
+ *
+ * @param config The config.
+ */
+void checkLogLevel(const ptree &config) {
+  const std::string actual = config.get<std::string>("loglevel");
+  const std::vector<std::string> expected = {
+      "trace", "debug", "info", "warn", "warning", "error", "critical"};
+
+  if (std::find(expected.begin(), expected.end(), actual) == expected.end()) {
+    throw std::invalid_argument("Invalid loglevel: " + actual);
+  }
+}
+
+/**
+ * @brief checkChrono
+ *
+ * Checks if the strings representing durations can be converted to
+ * std::chrono::seconds. If not, an exception is thrown.
+ *
+ * @param config The config.
+ */
+void checkChrono(const ptree &config) {
+  std::vector<std::string> keys = {"timeout", "duration", "interval"};
+  for (const auto &key : keys) {
+    const std::string str = config.get<std::string>(key);
+    sec value = stringToSec(str); // throws if invalid
+  }
+}
+
+/**
+ * @brief check if the string representing a number in scientific notation is
+ * valid. If not, an exception is thrown.
+ *
+ * @param config The config.
+ */
+void checkScientificNotation(const ptree &config) {
+  const std::string str = config.get<std::string>("max-bytes");
+  std::regex regex("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$");
+  if (!std::regex_match(str, regex)) {
+    throw std::invalid_argument("Invalid scientific notation: " + str);
+  }
+}
+
+/**
+ * @brief check if the parent directory of the folders are writable such that
+ * the directory can be created. If not, an exception is thrown.
+ *
+ * @param config
+ */
+void checkPaths(const ptree &config) {
+  std::filesystem::path path(config.get<std::string>("folder"));
+  std::filesystem::path parent = path.parent_path();
+
+  if (!std::filesystem::exists(parent)) {
+    throw std::invalid_argument("Parent directory does not exist: " +
+                                parent.string());
+  } else if (access(parent.string().c_str(), W_OK) != 0) {
+    throw std::invalid_argument("Parent directory is not writable: " +
+                                parent.string());
+  }
+}
+
+/**
+ * @brief check
+ *
+ * Checks if the config is valid. If not, an exception is thrown.
+ *
+ * @param config The config.
+ */
+void ArgParse::check(const ptree &config) {
+  checkLogLevel(config);
+  checkChrono(config);
+  checkScientificNotation(config);
+  checkPaths(config);
+}

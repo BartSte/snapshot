@@ -86,7 +86,7 @@ TEST_F(GTestApp, testParseConfig) {
 TEST_F(GTestApp, testPrintHelp) {
   CharPointers argv = getArgv({"--help"});
   App app(argv.size(), argv.data());
-  std::cout << app.run();
+  std::cout << app.exec();
 
   EXPECT_TRUE(buffer.str().find("Usage:") != std::string::npos);
 }
@@ -94,7 +94,7 @@ TEST_F(GTestApp, testPrintHelp) {
 TEST_F(GTestApp, testList) {
   CharPointers argv = getArgv({"--list"});
   App app(argv.size(), argv.data());
-  std::cout << app.run();
+  std::cout << app.exec();
 
   for (auto &column : {"Index", "Name", "ID", "Is Default"}) {
     EXPECT_TRUE(buffer.str().find(column) != std::string::npos);
@@ -128,7 +128,7 @@ class QTestApp : public QObject {
   void testCamera() {
     CharPointers argv = getArgv({"--camera", App::debug_video.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.run();
+    int exitCode = app.exec();
     QTest::qWait(2000);
   }
 
@@ -144,7 +144,7 @@ class QTestApp : public QObject {
         {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
          "--duration", "2s", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.run();
+    int exitCode = app.exec();
     QTest::qWait(4000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 2);
   }
@@ -162,7 +162,7 @@ class QTestApp : public QObject {
         {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
          "--max-bytes", "1", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
-    int exitCode = app.run();
+    int exitCode = app.exec();
     QTest::qWait(2000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 1);
   }
