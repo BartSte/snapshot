@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <helpers/path.hpp>
 #include <helpers/time.hpp>
+#include <spdlog/spdlog.h>
 #include <string>
 
 #define DEFAULT cxxopts::value<std::string>()->default_value
@@ -188,6 +189,22 @@ void checkPaths(const ptree &config) {
 }
 
 /**
+ * @brief checkFlags
+ *
+ * Log messages for some flags.
+ *
+ * @param config The config.
+ */
+void checkFlags(const ptree &config) {
+  if (config.get<bool>("no-event-loop")) {
+    spdlog::warn("Event loop disabled by user.");
+  }
+  if (config.get<bool>("debug")) {
+    spdlog::warn("Debug mode enabled.");
+  }
+}
+
+/**
  * @brief check
  *
  * Checks if the config is valid. If not, an exception is thrown.
@@ -199,4 +216,5 @@ void ArgParse::check(const ptree &config) {
   checkChrono(config);
   checkScientificNotation(config);
   checkPaths(config);
+  checkFlags(config);
 }

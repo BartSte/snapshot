@@ -101,8 +101,6 @@ int App::run() {
   if ((window || recorder) && !noEventLoop) {
     return QApplication::exec();
   } else {
-    if (noEventLoop)
-      spdlog::warn("Event loop disabled by user.");
     return 0;
   }
 }
