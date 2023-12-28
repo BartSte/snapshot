@@ -122,6 +122,6 @@ TEST(testArgparse, testPaths) {
   config.put("folder", "/non-existing-parent/non-existing-folder");
   tryCatchSucceed(func);
 
-  config.put("folder", Path::expand("~/non-existing-folder"));
+  config.put("folder", "~/non-existing-folder");
   tryCatchFail(func);
 }

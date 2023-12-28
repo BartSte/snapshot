@@ -175,7 +175,7 @@ void checkScientificNotation(const ptree &config) {
  * @param config
  */
 void checkPaths(const ptree &config) {
-  std::filesystem::path path(config.get<std::string>("folder"));
+  std::filesystem::path path(Path::expand(config.get<std::string>("folder")));
   std::filesystem::path parent = path.parent_path();
 
   if (!std::filesystem::exists(parent)) {
