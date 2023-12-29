@@ -49,7 +49,7 @@ void BaseVideo::setState(const VideoState &newState) {
   if (state != newState) {
     state = newState;
     emit stateChanged();
-    spdlog::info("Video state changed to {}", videoStateString.at(state));
+    spdlog::debug("Video state changed to {}", videoStateString.at(state));
   }
 }
 

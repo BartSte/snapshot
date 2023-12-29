@@ -50,16 +50,8 @@ class Recorder : public QObject {
   Q_OBJECT
   QThread worker;
 
- private:
-  QTimer timer;
-  path directory;
-  ImageSaver saver;
-  ms elapsed;
-  ms duration;
-  uint64_t maxBytes;
-  RecorderState state;
-  bool isValidInterval(ms interval, ms min_interval);
-  void applyDuration(ms duration);
+ signals:
+  void stateChanged();
 
  private slots:
   void stopAfterDuration();
@@ -72,4 +64,16 @@ class Recorder : public QObject {
              ms min_interval = ms(1000), uint64_t max_bytes = UINT64_MAX);
   void stop();
   RecorderState getState();
+  void setState(RecorderState state);
+
+ private:
+  QTimer timer;
+  path directory;
+  ImageSaver saver;
+  ms elapsed;
+  ms duration;
+  uint64_t maxBytes;
+  RecorderState state;
+  bool isValidInterval(ms interval, ms min_interval);
+  void applyDuration(ms duration);
 };

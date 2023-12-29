@@ -1,9 +1,9 @@
-#include "snapshotapp.hpp"
 #include <QObject>
 #include <QTest>
 #include <gtest/gtest.h>
 #include <helpers/path.hpp>
 #include <qvideosink.h>
+#include <snapshotapp.hpp>
 #include <video/record.hpp>
 
 using path = std::filesystem::path;

@@ -135,9 +135,9 @@ Recorder::~Recorder() {
 void Recorder::stopAfterDuration() {
   elapsed += timer.intervalAsDuration();
   if (elapsed >= duration && duration.count() != 0) {
+    stop();
     spdlog::info("Recording finished. The elapsed time is {} ms.",
                  elapsed.count());
-    stop();
   }
 }
 
@@ -175,7 +175,8 @@ void Recorder::start(ms interval, ms duration, ms min_interval,
   maxBytes = bytes;
   timer.start(interval);
   worker.start();
-  state = RecorderState::Start;
+  spdlog::debug("Recorder is started");
+  setState(RecorderState::Start);
 }
 
 /**
@@ -187,7 +188,8 @@ void Recorder::stop() {
   timer.stop();
   worker.quit();
   worker.wait();
-  state = RecorderState::Stop;
+  spdlog::debug("Recorder is stopped");
+  setState(RecorderState::Stop);
 }
 
 /**
@@ -225,3 +227,17 @@ bool Recorder::isValidInterval(ms interval, ms min_interval) {
  * @return the state of the recorder
  */
 RecorderState Recorder::getState() { return state; }
+
+/**
+ * @brief setState
+ *
+ * Set the state of the recorder.
+ *
+ * @param state the state of the recorder
+ */
+void Recorder::setState(RecorderState state) {
+  if (state != this->state) {
+    this->state = state;
+    emit stateChanged();
+  }
+}

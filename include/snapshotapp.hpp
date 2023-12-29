@@ -25,6 +25,9 @@ class App : public QApplication {
   ptree getSettings();
   int exec();
 
+ public slots:
+  void quitWhenHeadless();
+
  private:
   ArgParse parser;
   ptree settings;
@@ -32,14 +35,24 @@ class App : public QApplication {
   std::shared_ptr<BaseVideo> video;
   std::unique_ptr<MainWindow> window;
 
-  int run();
+  static void sigintHandler(int signal);
+
+  int start();
   ptree parseSettings();
   void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
-  void debug();
-  void list();
-  void connect();
-  void record();
-  void show();
-  static void sigintHandler(int signal);
+  void applyDebugSettings();
+  bool list();
+  void makeVideo();
+  void startVideo();
+  void makeRecorder();
+  void startRecorder();
+  void makeGui();
+  void startGui();
+  int execWithFlag(bool disable);
+
+  void stop();
+  bool videoActive();
+  bool recorderActive();
+  bool guiActive();
 };

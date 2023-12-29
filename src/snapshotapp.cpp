@@ -11,6 +11,7 @@
 #include <iostream>
 #include <memory>
 #include <qapplication.h>
+#include <qobject.h>
 #include <signal.h>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -38,6 +39,7 @@ const path App::debug_video = App::static_dir / "sample.mp4";
 App::App(int argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
   signal(SIGINT, sigintHandler);
+  QObject::connect(this, &App::aboutToQuit, this, &App::stop);
 }
 
 /**
@@ -50,12 +52,27 @@ App::App(int argc, char *argv[])
 void App::sigintHandler(int signal) {
   if (signal == SIGINT) {
     spdlog::info("SIGINT received, exiting...");
-    auto app = App::instance();
+    QCoreApplication *app = App::instance();
     if (app == nullptr) {
       spdlog::warn("QApplication is a nullptr.");
     } else {
+      spdlog::debug("Quitting QApplication");
       App::instance()->quit();
     }
+  }
+}
+
+/**
+ * @brief Stop the injected dependencies.
+ */
+void App::stop() {
+  spdlog::debug("App::stop called");
+  if (videoActive()) {
+    video->stop();
+  }
+  if (recorderActive()) {
+    disconnect(recorder.get(), &Recorder::stateChanged, this, &App::quitWhenHeadless);
+    recorder->stop();
   }
 }
 
@@ -68,39 +85,43 @@ void App::sigintHandler(int signal) {
  */
 int App::exec() {
   try {
-    return run();
+    return start();
   } catch (std::exception &e) {
+    quit();
     spdlog::error("{}", e.what());
     return 1;
   }
 }
 
 /**
- * @brief exec
+ * @brief run
  *
- * Executes the program.
+ * Executes the program without handling exceptions.
  *
  * @return exit code
  */
-int App::run() {
+int App::start() {
   settings = getSettings();
 
   setUpLogger(settings.get<std::string>("loglevel"),
               settings.get<std::string>("pattern"));
 
-  if (printHelp()) {
+  if (printHelp() || list()) {
     return 0;
   }
-  debug();
-  list();
-  connect();
-  show();
-  record();
 
-  bool noEventLoop = settings.get<bool>("no-event-loop");
-  if ((window || recorder) && !noEventLoop) {
-    return QApplication::exec();
+  applyDebugSettings();
+  makeVideo();
+  makeGui();
+  makeRecorder();
+
+  if (window || recorder) {
+    startVideo();
+    startRecorder();
+    startGui();
+    return execWithFlag(settings.get<bool>("no-event-loop"));
   } else {
+    spdlog::info("No gui, or recorder created. Exiting...");
     return 0;
   }
 }
@@ -123,9 +144,9 @@ ptree App::getSettings() {
  * @brief Combines the user config file, the defaults, and the cli arguments
  * into 1 ptree.
  *
- * If the user config supplies a custom config file path, an exeption is thrown
- * when the file does not exist. After parsing, the config is checked for
- * validity.
+ * If the user config supplies a custom config file path, an exeption is
+ * thrown when the file does not exist. After parsing, the config is checked
+ * for validity.
  *
  * @return The settings.
  */
@@ -176,19 +197,6 @@ bool App::printHelp() {
 }
 
 /**
- * @brief enableDebugMode
- *
- * If the debug flag is set, enable the gui and set the camera to the debug
- * video.
- */
-void App::debug() {
-  if (settings.get<bool>("debug")) {
-    settings.put("gui", true);
-    settings.put("camera", debug_video.string());
-  }
-}
-
-/**
  * @brief printCameras
  *
  * Print the available cameras that are found by Qt's QMediaDevices module to
@@ -196,9 +204,24 @@ void App::debug() {
  *
  * @return exit code
  */
-void App::list() {
-  if (settings.get<bool>("list")) {
+bool App::list() {
+  bool list = settings.get<bool>("list");
+  if (list) {
     std::cout << listCameras() << std::endl;
+  }
+  return list;
+}
+
+/**
+ * @brief enableDebugMode
+ *
+ * If the debug flag is set, enable the gui and set the camera to the debug
+ * video.
+ */
+void App::applyDebugSettings() {
+  if (settings.get<bool>("debug")) {
+    settings.put("gui", true);
+    settings.put("camera", debug_video.string());
   }
 }
 
@@ -207,14 +230,13 @@ void App::list() {
  *
  * Connect to the camera specified in the config file, if it is found.
  */
-void App::connect() {
+void App::makeVideo() {
   std::string id = settings.get<std::string>("camera");
   std::string timeout = settings.get<std::string>("timeout");
   auto optional = videoFactory(id, stringToSec(timeout));
 
   if (optional.has_value()) {
     video = std::move(optional.value());
-    video->start();
   } else {
     spdlog::info("No video found.");
   }
@@ -227,7 +249,7 @@ void App::connect() {
  *
  * @return exit code
  */
-void App::show() {
+void App::makeGui() {
   if (!settings.get<bool>("gui")) {
     return;
   }
@@ -236,7 +258,6 @@ void App::show() {
   if (video) {
     window->scene.setVideo(video);
   }
-  window->show();
 }
 
 /**
@@ -246,7 +267,7 @@ void App::show() {
  *
  * @return exit code
  */
-void App::record() {
+void App::makeRecorder() {
   if (!settings.get<bool>("record")) {
     return;
   }
@@ -254,11 +275,111 @@ void App::record() {
   path path_save(Path::expand(settings.get<std::string>("folder")));
   QVideoSink *sink_ptr = video->getVideoSink();
   recorder = std::make_unique<Recorder>(sink_ptr, path_save);
+  QObject::connect(recorder.get(), &Recorder::stateChanged, this,
+                   &App::quitWhenHeadless);
+}
 
-  sec duration = stringToSec(settings.get<std::string>("duration"));
-  sec interval = stringToSec(settings.get<std::string>("interval"));
-  std::string maxBytesString = settings.get<std::string>("max-bytes");
-  uint64_t maxBytes = static_cast<uint64_t>(std::stod(maxBytesString));
+/**
+ * @brief Quit when the recorder is stopped and no gui is active.
+ */
+void App::quitWhenHeadless() {
+  spdlog::debug("Quit if no gui is active");
+  if (guiActive()) {
+    spdlog::debug("Gui is active");
+    return;
+  } else if (App::closingDown()) {
+    spdlog::debug("App is already closing down");
+    return;
+  } else {
+    spdlog::debug("Quitting");
+    quit();
+  }
+}
 
-  recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
+/**
+ * @brief If a video is created, start it.
+ */
+void App::startVideo() {
+  if (video) {
+    spdlog::debug("Starting video");
+    video->start();
+  }
+}
+
+/**
+ * @brief Show the GUI if it is created.
+ */
+void App::startGui() {
+  if (window) {
+    window->show();
+  }
+}
+
+/**
+ * @brief Start the recorder if it is created.
+ */
+void App::startRecorder() {
+  if (recorder) {
+    sec duration = stringToSec(settings.get<std::string>("duration"));
+    sec interval = stringToSec(settings.get<std::string>("interval"));
+    std::string maxBytesString = settings.get<std::string>("max-bytes");
+    uint64_t maxBytes = static_cast<uint64_t>(std::stod(maxBytesString));
+
+    recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
+  }
+}
+
+/**
+ * @brief execute the event loop if enable is true.
+ *
+ * @param enable a flag to enable the event loop
+ * @return the exit code
+ */
+int App::execWithFlag(bool disable) {
+  if (disable) {
+    spdlog::warn("Event loop disabled");
+    return 0;
+  } else {
+    spdlog::debug("Starting event loop");
+    return QApplication::exec();
+  }
+}
+
+/**
+ * @brief check if the video is active.
+ *
+ * @return True if the video is active, false otherwise.
+ */
+bool App::videoActive() {
+  if (video) {
+    return video->getState() == VideoState::Start;
+  } else {
+    return false;
+  }
+}
+
+/**
+ * @brief check if the gui is active.
+ *
+ * @return True if the gui is active, false otherwise.
+ */
+bool App::guiActive() {
+  if (window) {
+    return window->isVisible();
+  } else {
+    return false;
+  }
+}
+
+/**
+ * @brief Returns true if the recorder is created and its state is Start.
+ *
+ * @return True if the recorder is created and its state is Start.
+ */
+bool App::recorderActive() {
+  if (recorder) {
+    return recorder->getState() == RecorderState::Start;
+  } else {
+    return false;
+  }
 }
