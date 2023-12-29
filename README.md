@@ -274,18 +274,10 @@ more information.
 
 # TODO:
 
-- [ ] Quit the application when both the gui and the recorder are stopped. Do
-      this by creating 2 signals when the gui and the recorder are stopped.
-      Connect these signals to a slot that of application that quits the
-      application when both signals gui and recorder states are stopped.
-      - Almost done, fine the behaviour
-
 - [ ] When the connection is lost, the app will set the state to stop after the
       duration that is specified in the timeout. In the meantime, we do not
       want a blank screen, instead, we want to display the last frame that was
       received.
 
 - [ ] Fix the segmenation fault that sometimes occurs when the application is
-      closed using SIGINT. You can try to create a signleton that can be
-      created in the siginthandler. Next, you can call the quit method that
-      gracefully exists the recorder and the gui.
+      closed using SIGINT.
