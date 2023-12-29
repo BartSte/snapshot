@@ -182,8 +182,8 @@ void ResetTimer::count() { elapsed += intervalAsDuration(); }
  */
 void ResetTimer::check() {
   if (elapsed >= duration) {
-    spdlog::info("ResetTimer timed out with elapsed time {} ms and a timeout "
-                 "of {} ms",
+    spdlog::info("The video connection was lost for {} seconds, exceeding the "
+                 "timeout of {} seconds",
                  elapsed.count(), duration.count());
     stop();
     emit this->timeout();

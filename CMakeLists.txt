@@ -4,6 +4,8 @@ project(
   VERSION 0.0.0
   LANGUAGES CXX)
 
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

@@ -5,8 +5,6 @@
 #include <spdlog/spdlog.h>
 #include <video/find.hpp>
 
-const char *TITLE = "Snap shot machine";
-
 /**
  * @brief Constructor
  *
@@ -18,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), Ui::MainWindow(), scene(this) {
 
   setupUi(this);
-  setWindowTitle(QString::fromStdString(TITLE));
+  setWindowTitle(QString::fromStdString("Snap shot machine"));
   graphicsView->setGeometry(rect());
   graphicsView->setScene(&scene);
 }
