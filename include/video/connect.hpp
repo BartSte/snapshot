@@ -56,7 +56,7 @@ class BaseVideo : public QObject {
   void stateChanged();
 
  private slots:
-  void setStart(const QVideoFrame frame);
+  void updateState(const QVideoFrame frame);
 };
 
 class MediaPlayer : public BaseVideo {

@@ -62,20 +62,24 @@ void BaseVideo::start() {
   stopTimer.start();
   setState(VideoState::Search);
   connect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
-          &Camera::setStart);
+          &Camera::updateState);
   connect(getVideoSink(), &QVideoSink::videoFrameChanged, &stopTimer,
           &ResetTimer::reset);
 }
 
 /**
- * @brief Set the state to start.
+ * @brief Set the state based on the validity of the frame.
  *
- * The state is set to Started when frames are received from the video source.
- * The `frame` parameter is not used.
+ * The state is set to Started a valid frame is received from the video source.
+ * It is set to Search if an invalid frame is received.
+ *
+ * @param frame The QVideoFrame received from the video source.
  */
-void BaseVideo::setStart(const QVideoFrame frame) {
+void BaseVideo::updateState(const QVideoFrame frame) {
   if (frame.isValid() && state == VideoState::Search) {
     setState(VideoState::Start);
+  } else if (!frame.isValid() && state == VideoState::Start) {
+    setState(VideoState::Search);
   }
 }
 
@@ -86,7 +90,7 @@ void BaseVideo::setStart(const QVideoFrame frame) {
  */
 void BaseVideo::stop() {
   disconnect(getVideoSink(), &QVideoSink::videoFrameChanged, this,
-             &Camera::setStart);
+             &Camera::updateState);
   disconnect(getVideoSink(), &QVideoSink::videoFrameChanged, &stopTimer,
              &ResetTimer::reset);
   setState(VideoState::Stop);

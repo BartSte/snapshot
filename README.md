@@ -274,10 +274,5 @@ more information.
 
 # TODO:
 
-- [ ] When the connection is lost, the app will set the state to stop after the
-      duration that is specified in the timeout. In the meantime, we do not
-      want a blank screen, instead, we want to display the last frame that was
-      received.
-
 - [ ] Fix the segmenation fault that sometimes occurs when the application is
       closed using SIGINT.
