@@ -76,10 +76,11 @@ TEST_F(GTestApp, testParseConfig) {
   ASSERT_EQ(settings.get<bool>("gui"), false);
   ASSERT_EQ(settings.get<bool>("list"), false);
   ASSERT_EQ(settings.get<bool>("record"), false);
+  ASSERT_EQ(settings.get<bool>("version"), false);
   ASSERT_EQ(settings.get<std::string>("folder"), folder.string());
   ASSERT_EQ(settings.get<std::string>("timeout"), "30s");
   ASSERT_EQ(settings.get<std::string>("duration"), "0s");
-  ASSERT_EQ(settings.get<std::string>("interval"), "0s");
+  ASSERT_EQ(settings.get<std::string>("interval"), "10s");
   ASSERT_EQ(settings.get<std::string>("pattern"), pattern);
 }
 

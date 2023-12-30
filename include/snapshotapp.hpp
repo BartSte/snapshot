@@ -37,6 +37,7 @@ class App : public QApplication {
   ptree parseSettings();
   void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
+  bool version();
   bool list();
   void makeVideo();
   void startVideo();

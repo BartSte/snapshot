@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <spdlog/spdlog.h>
 #include <string>
+#include <version.h>
 #include <video/find.hpp>
 #include <video/record.hpp>
 
@@ -22,8 +23,6 @@ using ptree = boost::property_tree::ptree;
 using path = std::filesystem::path;
 using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
-
-extern const path debug_video;
 
 /**
  * @brief Constructor
@@ -69,7 +68,8 @@ void App::stop() {
     video->stop();
   }
   if (recorderActive()) {
-    disconnect(recorder.get(), &Recorder::stateChanged, this, &App::quitWhenHeadless);
+    disconnect(recorder.get(), &Recorder::stateChanged, this,
+               &App::quitWhenHeadless);
     recorder->stop();
   }
 }
@@ -104,7 +104,7 @@ int App::start() {
   setUpLogger(settings.get<std::string>("loglevel"),
               settings.get<std::string>("pattern"));
 
-  if (printHelp() || list()) {
+  if (printHelp() || version() || list()) {
     return 0;
   }
 
@@ -191,6 +191,19 @@ bool App::printHelp() {
     std::cout << parser.help() << std::endl;
   }
   return help;
+}
+
+/**
+ * @brief Returns the version number that is defined in the CMakeLists.txt.
+ *
+ * @return The version number.
+ */
+bool App::version() {
+  bool version = settings.get<bool>("version");
+  if (version) {
+    std::cout << PROJECT_VERSION << std::endl;
+  }
+  return version;
 }
 
 /**

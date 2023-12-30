@@ -61,6 +61,8 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("n,no-event-loop", "Used for testing. Does not start the event loop.")
 
+    ("version", "Returns the version number.")
+
     ("c,camera", "Select a camera by the name shown by the list command",
      DEFAULT("default"))
 

@@ -363,4 +363,5 @@ more information.
 # TODO:
 
 - [ ] Add pre built binaries to the github releases
+- [ ] Add an uninstall target?
 - [ ] Cross compile for raspberry pi
