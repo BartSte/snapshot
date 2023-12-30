@@ -4,7 +4,10 @@ project(
   VERSION 0.0.0
   LANGUAGES CXX)
 
+option(BUILD_TESTS "Build tests" OFF)
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build tests: ${BUILD_TESTS}")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,5 +22,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(src)
 add_subdirectory(app)
 
-enable_testing()
-add_subdirectory(tests)
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
