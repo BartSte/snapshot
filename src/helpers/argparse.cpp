@@ -55,8 +55,6 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("l,list", "List available cameras")
 
-    ("d,debug", "Enable debug mode. Plays an internal video and show the gui.")
-
     ("r,record", "Record")
 
     ("n,no-event-loop", "Used for testing. Does not start the event loop.")
@@ -198,9 +196,6 @@ void checkPaths(const ptree &config) {
 void checkFlags(const ptree &config) {
   if (config.get<bool>("no-event-loop")) {
     spdlog::warn("Event loop disabled by user.");
-  }
-  if (config.get<bool>("debug")) {
-    spdlog::warn("Debug mode enabled.");
   }
 }
 

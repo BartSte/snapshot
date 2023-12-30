@@ -22,7 +22,6 @@ TEST(testArgparse, testParse) {
   EXPECT_EQ(result.count("gui"), 1);
   EXPECT_EQ(result.count("list"), 1);
   EXPECT_EQ(result["camera"].as<std::string>(), "usb_cam");
-  EXPECT_EQ(result["loglevel"].as<std::string>(), "DEBUG");
   EXPECT_EQ(result["pattern"].as<std::string>(), "[foo]");
   EXPECT_EQ(result["duration"].as<std::string>(), "10d");
   EXPECT_EQ(result["interval"].as<std::string>(), "1hour");

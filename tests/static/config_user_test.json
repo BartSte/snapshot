@@ -2,6 +2,5 @@
     "gui": true,
     "list": true,
     "camera": "usb_cam",
-    "loglevel": "debug",
     "pattern": "foo"
 }

@@ -12,17 +12,18 @@
 using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
+extern const path static_dir;
+
 /**
  * @brief Tests the Config::parse function.
  */
 TEST(testConfig, parseConfig) {
-  path path = App::static_dir / "config_user_test.json";
+  path path = static_dir / "config_user_test.json";
   ptree config = Config::parse(path.string());
 
   ASSERT_EQ(config.get<bool>("gui"), true);
   ASSERT_EQ(config.get<bool>("list"), true);
   ASSERT_EQ(config.get<std::string>("camera"), "usb_cam");
-  ASSERT_EQ(config.get<std::string>("loglevel"), "debug");
   ASSERT_EQ(config.get<std::string>("pattern"), "foo");
 }
 

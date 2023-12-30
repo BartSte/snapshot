@@ -9,6 +9,8 @@
 using path = std::filesystem::path;
 using dir_iterator = std::filesystem::directory_iterator;
 
+extern const path debug_video;
+
 class TestRecorder : public QObject {
   using ms = std::chrono::milliseconds;
 
@@ -26,7 +28,7 @@ class TestRecorder : public QObject {
   }
 
   void init() {
-    debug_video_qstr = QString::fromStdString(App::debug_video.string());
+    debug_video_qstr = QString::fromStdString(debug_video.string());
     tmp_dir = std::filesystem::temp_directory_path();
     tmp_dir /= "test_record";
     std::filesystem::remove_all(tmp_dir);

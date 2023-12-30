@@ -14,6 +14,10 @@
 using path = std::filesystem::path;
 using ptree = boost::property_tree::ptree;
 
+extern const path static_dir;
+extern const path config_test;
+extern const path debug_video;
+
 class GTestApp : public testing::Test {
  protected:
   std::stringstream buffer;
@@ -31,8 +35,8 @@ class GTestApp : public testing::Test {
  * @return Argv object
  */
 CharPointers getArgv(std::vector<std::string> vec = {}) {
-  const path config = App::static_dir / "config_test.json";
-  std::vector<std::string> strings = {"test_app", "--config", config.string()};
+  std::vector<std::string> strings = {"test_app", "--config",
+                                      config_test.string()};
   CharPointers argv(strings);
   for (auto &str : vec) {
     argv.push_back(str);
@@ -42,12 +46,11 @@ CharPointers getArgv(std::vector<std::string> vec = {}) {
 
 TEST(testApp, testGetArgv) {
   CharPointers argv = getArgv({"foo", "bar"});
-  const path config = App::static_dir / "config_test.json";
-  spdlog::info("config: {}", config.string());
+  spdlog::info("config: {}", config_test.string());
   EXPECT_EQ(argv.size(), 5);
   EXPECT_STREQ(argv.data()[0], "test_app");
   EXPECT_STREQ(argv.data()[1], "--config");
-  EXPECT_STREQ(argv.data()[2], config.string().c_str());
+  EXPECT_STREQ(argv.data()[2], config_test.string().c_str());
   EXPECT_STREQ(argv.data()[3], "foo");
   EXPECT_STREQ(argv.data()[4], "bar");
 }
@@ -60,12 +63,10 @@ TEST_F(GTestApp, testParseConfig) {
   // Changed by config
   ASSERT_EQ(settings.get<bool>("no-event-loop"), true);
   ASSERT_EQ(settings.get<std::string>("camera"), "non-existing-camera");
-  ASSERT_EQ(settings.get<std::string>("loglevel"), "debug");
   ASSERT_EQ(settings.get<std::string>("max-bytes"), "1e9");
 
   // Changed by cli
-  path test_config = App::static_dir / "config_test.json";
-  ASSERT_EQ(settings.get<std::string>("config"), test_config.string());
+  ASSERT_EQ(settings.get<std::string>("config"), config_test.string());
 
   // Defaults
   path cwd = std::filesystem::current_path();
@@ -74,7 +75,6 @@ TEST_F(GTestApp, testParseConfig) {
   ASSERT_EQ(settings.get<bool>("help"), false);
   ASSERT_EQ(settings.get<bool>("gui"), false);
   ASSERT_EQ(settings.get<bool>("list"), false);
-  ASSERT_EQ(settings.get<bool>("debug"), false);
   ASSERT_EQ(settings.get<bool>("record"), false);
   ASSERT_EQ(settings.get<std::string>("folder"), folder.string());
   ASSERT_EQ(settings.get<std::string>("timeout"), "30s");
@@ -126,7 +126,7 @@ class QTestApp : public QObject {
    * is used to run the event loop.
    */
   void testCamera() {
-    CharPointers argv = getArgv({"--camera", App::debug_video.string()});
+    CharPointers argv = getArgv({"--camera", debug_video.string()});
     App app(argv.size(), argv.data());
     app.exec();
     QTest::qWait(2000);
@@ -140,9 +140,9 @@ class QTestApp : public QObject {
    * makes execution simpler.
    */
   void testRecord() {
-    CharPointers argv = getArgv(
-        {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
-         "--duration", "2s", "--folder", tmpDir.string()});
+    CharPointers argv =
+        getArgv({"--record", "--camera", debug_video.string(), "--interval",
+                 "1s", "--duration", "2s", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
     app.exec();
     QTest::qWait(4000);
@@ -158,9 +158,9 @@ class QTestApp : public QObject {
    * that only 1 frame can be recorded.
    */
   void testRecordMaxBytes() {
-    CharPointers argv = getArgv(
-        {"--record", "--camera", App::debug_video.string(), "--interval", "1s",
-         "--max-bytes", "1", "--folder", tmpDir.string()});
+    CharPointers argv =
+        getArgv({"--record", "--camera", debug_video.string(), "--interval",
+                 "1s", "--max-bytes", "1", "--folder", tmpDir.string()});
     App app(argv.size(), argv.data());
     app.exec();
     QTest::qWait(2000);

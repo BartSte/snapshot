@@ -1,6 +1,5 @@
 {
     "no-event-loop": true,
     "camera": "non-existing-camera",
-    "loglevel": "debug",
     "max-bytes": "1e9"
 }

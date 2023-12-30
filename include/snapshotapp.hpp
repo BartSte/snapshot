@@ -17,10 +17,6 @@ class App : public QApplication {
   using path = std::filesystem::path;
 
  public:
-  static const path root;
-  static const path static_dir;
-  static const path debug_video;
-
   App(int argc, char *argv[]);
   ptree getSettings();
   int exec();
@@ -41,7 +37,6 @@ class App : public QApplication {
   ptree parseSettings();
   void setUpLogger(std::string level, std::string pattern);
   bool printHelp();
-  void applyDebugSettings();
   bool list();
   void makeVideo();
   void startVideo();

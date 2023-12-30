@@ -23,9 +23,7 @@ using path = std::filesystem::path;
 using sec = std::chrono::seconds;
 using ms = std::chrono::milliseconds;
 
-const path App::root = Path::program_location();
-const path App::static_dir = App::root / ".." / "static";
-const path App::debug_video = App::static_dir / "sample.mp4";
+extern const path debug_video;
 
 /**
  * @brief Constructor
@@ -110,7 +108,6 @@ int App::start() {
     return 0;
   }
 
-  applyDebugSettings();
   makeVideo();
   makeGui();
   makeRecorder();
@@ -121,7 +118,7 @@ int App::start() {
     startGui();
     return execWithFlag(settings.get<bool>("no-event-loop"));
   } else {
-    spdlog::info("No gui, or recorder created. Exiting...");
+    spdlog::warn("No gui, or recorder created. Exiting...");
     return 0;
   }
 }
@@ -210,19 +207,6 @@ bool App::list() {
     std::cout << listCameras() << std::endl;
   }
   return list;
-}
-
-/**
- * @brief enableDebugMode
- *
- * If the debug flag is set, enable the gui and set the camera to the debug
- * video.
- */
-void App::applyDebugSettings() {
-  if (settings.get<bool>("debug")) {
-    settings.put("gui", true);
-    settings.put("camera", debug_video.string());
-  }
 }
 
 /**

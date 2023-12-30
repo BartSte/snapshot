@@ -11,6 +11,8 @@ using ms = std::chrono::milliseconds;
 using path = std::filesystem::path;
 using VideoPtr = std::optional<std::unique_ptr<BaseVideo>>;
 
+extern const path debug_video;
+
 class TestMediaPlayer : public QObject {
 
  private:
@@ -33,7 +35,7 @@ class TestMediaPlayer : public QObject {
    * effort.
    */
   void start() {
-    QString file_qstr = QString::fromStdString(App::debug_video.string());
+    QString file_qstr = QString::fromStdString(debug_video.string());
     MediaPlayer player(file_qstr);
 
     player.start();
@@ -81,7 +83,7 @@ TEST(testConnect, TestVideoFactory) {
   int argc = 0;
   QApplication app(argc, nullptr);
   VideoPtr null = videoFactory("non-existing-camera");
-  VideoPtr file = videoFactory(App::debug_video.string());
+  VideoPtr file = videoFactory(debug_video.string());
   VideoPtr stream = videoFactory("rtsp://localhost:1234/test");
 
   ASSERT_EQ(null.has_value(), false);
