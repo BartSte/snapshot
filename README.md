@@ -9,10 +9,10 @@
 - [Summary](#summary)
   - [Features](#features)
 - [Dependencies](#dependencies)
-- [Building](#building)
-  - [Linux](#linux)
-  - [Raspberry Pi OS](#raspberry-pi-os)
-  - [Windows](#windows)
+- [Installation](#installation)
+  - [Building](#building)
+    - [Linux](#linux)
+    - [Raspberry Pi OS](#raspberry-pi-os)
 - [Usage](#usage)
   - [List the available cameras](#list-the-available-cameras)
   - [Display a video](#display-a-video)
@@ -21,8 +21,8 @@
   - [Using the configuration file](#using-the-configuration-file)
 - [Development](#development)
   - [Build](#build)
-  - [Running the rtsp stream](#running-the-rtsp-stream)
-  - [Running the udp stream](#running-the-udp-stream)
+  - [Test](#test)
+  - [Running a camera](#running-a-camera)
 - [License](#license)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -68,7 +68,13 @@ For building the project, the following dependencies are required:
 - [CMake](https://cmake.org/download/)
 - [Ninja](https://ninja-build.org/)
 
-## Building
+## Installation
+
+The following sections explain how to install the project. You have two
+options: building the project from source, or using the pre built binaries. The
+easiest way is to use the pre built binaries.
+
+### From source
 
 The next steps explain how to build this project from source. The following
 sections explain how to build the project on different environments: Linux,
@@ -83,7 +89,7 @@ For all environments, cloning the repository is the first step:
 git clone https://github.com/BartSte/snapshot
 ```
 
-### Linux
+#### Linux
 
 Create a `build` directory by running the following command:
 
@@ -98,19 +104,28 @@ run the following command:
 cmake --build ./build
 ```
 
-After this, the `snapshot` executable can be found in the `build/bin` directory.
+After this, the `snapshot` executable can be found in the `build/bin`
+directory. You can install the executable by running the following command:
 
-### Raspberry Pi OS
+```bash
+cmake --install ./build
+```
+
+#### Raspberry Pi OS
 
 - **TODO**
 
-### Usage
+### Pre built binaries
+
+- **TODO**
+
+## Usage
 
 The `snapshot` executable should be runned from the command line. The following
 sections explain how to use the application. You can also run `snapshot --help`
 to get more information.
 
-#### List the available cameras
+### List the available cameras
 
 By running the following command, a list of available cameras is shown:
 
@@ -128,7 +143,7 @@ Index | Name                    | ID          | Is Default |
 which means that there is one camera available, with index `0`, name `HP
 TrueVision HD Camera`, id `/dev/video0` and is the default camera.
 
-#### Display a video
+### Display a video
 
 If we want to display a video stream from the default camera, we can run the
 following command:
@@ -165,7 +180,7 @@ name. Lastly, the `--timeout` option can be used to specify how long the app
 should be searching for a video at startup, or when the connection is lost. By
 default, this is set to `30s`.
 
-#### Record a video stream
+### Record a video stream
 
 When you want to record snapshots from a video stream, you can use the
 `--record` option. For example, if we want to record a video stream from the
@@ -193,7 +208,7 @@ the recording, the `--max-snapshots` is set to `10e9` bytes (10 GB) by default,
 which means that the recording will stop when the current session exceeds this
 size.
 
-#### Set the logging level
+### Set the logging level
 
 By default, the logging level is set to `warning`. If we want to set the
 logging level to `debug`, we can run the following command:
@@ -205,7 +220,7 @@ snapshot --log-level debug <other options>
 The following logging levels are available: `trace`, `debug`, `info`,
 `warning`, `error`, and `critical`.
 
-#### Using the configuration file
+### Using the configuration file
 
 Instead of using the command line options, a cnfiguration file can be used. By
 default, the application looks for a file called `config.json` in the
@@ -258,7 +273,7 @@ debugging and testing the project.
 Follow the steps in the [Building](#building) section to build the project.
 Instead of the `Release` build type, use the `Debug` build type.
 
-### Testing
+### Test
 
 Googletest and QTest are used for building the unit tests and the end-to-end
 tests. To build the tests, the `BUILD_TESTS` option must be set to `ON` when
@@ -335,7 +350,7 @@ snapshot -g -c udp://localhost:8090
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE)
 file for details.
 
-### Troubleshooting
+## Troubleshooting
 
 If you encounter any issues, please report them on the issue tracker at:
 [snapshot issues](https://github.com/BartSte/snapshot/issues)
@@ -347,5 +362,5 @@ more information.
 
 # TODO:
 
-- [ ] Add a install script for cmake
+- [ ] Add pre built binaries to the github releases
 - [ ] Cross compile for raspberry pi

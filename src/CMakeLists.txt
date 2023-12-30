@@ -13,3 +13,4 @@ target_include_directories(
 target_link_libraries(
   snapshotapp PUBLIC spdlog::spdlog_header_only Qt6::Widgets Qt6::Multimedia
                      Qt6::MultimediaWidgets Boost::filesystem)
+install(TARGETS snapshotapp DESTINATION lib)
