@@ -5,6 +5,7 @@ release
 Session.vim
 nvim.shada
 include/version.h
+3rdparty/Qt
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

@@ -58,7 +58,6 @@ Ensure the following dependencies are installed:
 | Dependency                                                    | Version  |
 | ------------------------------------------------------------- | -------- |
 | [Qt6](https://www.qt.io/download): base & multimedia (ffmpeg) | ≥ 6.6.0  |
-| [cxxopts](https://github.com/jarro2783/cxxopts)               | ≥ 3.1.1  |
 | [boost](https://www.boost.org/)                               | ≥ 1.83   |
 | [spdlog](https://github.com/gabime/spdlog)                    | ≥ 1.12.0 |
 
@@ -67,6 +66,10 @@ For building the project, the following dependencies are required:
 - [git](https://git-scm.com/)
 - [CMake](https://cmake.org/download/)
 - [Ninja](https://ninja-build.org/)
+
+`cxxopts` and `googletest` are also dependencies, but they are included in the
+project. The former as a header file in the `3rdparty` directory, and the latter
+is installed using `cmake`.
 
 ## Installation
 
@@ -272,6 +275,21 @@ debugging and testing the project.
 
 Follow the steps in the [Building](#building) section to build the project.
 Instead of the `Release` build type, use the `Debug` build type.
+
+#### Installing Qt6
+
+When using Arch, you can install version >= 6.6.0 of Qt6 using pacman. However,
+at the time of this writing, for distributions that hold older versions of Qt6,
+like Debian and Ubuntu, you need to install Qt6 yourself. You can do this by
+building Qt6 from source, or by using their online installer.
+
+Since the CI on Github uses Ubuntu, Qt6 could not be installed using apt.
+Therefore, the online installer is used. The installation is automated using
+the `scripts/install-qt` script. This script downloads the online installer,
+installs Qt6. You need to authenticate yourself by setting the
+`QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. Alternatively,
+you can provide your email and password using the `--email` and `--password`
+options. More information, check the website of Qt.
 
 ### Test
 

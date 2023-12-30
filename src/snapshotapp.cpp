@@ -201,7 +201,7 @@ bool App::printHelp() {
 bool App::version() {
   bool version = settings.get<bool>("version");
   if (version) {
-    std::cout << PROJECT_VERSION << std::endl;
+    std::cout << "Version: " << PROJECT_VERSION << std::endl;
   }
   return version;
 }
