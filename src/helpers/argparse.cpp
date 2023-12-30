@@ -55,7 +55,9 @@ ArgParse::ArgParse(int argc, char *argv[])
 
     ("l,list", "List available cameras")
 
-    ("r,record", "Record")
+    ("r,record", "Record snapshots at a given interval and duration, which can"
+     " be specified using the --interval and --duration options, respectively."
+     " The snapshots are saved to the folder specified by the --folder option.")
 
     ("n,no-event-loop", "Used for testing. Does not start the event loop.")
 
@@ -84,9 +86,9 @@ ArgParse::ArgParse(int argc, char *argv[])
     ("interval", "The interval in which frames are saved. The following "
      "formats are supported: s, second, seconds, m, minute, minutes, h, hour, "
      "hours, " "d, day, days. For example, 10s = 10 seconds. If no unit is "
-     "supplied, it is iterpreted as seconds.The default is 0, meaning that no "
-     "frames are saved.",
-     DEFAULT("0s"))
+     "supplied, it is iterpreted as seconds.The default is 10, meaning that a "
+     "frame is saved every 10 seconds.",
+     DEFAULT("10s"))
 
     ("max-bytes", "The maximal number of bytes that may be saved within 1 "
      "session. The maximal number of bytes is 2^64 - 1. The default is "
