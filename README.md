@@ -244,7 +244,6 @@ Below an example of a configuration file is shown that has the default values:
   "duration": "0s",
   "interval": "10s",
   "max-bytes": "10e9",
-  "config": "~/.config/snapshot/config.json",
   "loglevel": "warning",
   "pattern": "[%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v"
 }
@@ -287,9 +286,9 @@ Since the CI on Github uses Ubuntu, Qt6 could not be installed using apt.
 Therefore, the online installer is used. The installation is automated using
 the `scripts/install-qt` script. This script downloads the online installer,
 installs Qt6. You need to authenticate yourself by setting the
-`QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. Alternatively,
-you can provide your email and password using the `--email` and `--password`
-options. More information, check the website of Qt.
+`QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. More
+information on getting this token is provided on the [website of
+Qt](https://doc.qt.io/qt-6/get-and-install-qt-cli.html).
 
 ### Test
 
