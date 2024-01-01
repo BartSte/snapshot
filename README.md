@@ -284,9 +284,10 @@ building Qt6 from source, or by using their online installer.
 
 Since the CI on Github uses Ubuntu, Qt6 could not be installed using apt.
 Therefore, the online installer is used. The installation is automated using
-the `scripts/install-qt` script. This script downloads the online installer,
-installs Qt6. You need to authenticate yourself by setting the
-`QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. More
+the `scripts/install-qt` script. This script downloads the online installer and
+installs Qt6 in the `3rdparty/Qt` folder. This folder will be picked up by
+`cmake` when building the project. You need to authenticate yourself by setting
+the `QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. More
 information on getting this token is provided on the [website of
 Qt](https://doc.qt.io/qt-6/get-and-install-qt-cli.html).
 
