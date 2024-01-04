@@ -291,14 +291,27 @@ the `QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. More
 information on getting this token is provided on the [website of
 Qt](https://doc.qt.io/qt-6/get-and-install-qt-cli.html).
 
+#### Static build
+
+** TODO **
+
+- Explain how to statically build Qt6 and how to statically link it to
+snapshot.
+
+- I used the following configure command:
+
+```bash
+configure -release -static -no-pch -prefix ~/code/snapshot/3rdparty/Qt/ -no-gstreamer -fontconfig -submodules qtbase,qtmultimedia,qtwayland -- -S . -B ./build
+```
+
 ### Test
 
 Googletest and QTest are used for building the unit tests and the end-to-end
-tests. To build the tests, the `BUILD_TESTS` option must be set to `ON` when
+tests. To build the tests, the `BUILD_TESTING` option must be set to `ON` when
 running cmake. For example:
 
 ```bash
-cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -BUILD_TESTING=ON
 ```
 
 this will uses the `Debug` build type with the tests enabled. To run the tests,
@@ -381,5 +394,14 @@ more information.
 # TODO:
 
 - [ ] Add pre built binaries to the github releases
+  - For static build I used the followig configure command:
+
+  ```bash
+  ```
+
+  The Qt docs stated that plugins need to be linked in cmake when Qt is
+  compiled statically. This is done automatically when using dynamic linking,
+  thus explaining why I get pluging errors.
+
 - [ ] Add an uninstall target?
 - [ ] Cross compile for raspberry pi

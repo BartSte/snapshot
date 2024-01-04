@@ -1,28 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-usage="Usage: $0 
+usage="Usage: $0 <optional packages>
 
 Installs Qt 6.6.1 to 3rdparty/Qt. For this script to work, you need to set the 
 QT_INSTALLER_JWT_TOKEN environment variable to your jwt token. Check the
 website of Qt for more information.
 
+Optionally, you can add more Qt packages to install by adding them as
+arguments.
+
 Options:
   -h, --help    Show this help message and exit"
 
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -h | --help)
-            echo "$usage"
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            echo "$usage"
-            exit 1
-            ;;
-    esac
-done
+if [[ "$*" == *-h* ]] || [[ "$*" == *--help* ]]; then
+    echo "$usage"
+    exit 0
+fi
 
 tmp_dir=$(mktemp -d)
 this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
@@ -32,6 +26,6 @@ multimedia="qt.qt6.661.addons.qtmultimedia"
 
 curl "https://d13lb3tujbc8s0.cloudfront.net/onlineinstallers/qt-unified-linux-x64-4.6.1-online.run" -o "$tmp_dir/qt-installer.run"
 chmod +x "$tmp_dir/qt-installer.run"
-"$tmp_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $base $multimedia
+"$tmp_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $base $multimedia $@
 
 rm -rf "$tmp_dir"

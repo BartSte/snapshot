@@ -4,10 +4,10 @@ project(
   VERSION 0.0.0
   LANGUAGES CXX)
 
-option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_TESTING "Build tests" OFF)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Build tests: ${BUILD_TESTS}")
+message(STATUS "Build tests: ${BUILD_TESTING}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,7 +25,7 @@ configure_file(${CMAKE_SOURCE_DIR}/include/version.h.in
 add_subdirectory(src)
 add_subdirectory(app)
 
-if(BUILD_TESTS)
+if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
 endif()
