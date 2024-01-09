@@ -296,13 +296,24 @@ Qt](https://doc.qt.io/qt-6/get-and-install-qt-cli.html).
 ** TODO **
 
 - Explain how to statically build Qt6 and how to statically link it to
-snapshot.
+  snapshot.
 
 - I used the following configure command:
 
 ```bash
-configure -release -static -no-pch -prefix ~/code/snapshot/3rdparty/Qt/ -no-gstreamer -fontconfig -submodules qtbase,qtmultimedia,qtwayland -- -S . -B ./build
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++
+export CXXFLAGS="-static-libstdc++ -static-libgcc"
+configure -release -static -no-pch -prefix ~/code/snapshot/3rdparty/Qt/ -no-gstreamer -fontconfig -submodules qtbase,qtmultimedia,qtwayland,qtimageformats -- -S . -B ./build
 ```
+
+- I appended the linker flag with `-static-libstdc++ -static-libgcc` such that
+  the `libstdc++` and `libgcc` libraries are statically linked. However, this has
+  no effect. I think the compiler has some issue with statically linking the
+  std libs (I read something about using exceptions in your code that causes
+  the compiler to add -shared-libgcc and -shared-libstdc++ to the linker flags).
+  For now lets ignore this and just use dynamic libs for all deps that are not
+  boost, qt or spdlog.
 
 ### Test
 
@@ -394,14 +405,14 @@ more information.
 # TODO:
 
 - [ ] Add pre built binaries to the github releases
-  - For static build I used the followig configure command:
 
-  ```bash
-  ```
+  - [x] Link the app statically against Qt6, boost and spdlog
+  - [ ] Go through all the remaining dynamic libs using ldd and see which ones
+        can also be linked statically.
+  - [ ] Add the remaining dynamic libs to the same directory tree as the
+        executable and using the script that is provided in the Qt [docs](https://doc.qt.io/qt-6/linux-deployment.html)
+        to run the app.
+  - [ ] Publish the directory tree as an archive as a release. Other more
+        sophisticated release methods can be used later.
 
-  The Qt docs stated that plugins need to be linked in cmake when Qt is
-  compiled statically. This is done automatically when using dynamic linking,
-  thus explaining why I get pluging errors.
-
-- [ ] Add an uninstall target?
 - [ ] Cross compile for raspberry pi
