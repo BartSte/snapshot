@@ -409,10 +409,27 @@ more information.
   - [x] Link the app statically against Qt6, boost and spdlog
   - [ ] Go through all the remaining dynamic libs using ldd and see which ones
         can also be linked statically.
-  - [ ] Add the remaining dynamic libs to the same directory tree as the
+  - [x] Add the remaining dynamic libs to the same directory tree as the
         executable and using the script that is provided in the Qt [docs](https://doc.qt.io/qt-6/linux-deployment.html)
         to run the app.
   - [ ] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
+  - Issues:
+
+    - On WSL I get the following error:
+
+    ```
+    snapshot-0.0.0-Linux/snapshot -g
+    [2024-01-09 18:18:41.573] [warning] [: @ ] No cameras found
+    MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    libEGL warning: egl: failed to create dri2 screen
+    ```
+
+    - On ubuntu, fresh install, I get the following error:
+
+    ```
+    barts@zbook:~$ ./snapshot-0.0.0-Linux/snapshot -h
+      1012:     __vdso_timeSegmentation fault
+    ```
 
 - [ ] Cross compile for raspberry pi
