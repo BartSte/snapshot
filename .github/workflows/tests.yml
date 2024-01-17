@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
     branches:
       - main
@@ -18,25 +17,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Update apt-get database
+      - name: Install build dependencies
         run: |
           sudo apt-get update -y
           sudo apt-get upgrade -y
+          sudo apt-get install -y clang ninja-build git cmake 
 
-      - name: Install build dependencies
-        run: sudo apt-get install -y clang ninja-build git cmake 
+      - name: Install vulkan
+        run: ./scripts/install-vulkan
 
       - name: Install project dependencies
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
-           sudo apt-get install -y libboost-all-dev libspdlog-dev
-           sudo apt-get install -y build-essential openssl libssl-dev libssl1.0 libgl1-mesa-dev libqt5x11extras5 '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libpulse-dev
-           ./scripts/install-qt
+          sudo apt-get install -y libboost-all-dev libspdlog-dev
+          sudo apt-get install -y build-essential openssl libssl-dev libssl1.0 libgl1-mesa-dev libqt5x11extras5 '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libpulse-dev libwayland-dev libwayland-egl1-mesa libwayland-server0
+          ./scripts/install-qt --root $PWD/3rdparty/Qt qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia
 
       - name: Build project
         run: |
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+          ./scripts/configure -- -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH=$PWD/3rdparty/Qt/6.6.1/gcc_64/lib/cmake
           cmake --build build 
 
       - name: Run tests

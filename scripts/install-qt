@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
-usage="Usage: $0 <optional packages>
+usage="Usage: $0 <packages>
 
 Installs Qt 6.6.1 to 3rdparty/Qt. For this script to work, you need to set the 
 QT_INSTALLER_JWT_TOKEN environment variable to your jwt token. Check the
@@ -11,21 +11,32 @@ Optionally, you can add more Qt packages to install by adding them as
 arguments.
 
 Options:
+  -r, --root    The root directory to install Qt to.
   -h, --help    Show this help message and exit"
 
-if [[ "$*" == *-h* ]] || [[ "$*" == *--help* ]]; then
-    echo "$usage"
-    exit 0
-fi
+packages=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -r | --root)
+            install_dir="$2"
+            shift
+            shift
+            ;;
+        -h | --help)
+            echo "$usage"
+            exit 0
+            ;;
+        *)
+            packages="$packages $1"
+            shift
+            ;;
+    esac
+done
 
 tmp_dir=$(mktemp -d)
-this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
-install_dir="$this_dir/../3rdparty/Qt"
-base="qt.qt6.661.gcc_64"
-multimedia="qt.qt6.661.addons.qtmultimedia"
 
 curl "https://d13lb3tujbc8s0.cloudfront.net/onlineinstallers/qt-unified-linux-x64-4.6.1-online.run" -o "$tmp_dir/qt-installer.run"
 chmod +x "$tmp_dir/qt-installer.run"
-"$tmp_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $base $multimedia $@
+"$tmp_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $packages
 
 rm -rf "$tmp_dir"

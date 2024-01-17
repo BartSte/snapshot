@@ -1,11 +1,8 @@
-list(APPEND CMAKE_PREFIX_PATH
-     ${CMAKE_SOURCE_DIR}/3rdparty/Qt/6.6.1/gcc_64/lib/cmake)
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/3rdparty/Qt/lib/cmake)
-
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
+                                     WaylandClient)
 
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
 
@@ -27,7 +24,18 @@ target_link_libraries(
          Qt6::Widgets
          Qt6::Multimedia
          Qt6::MultimediaWidgets
-         Qt6::QWaylandIntegrationPlugin)
+         Qt6::QWaylandEglPlatformIntegrationPlugin
+         Qt6::QWaylandIntegrationPlugin
+         Qt6::QXcbIntegrationPlugin
+         Qt6::QFFmpegMediaPlugin)
 
-qt_import_plugins(snapshotapp INCLUDE_BY_TYPE platforms
-                  Qt6::QWaylandIntegrationPlugin)
+qt_import_plugins(
+  snapshotapp
+  INCLUDE_BY_TYPE
+  platforms
+  Qt6::QWaylandEglPlatformIntegrationPlugin
+  Qt6::QWaylandIntegrationPlugin
+  Qt6::QXcbIntegrationPlugin
+  INCLUDE_BY_TYPE
+  multimedia
+  Qt6::QFFmpegMediaPlugin)
