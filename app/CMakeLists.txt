@@ -7,23 +7,20 @@ install(
           POST_EXCLUDE_REGEXES
           # Compatability with standard C libraries across linux distributions
           # is assumed.
-          ".*libc.*"
-          ".*libm\..*"
-          ".*libdbm\..*"
-          ".*libpthread\..*"
-          # FFmpeg libraries are added manually below due to an unknown issue.
-          ".*libavcodec.*"
-          ".*libavdevice.*"
-          ".*libavfilter.*"
-          ".*libavformat.*"
-          ".*libavutil.*"
-          ".*libpostproc.*"
-          ".*libswresample.*"
-          ".*libswscale.*"
-          ".*libvmaf.*")
-
-# Copy FFmpeg libraries to the install directory.
-install(FILES ${FFMPEG_LIBRARIES} DESTINATION lib)
+          ".*libc\.so.*"
+          ".*libm\.so.*"
+          ".*libdbm\.so.*"
+          ".*libpthread\.so.*"
+          # The FFmpeg libraries are added explicitly below to avoid conflicts
+          # libs that are installed elsewhere on the system
+          ".*libswscale\.so.*"
+          ".*libavutil\.so.*"
+          ".*libavcodec\.so.*"
+          ".*libavformat\.so.*"
+          ".*libswresample\.so.*"
+          POST_INCLUDE_FILES
+          # FFmpeg libraries are added explicitly below to avoid conflicts
+          ${FFMPEG_LIBRARIES})
 
 # Copy the entrypoint to the install directory.
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/snapshot DESTINATION .)

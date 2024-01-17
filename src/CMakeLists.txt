@@ -5,6 +5,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
 
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
+message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
