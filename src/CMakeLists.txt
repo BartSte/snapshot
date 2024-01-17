@@ -16,6 +16,18 @@ target_include_directories(
          ${Boost_INCLUDE_DIRS}
   INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/snapshotapp_autogen/include)
 
+set(PLATFORM_PLUGINS
+    Qt6::QEglFSIntegrationPlugin
+    Qt6::QLinuxFbIntegrationPlugin
+    Qt6::QMinimalEglIntegrationPlugin
+    Qt6::QMinimalIntegrationPlugin
+    Qt6::QOffscreenIntegrationPlugin
+    Qt6::QVkKhrDisplayIntegrationPlugin
+    Qt6::QVncIntegrationPlugin
+    Qt6::QWaylandEglPlatformIntegrationPlugin
+    Qt6::QWaylandIntegrationPlugin
+    Qt6::QXcbIntegrationPlugin)
+
 target_link_libraries(
   snapshotapp
   PUBLIC spdlog::spdlog_header_only
@@ -24,18 +36,14 @@ target_link_libraries(
          Qt6::Widgets
          Qt6::Multimedia
          Qt6::MultimediaWidgets
-         Qt6::QWaylandEglPlatformIntegrationPlugin
-         Qt6::QWaylandIntegrationPlugin
-         Qt6::QXcbIntegrationPlugin
-         Qt6::QFFmpegMediaPlugin)
+         Qt6::QFFmpegMediaPlugin
+         ${PLATFORM_PLUGINS})
 
 qt_import_plugins(
   snapshotapp
   INCLUDE_BY_TYPE
   platforms
-  Qt6::QWaylandEglPlatformIntegrationPlugin
-  Qt6::QWaylandIntegrationPlugin
-  Qt6::QXcbIntegrationPlugin
+  ${PLATFORM_PLUGINS}
   INCLUDE_BY_TYPE
   multimedia
   Qt6::QFFmpegMediaPlugin)

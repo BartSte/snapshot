@@ -417,56 +417,186 @@ more information.
         to run the app.
   - [ ] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
-  - Issue FFmpeg:
 
-    - On ubuntu, the includes (headers I guess) are not included in the apt
-      package, in contrast to the arch package. As a solution, I build ffmpeg
-      from source. I build them with static linking which gives some new
-      issues when building the project. Now I am thinking.. I guess I have 3
-      options:
+  - Ffmpeg libs are missing from build? And also other libs? This is the ldd
+    afterd the LD_LIBRARY_PATH is set to ./lib:
 
-      1. statical link ffmpeg to the project.
-      2. dynamically link ffmpeg to the project and include the ffmpeg libs in
-         the release.
-      3. dynamically link ffmpeg to the project and let the user install ffmpeg
-         themselves. This could be useful when the user needs different
-         versions of ffmpeg to make it work with their hardware.
+    ```
+    # Assumed to be on system
+    linux-vdso.so.1 (0x00007fff26bdf000)
+    libm.so.6 => /usr/lib/libm.so.6 (0x00007f822530f000)
+    libc.so.6 => /usr/lib/libc.so.6 (0x00007f8224e1e000)
+    /lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007f822a7d1000)
 
-      On arch, I can just install static ffmpeg using AUR (its located at
-      /opt/ffmpeg063).
+    libz.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libz.so.1 (0x00007f8225c5b000)
+    libSM.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libSM.so.6 (0x00007f8226035000)
+    libEGL.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libEGL.so.1 (0x00007f8225c9e000)
+    libGLX.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libGLX.so.0 (0x00007f82275cc000)
+    libICE.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libICE.so.6 (0x00007f8226016000)
+    libX11.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libX11.so.6 (0x00007f82262c0000)
+    libdrm.so.2 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libdrm.so.2 (0x00007f8225c88000)
+    libfmt.so.8 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libfmt.so.8 (0x00007f822a7ae000)
+    libgbm.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgbm.so.1 (0x00007f8225c77000)
+    libxcb.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb.so.1 (0x00007f8225cb1000)
+    libffi.so.8 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libffi.so.8 (0x00007f8225b76000)
+    libbsd.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libbsd.so.0 (0x00007f8219cff000)
+    libXau.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libXau.so.6 (0x00007f8223682000)
+    libogg.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libogg.so.0 (0x00007f821663a000)
+    liblz4.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/liblz4.so.1 (0x00007f8215896000)
+    libXext.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libXext.so.6 (0x00007f8228eec000)
+    libjpeg.so.8 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libjpeg.so.8 (0x00007f8225d7f000)
+    libtiff.so.5 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libtiff.so.5 (0x00007f8225cf8000)
+    libudev.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libudev.so.1 (0x00007f8225ba7000)
+    libzstd.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libzstd.so.1 (0x00007f8225536000)
+    liblzma.so.5 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/liblzma.so.5 (0x00007f8224650000)
+    libopus.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libopus.so.0 (0x00007f82237a2000)
+    libwebp.so.7 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libwebp.so.7 (0x00007f8222993000)
+    libuuid.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libuuid.so.1 (0x00007f8223691000)
+    libjbig.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libjbig.so.0 (0x00007f8222927000)
+    libpcre.so.3 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpcre.so.3 (0x00007f821858a000)
+    libFLAC.so.8 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libFLAC.so.8 (0x00007f821571c000)
+    libpulse.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpulse.so.0 (0x00007f8228f53000)
+    libgcc_s.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgcc_s.so.1 (0x00007f8225b83000)
+    libexpat.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libexpat.so.1 (0x00007f8219d17000)
+    libXdmcp.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libXdmcp.so.6 (0x00007f8222456000)
+    libOpenGL.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libOpenGL.so.0 (0x00007f8228ebe000)
+    libXrandr.so.2 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libXrandr.so.2 (0x00007f8228f01000)
+    libdbus-1.so.3 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libdbus-1.so.3 (0x00007f82260db000)
+    libicuuc.so.70 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libicuuc.so.70 (0x00007f8225605000)
+    libpng16.so.16 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpng16.so.16 (0x00007f8227591000)
+    libstdc++.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libstdc++.so.6 (0x00007f8225000000)
+    libvorbis.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libvorbis.so.0 (0x00007f8223775000)
+    libX11-xcb.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libX11-xcb.so.1 (0x00007f8226011000)
+    libgio-2.0.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgio-2.0.so.0 (0x00007f8228fa8000)
+    libxcb-glx.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-glx.so.0 (0x00007f8225cdb000)
+    libxcb-shm.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-shm.so.0 (0x00007f8226088000)
+    libxcb-xkb.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-xkb.so.1 (0x00007f8226040000)
+    libselinux.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libselinux.so.1 (0x00007f8225293000)
+    libXrender.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libXrender.so.1 (0x00007f8223c9a000)
+    libsystemd.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libsystemd.so.0 (0x00007f8219939000)
+    libdeflate.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libdeflate.so.0 (0x00007f8219cdb000)
+    libpcre2-8.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpcre2-8.so.0 (0x00007f82184f3000)
+    libsndfile.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libsndfile.so.1 (0x00007f8218474000)
+    libasyncns.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libasyncns.so.0 (0x00007f8219cd3000)
+    libgcrypt.so.20 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgcrypt.so.20 (0x00007f8215758000)
+    libfreetype.so.6 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libfreetype.so.6 (0x00007f8226129000)
+    libglib-2.0.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libglib-2.0.so.0 (0x00007f82253fc000)
+    libharfbuzz.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libharfbuzz.so.0 (0x00007f82261f1000)
+    libicui18n.so.70 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libicui18n.so.70 (0x00007f8225800000)
+    libpcre2-16.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpcre2-16.so.0 (0x00007f8225bd1000)
+    libxcb-sync.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-sync.so.1 (0x00007f822607e000)
+    libxcb-util.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-util.so.1 (0x00007f8223688000)
+    libicudata.so.70 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libicudata.so.70 (0x00007f8216800000)
+    libapparmor.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libapparmor.so.1 (0x00007f82198d2000)
+    libbrotlidec.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libbrotlidec.so.1 (0x00007f82291e1000)
+    libxcb-icccm.so.4 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-icccm.so.4 (0x00007f8228b57000)
+    libxcb-image.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-image.so.0 (0x00007f8228b51000)
+    libxcb-randr.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-randr.so.0 (0x00007f822752f000)
+    libxcb-shape.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-shape.so.0 (0x00007f822605e000)
+    libxkbcommon.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxkbcommon.so.0 (0x00007f8226094000)
+    libvorbisenc.so.2 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libvorbisenc.so.2 (0x00007f82236ca000)
+    libgraphite2.so.3 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgraphite2.so.3 (0x00007f8222dd9000)
+    libgpg-error.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgpg-error.so.0 (0x00007f821563d000)
+    libfontconfig.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libfontconfig.so.1 (0x00007f8227547000)
+    libxcb-cursor.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-cursor.so.0 (0x00007f8225e00000)
+    libxcb-render.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-render.so.0 (0x00007f8226063000)
+    libxcb-xfixes.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-xfixes.so.0 (0x00007f8226072000)
+    libGLdispatch.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libGLdispatch.so.0 (0x00007f8219d48000)
+    libgobject-2.0.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgobject-2.0.so.0 (0x00007f8229181000)
+    libwayland-egl.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libwayland-egl.so.1 (0x00007f822a7a9000)
+    libxcb-keysyms.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-keysyms.so.1 (0x00007f8227542000)
+    libgmodule-2.0.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libgmodule-2.0.so.0 (0x00007f8225b4c000)
+    libbrotlicommon.so.1 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libbrotlicommon.so.1 (0x00007f8225b53000)
+    libxkbcommon-x11.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxkbcommon-x11.so.0 (0x00007f8228b5e000)
+    libwayland-client.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libwayland-client.so.0 (0x00007f82291ef000)
+    libwayland-cursor.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libwayland-cursor.so.0 (0x00007f822a79f000)
+    libwayland-server.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libwayland-server.so.0 (0x00007f8219923000)
+    libxcb-render-util.so.0 => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libxcb-render-util.so.0 (0x00007f822608d000)
+    libpulsecommon-15.99.so => /home/barts/Downloads/snapshot-0.0.0-Linux/./lib/libpulsecommon-15.99.so (0x00007f8224d99000)
 
-      Update: I think I fixed it:
+    # FFmpeg libs are missing...
+    libavformat.so.60 => /usr/lib/libavformat.so.60 (0x00007f8228c00000)
+    libavcodec.so.60 => /usr/lib/libavcodec.so.60 (0x00007f8227600000)
+    libswresample.so.4 => /usr/lib/libswresample.so.4 (0x00007f8228f10000)
+    libswscale.so.7 => /usr/lib/libswscale.so.7 (0x00007f8228b69000)
+    libavutil.so.58 => /usr/lib/libavutil.so.58 (0x00007f8226400000)
 
-      - I created the install-ffmpeg script to build ffmpeg from source. It is
-        installed in ./3rdparty/ffmpeg.
-      - After that, the -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg flag is added to the
-        cmake command. This makes sure that the ffmpeg libs are found. This
-        results in:
+    # Other missing libs?
+    libOpenCL.so.1 => /usr/lib/libOpenCL.so.1 (0x00007f822245e000)
+    libSvtAv1Enc.so.1 => /usr/lib/libSvtAv1Enc.so.1 (0x00007f8219e00000)
+    libXfixes.so.3 => /usr/lib/libXfixes.so.3 (0x00007f8216632000)
+    libaom.so.3 => /usr/lib/libaom.so.3 (0x00007f8222e00000)
+    libblkid.so.1 => /usr/lib/libblkid.so.1 (0x00007f82198e7000)
+    libbluray.so.2 => /usr/lib/libbluray.so.2 (0x00007f8224860000)
+    libbrotlienc.so.1 => /usr/lib/libbrotlienc.so.1 (0x00007f82166f1000)
+    libbz2.so.1.0 => /usr/lib/libbz2.so.1.0 (0x00007f8225b39000)
+    libcairo-gobject.so.2 => /usr/lib/libcairo-gobject.so.2 (0x00007f8218430000)
+    libcairo.so.2 => /usr/lib/libcairo.so.2 (0x00007f8223ceb000)
+    libcap.so.2 => /usr/lib/libcap.so.2 (0x00007f821661f000)
+    libcrypto.so.3 => /usr/lib/libcrypto.so.3 (0x00007f8215a00000)
+    libdatrie.so.1 => /usr/lib/libdatrie.so.1 (0x00007f8215627000)
+    libdav1d.so.7 => /usr/lib/libdav1d.so.7 (0x00007f8223e24000)
+    libfribidi.so.0 => /usr/lib/libfribidi.so.0 (0x00007f821566e000)
+    libgdk_pixbuf-2.0.so.0 => /usr/lib/libgdk_pixbuf-2.0.so.0 (0x00007f821606a000)
+    libgmp.so.10 => /usr/lib/libgmp.so.10 (0x00007f82247ba000)
+    libgnutls.so.30 => /usr/lib/libgnutls.so.30 (0x00007f8224400000)
+    libgomp.so.1 => /usr/lib/libgomp.so.1 (0x00007f82158b6000)
+    libgsm.so.1 => /usr/lib/libgsm.so.1 (0x00007f8224635000)
+    libhogweed.so.6 => /usr/lib/libhogweed.so.6 (0x00007f8216650000)
+    libhwy.so.1 => /usr/lib/libhwy.so.1 (0x00007f8216645000)
+    libicudata.so.74 => /usr/lib/libicudata.so.74 (0x00007f8213800000)
+    libicuuc.so.74 => /usr/lib/libicuuc.so.74 (0x00007f8216400000)
+    libidn2.so.0 => /usr/lib/libidn2.so.0 (0x00007f8218452000)
+    libjbig.so.2.1 => /usr/lib/libjbig.so.2.1 (0x00007f8215630000)
+    libjxl.so.0.8 => /usr/lib/libjxl.so.0.8 (0x00007f8222a00000)
+    libjxl_threads.so.0.8 => /usr/lib/libjxl_threads.so.0.8 (0x00007f8225b2f000)
+    libmd.so.0 => /usr/lib/libmd.so.0 (0x00007f821660f000)
+    libmodplug.so.1 => /usr/lib/libmodplug.so.1 (0x00007f8224aa1000)
+    libmount.so.1 => /usr/lib/libmount.so.1 (0x00007f82252bf000)
+    libmp3lame.so.0 => /usr/lib/libmp3lame.so.0 (0x00007f8224388000)
+    libmpg123.so.0 => /usr/lib/libmpg123.so.0 (0x00007f82167a3000)
+    libmvec.so.1 => /usr/lib/libmvec.so.1 (0x00007f8215907000)
+    libnettle.so.8 => /usr/lib/libnettle.so.8 (0x00007f8216699000)
+    libopencore-amrnb.so.0 => /usr/lib/libopencore-amrnb.so.0 (0x00007f822460c000)
+    libopencore-amrwb.so.0 => /usr/lib/libopencore-amrwb.so.0 (0x00007f8225270000)
+    libopenjp2.so.7 => /usr/lib/libopenjp2.so.7 (0x00007f822431b000)
+    libopenmpt.so.0 => /usr/lib/libopenmpt.so.0 (0x00007f82248bd000)
+    libp11-kit.so.0 => /usr/lib/libp11-kit.so.0 (0x00007f821626a000)
+    libpango-1.0.so.0 => /usr/lib/libpango-1.0.so.0 (0x00007f8216000000)
+    libpangocairo-1.0.so.0 => /usr/lib/libpangocairo-1.0.so.0 (0x00007f8218420000)
+    libpangoft2-1.0.so.0 => /usr/lib/libpangoft2-1.0.so.0 (0x00007f8215f34000)
+    libpixman-1.so.0 => /usr/lib/libpixman-1.so.0 (0x00007f8215f4d000)
+    libpthread.so.0 => /usr/lib/libpthread.so.0 (0x00007f8222451000)
+    librav1e.so.0.6 => /usr/lib/librav1e.so.0.6 (0x00007f8222600000)
+    librsvg-2.so.2 => /usr/lib/librsvg-2.so.2 (0x00007f8223800000)
+    libsnappy.so.1 => /usr/lib/libsnappy.so.1 (0x00007f8224644000)
+    libsoxr.so.0 => /usr/lib/libsoxr.so.0 (0x00007f822248e000)
+    libspeex.so.1 => /usr/lib/libspeex.so.1 (0x00007f82242fe000)
+    libsrt.so.1.5 => /usr/lib/libsrt.so.1.5 (0x00007f82246e8000)
+    libssh.so.4 => /usr/lib/libssh.so.4 (0x00007f822467b000)
+    libtasn1.so.6 => /usr/lib/libtasn1.so.6 (0x00007f821843b000)
+    libthai.so.0 => /usr/lib/libthai.so.0 (0x00007f8215663000)
+    libtheoradec.so.1 => /usr/lib/libtheoradec.so.1 (0x00007f82242e4000)
+    libtheoraenc.so.1 => /usr/lib/libtheoraenc.so.1 (0x00007f8223cb3000)
+    libtiff.so.6 => /usr/lib/libtiff.so.6 (0x00007f821568e000)
+    libunistring.so.5 => /usr/lib/libunistring.so.5 (0x00007f82160b0000)
+    libva-drm.so.2 => /usr/lib/libva-drm.so.2 (0x00007f82242df000)
+    libva-x11.so.2 => /usr/lib/libva-x11.so.2 (0x00007f8223cac000)
+    libva.so.2 => /usr/lib/libva.so.2 (0x00007f822369a000)
+    libvdpau.so.1 => /usr/lib/libvdpau.so.1 (0x00007f8223ca7000)
+    libvorbisfile.so.3 => /usr/lib/libvorbisfile.so.3 (0x00007f8219cc8000)
+    libvpl.so.2 => /usr/lib/libvpl.so.2 (0x00007f8222938000)
+    libvpx.so.8 => /usr/lib/libvpx.so.8 (0x00007f8224000000)
+    libwebpmux.so.3 => /usr/lib/libwebpmux.so.3 (0x00007f8225286000)
+    libx264.so.164 => /usr/lib/libx264.so.164 (0x00007f8219a00000)
+    libx265.so.199 => /usr/lib/libx265.so.199 (0x00007f8218600000)
+    libxcb-dri3.so.0 => /usr/lib/libxcb-dri3.so.0 (0x00007f821662b000)
+    libxml2.so.2 => /usr/lib/libxml2.so.2 (0x00007f8224c2f000)
+    libxvidcore.so.4 => /usr/lib/libxvidcore.so.4 (0x00007f82224f1000)
+    ```
 
-      ```
-      cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg
-      ```
-
-      Now I hit a known bug: https://bugreports.qt.io/browse/QTBUG-115052 when
-      building ffmpeg statically. So, I can apply the patch that is provided
-      and try again -> now I get an error that some functions are not undefined
-      so I probably miss some libs... I will go forward with the shared ffmpeg.
-      In the pipeline, I get the following error:
-
-      ```
-      CMake Error at /home/runner/work/snapshot/snapshot/build/app/cmake_install.cmake:66 (file):
-        file Could not resolve runtime dependencies:
-          libavcodec.so.60
-          libavutil.so.58
-          libswresample.so.4
-      Call Stack (most recent call first):
-        /home/runner/work/snapshot/snapshot/build/cmake_install.cmake:48 (include)
-      CPack Error: Error when generating package: snapshot
-      FAILED: CMakeFiles/package.util
-      cd /home/runner/work/snapshot/snapshot/build && /usr/local/bin/cpack --config ./CPackConfig.cmake
-      ninja: build stopped: subcommand failed.
-      Error: Process completed with exit code
-      ```
+    Above is the build from the ubuntu pipeline. How does it look for a local
+    build on Arch?
 
   - Issues graphics:
 
