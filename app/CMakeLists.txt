@@ -5,8 +5,13 @@ install(
   TARGETS snapshot
           RUNTIME_DEPENDENCIES
           POST_EXCLUDE_REGEXES
+          # Compatability with standard C libraries across linux distributions
+          # is assumed.
           ".*libc.*"
           ".*libm\..*"
+          ".*libdbm\..*"
+          ".*libpthread\..*"
+          # FFmpeg libraries are added manually below due to an unknown issue.
           ".*libavcodec.*"
           ".*libavdevice.*"
           ".*libavfilter.*"
@@ -16,7 +21,11 @@ install(
           ".*libswresample.*"
           ".*libswscale.*"
           ".*libvmaf.*")
+
+# Copy FFmpeg libraries to the install directory.
 install(FILES ${FFMPEG_LIBRARIES} DESTINATION lib)
+
+# Copy the entrypoint to the install directory.
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/snapshot DESTINATION .)
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
