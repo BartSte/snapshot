@@ -6,6 +6,7 @@ Session.vim
 nvim.shada
 include/version.h
 3rdparty/Qt
+3rdparty/ffmpeg
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

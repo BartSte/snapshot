@@ -1,5 +1,8 @@
 # README
 
+[![Tests](https://github.com/BartSte/snapshot/actions/workflows/tests.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/tests.yml)  
+[![Release](https://github.com/BartSte/snapshot/actions/workflows/release.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/release.yml)
+
 > WORK IN PROGRESS!  
 > This project is still under development. The code is still experimental and
 > is subject to change.
@@ -414,7 +417,58 @@ more information.
         to run the app.
   - [ ] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
-  - Issues:
+  - Issue FFmpeg:
+
+    - On ubuntu, the includes (headers I guess) are not included in the apt
+      package, in contrast to the arch package. As a solution, I build ffmpeg
+      from source. I build them with static linking which gives some new
+      issues when building the project. Now I am thinking.. I guess I have 3
+      options:
+
+      1. statical link ffmpeg to the project.
+      2. dynamically link ffmpeg to the project and include the ffmpeg libs in
+         the release.
+      3. dynamically link ffmpeg to the project and let the user install ffmpeg
+         themselves. This could be useful when the user needs different
+         versions of ffmpeg to make it work with their hardware.
+
+      On arch, I can just install static ffmpeg using AUR (its located at
+      /opt/ffmpeg063).
+
+      Update: I think I fixed it:
+
+      - I created the install-ffmpeg script to build ffmpeg from source. It is
+        installed in ./3rdparty/ffmpeg.
+      - After that, the -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg flag is added to the
+        cmake command. This makes sure that the ffmpeg libs are found. This
+        results in:
+
+      ```
+      cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg
+      ```
+
+      Now I hit a known bug: https://bugreports.qt.io/browse/QTBUG-115052 when
+      building ffmpeg statically. So, I can apply the patch that is provided
+      and try again -> now I get an error that some functions are not undefined
+      so I probably miss some libs... I will go forward with the shared ffmpeg.
+      In the pipeline, I get the following error:
+
+      ```
+      CMake Error at /home/runner/work/snapshot/snapshot/build/app/cmake_install.cmake:66 (file):
+        file Could not resolve runtime dependencies:
+          libavcodec.so.60
+          libavutil.so.58
+          libswresample.so.4
+      Call Stack (most recent call first):
+        /home/runner/work/snapshot/snapshot/build/cmake_install.cmake:48 (include)
+      CPack Error: Error when generating package: snapshot
+      FAILED: CMakeFiles/package.util
+      cd /home/runner/work/snapshot/snapshot/build && /usr/local/bin/cpack --config ./CPackConfig.cmake
+      ninja: build stopped: subcommand failed.
+      Error: Process completed with exit code
+      ```
+
+  - Issues graphics:
 
     - On WSL I get the following error:
 
@@ -425,11 +479,38 @@ more information.
     libEGL warning: egl: failed to create dri2 screen
     ```
 
-    - On ubuntu, fresh install, I get the following error:
+    According to bing:
 
     ```
-    barts@zbook:~$ ./snapshot-0.0.0-Linux/snapshot -h
-      1012:     __vdso_timeSegmentation fault
+    It seems that you are encountering an error while running your Qt app on
+    Arch Linux with WSL. The error message you provided indicates that the
+    vkCreateInstance function failed with the error code
+    VK_ERROR_INCOMPATIBLE_DRIVER. This error is usually caused by a mismatch
+    between the Vulkan driver and the hardware it is running on 1.
+
+    One possible solution is to install the latest graphics drivers for your
+    system 2. Another possible solution is to try running the app without any
+    Vulkan layers at all 3.
+
+    It’s also worth noting that there is an ongoing issue with
+    hardware-accelerated Vulkan in WSL2 4. You may want to check if this issue
+    is related to your problem.
+
+    I hope this helps!
     ```
+
+    An idea is to check for differences in the output of `pldd` when comparing
+    an snapshot app that uses a dynamic Qt6 and one that uses a static Qt6. I
+    the past, a dynamic Qt6 worked on WSL, so it is likely that something goes
+    wrong during the static linking.
+
+    I think it has to do with support for the GPU. I think it is not possible
+    to make a stand-alone structure that support all GPU's. So it is likely to
+    be better that the user installs the GPU drivers themselves. I am not sure
+    what the best way is to do this. It does explain why the build on the
+    ubuntu server fails on my arch machine, but when I build it myself, it
+    works. This may also be the case on my WSL+arch machine when I install the
+    GPU drivers as is explained
+    [here](https://github.com/lutris/docs/blob/master/InstallingDrivers.md#amd--intel).
 
 - [ ] Cross compile for raspberry pi

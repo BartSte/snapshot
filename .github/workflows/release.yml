@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+\.[0-9]+\.[0-9]+'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update apt-get database
+        run: |
+          sudo apt-get update -y
+          sudo apt-get upgrade -y
+
+      - name: Install build dependencies
+        run: sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
+
+      - name: Install vulkan
+        run: ./scripts/install-vulkan
+
+      - name: Install project dependencies
+        run: |
+           sudo apt-get install -y libboost-all-dev libspdlog-dev
+
+      - name: Install ffmpeg
+        run: ./scripts/install-ffmpeg
+
+      - name: Download Qt source
+        env: 
+          QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
+        run: |
+           mkdir /tmp/Qt
+           ./scripts/install-qt --root /tmp/Qt qt.qt6.661.src
+
+      - name: Build Qt from source with static linking
+        env: 
+          CC: gcc
+          CXX: g++
+          CXXFLAGS: -Wall
+        run: |
+           sudo apt-get install -y '^libxcb.*-dev' build-essential libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libpulse-dev libqt5x11extras5 libssl-dev libssl1.0 libwayland-dev libwayland-egl1-mesa libwayland-server0 libx11-xcb-dev libxi-dev libxkbcommon-dev libxkbcommon-dev libxkbcommon-x11-dev libxrender-dev openssl
+           src=/tmp/Qt/6.6.1/Src
+           $src/configure -release -static -prefix $PWD/3rdparty/Qt -submodules qtbase,qtmultimedia,qtwayland -no-pch -no-gstreamer -- -S $src -B $src/build -Wdev -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg
+           cmake --build $src/build
+           cmake --install $src/build
+
+      - name: Build project
+        run: |
+          ./scripts/configure -- -DBUILD_TESTING=ON
+          cmake --build ./build --target package
+          
+      - name: Run tests
+        run: ctest --test-dir ./build --verbose
+
+      - name: Publish
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          draft: true
+          files: ./build/*.tar.gz
