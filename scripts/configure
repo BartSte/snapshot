@@ -18,9 +18,11 @@ Additionally, the following is supported by default:
     - 3rdparty/ffmpeg/include contains the headers
 
 Options:
-    --help      Show this help message
-    --clean     Remove the build folder before configuring
-    --no-patch  Do not patch FindFFmpeg.cmake to fix a bug in Qt 6.6"
+    --help                  Show this help message
+    --clean                 Remove the build folder before configuring
+    --no-patch              Do not patch FindFFmpeg.cmake to fix a bug in Qt 6.6
+    --build-type <type>     Set the build type to Debug, Release, or
+                            RelWithDebInfo (default: Release)"
 
 this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
 
@@ -28,6 +30,7 @@ root="$this_dir/.."
 patch=true
 qt_dir="$root/3rdparty/Qt"
 ffmpeg_dir="$root/3rdparty/ffmpeg"
+build_type="Release"
 
 clean() {
     echo "Remove old build folder"
@@ -48,7 +51,7 @@ configure() {
         -S "$root" \
         -B "$root/build" \
         -DBUILD_TESTING=OFF \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE="$build_type" \
         -DFFMPEG_DIR="$ffmpeg_dir" \
         -DCMAKE_PREFIX_PATH="$qt_dir/lib/cmake" \
         "$@"
@@ -63,6 +66,10 @@ while [[ $# -gt 0 ]]; do
         --clean)
             clean
             shift
+            ;;
+        --build-type)
+            build_type="$2"
+            shift 2
             ;;
         --no-patch)
             patch=false

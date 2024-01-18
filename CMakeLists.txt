@@ -5,6 +5,7 @@ project(
   LANGUAGES CXX)
 
 option(BUILD_TESTING "Build tests" OFF)
+option(INSTALL_GTEST OFF)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build tests: ${BUILD_TESTING}")

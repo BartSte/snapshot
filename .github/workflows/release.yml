@@ -52,8 +52,11 @@ jobs:
 
       - name: Build project
         run: |
-          ./scripts/configure
-          cmake --build "$PWD/build" --target package
+          ./scripts/configure -- -DBUILD_TESTING=ON
+          cmake --build ./build --target package
+          
+      - name: Run tests
+        run: ctest --test-dir ./build --verbose
 
       - name: Publish
         uses: "marvinpinto/action-automatic-releases@latest"

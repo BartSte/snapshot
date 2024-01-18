@@ -417,56 +417,12 @@ more information.
         to run the app.
   - [ ] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
-  - Issue FFmpeg:
 
-    - On ubuntu, the includes (headers I guess) are not included in the apt
-      package, in contrast to the arch package. As a solution, I build ffmpeg
-      from source. I build them with static linking which gives some new
-      issues when building the project. Now I am thinking.. I guess I have 3
-      options:
+  - When install the runtime deps, how can I:
 
-      1. statical link ffmpeg to the project.
-      2. dynamically link ffmpeg to the project and include the ffmpeg libs in
-         the release.
-      3. dynamically link ffmpeg to the project and let the user install ffmpeg
-         themselves. This could be useful when the user needs different
-         versions of ffmpeg to make it work with their hardware.
-
-      On arch, I can just install static ffmpeg using AUR (its located at
-      /opt/ffmpeg063).
-
-      Update: I think I fixed it:
-
-      - I created the install-ffmpeg script to build ffmpeg from source. It is
-        installed in ./3rdparty/ffmpeg.
-      - After that, the -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg flag is added to the
-        cmake command. This makes sure that the ffmpeg libs are found. This
-        results in:
-
-      ```
-      cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg
-      ```
-
-      Now I hit a known bug: https://bugreports.qt.io/browse/QTBUG-115052 when
-      building ffmpeg statically. So, I can apply the patch that is provided
-      and try again -> now I get an error that some functions are not undefined
-      so I probably miss some libs... I will go forward with the shared ffmpeg.
-      In the pipeline, I get the following error:
-
-      ```
-      CMake Error at /home/runner/work/snapshot/snapshot/build/app/cmake_install.cmake:66 (file):
-        file Could not resolve runtime dependencies:
-          libavcodec.so.60
-          libavutil.so.58
-          libswresample.so.4
-      Call Stack (most recent call first):
-        /home/runner/work/snapshot/snapshot/build/cmake_install.cmake:48 (include)
-      CPack Error: Error when generating package: snapshot
-      FAILED: CMakeFiles/package.util
-      cd /home/runner/work/snapshot/snapshot/build && /usr/local/bin/cpack --config ./CPackConfig.cmake
-      ninja: build stopped: subcommand failed.
-      Error: Process completed with exit code
-      ```
+    - Resolve conflicting dependency names for ffmpeg (issue on my laptop)?
+    - Add the custom build of ffmpeg libs to the search path of the install
+      function of cmake (issue on pipeline)?
 
   - Issues graphics:
 
