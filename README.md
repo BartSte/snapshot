@@ -410,63 +410,56 @@ more information.
 - [ ] Add pre built binaries to the github releases
 
   - [x] Link the app statically against Qt6, boost and spdlog
+  - [x] Add the remaining dynamic libs to the same directory tree as the
+        executable and using the script that is provided in the Qt
+        [docs](https://doc.qt.io/qt-6/linux-deployment.html) to run the app.
   - [ ] Go through all the remaining dynamic libs using ldd and see which ones
         can also be linked statically.
-  - [x] Add the remaining dynamic libs to the same directory tree as the
-        executable and using the script that is provided in the Qt [docs](https://doc.qt.io/qt-6/linux-deployment.html)
-        to run the app.
-  - [ ] Publish the directory tree as an archive as a release. Other more
+  - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
 
-  - When install the runtime deps, how can I:
-
-    - Resolve conflicting dependency names for ffmpeg (issue on my laptop)?
-    - Add the custom build of ffmpeg libs to the search path of the install
-      function of cmake (issue on pipeline)?
-
-  - Issues graphics:
-
-    - On WSL I get the following error:
-
-    ```
-    snapshot-0.0.0-Linux/snapshot -g
-    [2024-01-09 18:18:41.573] [warning] [: @ ] No cameras found
-    MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
-    libEGL warning: egl: failed to create dri2 screen
-    ```
-
-    According to bing:
-
-    ```
-    It seems that you are encountering an error while running your Qt app on
-    Arch Linux with WSL. The error message you provided indicates that the
-    vkCreateInstance function failed with the error code
-    VK_ERROR_INCOMPATIBLE_DRIVER. This error is usually caused by a mismatch
-    between the Vulkan driver and the hardware it is running on 1.
-
-    One possible solution is to install the latest graphics drivers for your
-    system 2. Another possible solution is to try running the app without any
-    Vulkan layers at all 3.
-
-    It’s also worth noting that there is an ongoing issue with
-    hardware-accelerated Vulkan in WSL2 4. You may want to check if this issue
-    is related to your problem.
-
-    I hope this helps!
-    ```
-
-    An idea is to check for differences in the output of `pldd` when comparing
-    an snapshot app that uses a dynamic Qt6 and one that uses a static Qt6. I
-    the past, a dynamic Qt6 worked on WSL, so it is likely that something goes
-    wrong during the static linking.
-
-    I think it has to do with support for the GPU. I think it is not possible
-    to make a stand-alone structure that support all GPU's. So it is likely to
-    be better that the user installs the GPU drivers themselves. I am not sure
-    what the best way is to do this. It does explain why the build on the
-    ubuntu server fails on my arch machine, but when I build it myself, it
-    works. This may also be the case on my WSL+arch machine when I install the
-    GPU drivers as is explained
-    [here](https://github.com/lutris/docs/blob/master/InstallingDrivers.md#amd--intel).
-
 - [ ] Cross compile for raspberry pi
+
+
+- [ ] Issues graphics on WSL. I get the following error:
+
+  ```
+  snapshot-0.0.0-Linux/snapshot -g
+  [2024-01-09 18:18:41.573] [warning] [: @ ] No cameras found
+  MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+  libEGL warning: egl: failed to create dri2 screen
+  ```
+
+  According to bing:
+
+  ```
+  It seems that you are encountering an error while running your Qt app on
+  Arch Linux with WSL. The error message you provided indicates that the
+  vkCreateInstance function failed with the error code
+  VK_ERROR_INCOMPATIBLE_DRIVER. This error is usually caused by a mismatch
+  between the Vulkan driver and the hardware it is running on 1.
+
+  One possible solution is to install the latest graphics drivers for your
+  system 2. Another possible solution is to try running the app without any
+  Vulkan layers at all 3.
+
+  It’s also worth noting that there is an ongoing issue with
+  hardware-accelerated Vulkan in WSL2 4. You may want to check if this issue
+  is related to your problem.
+
+  I hope this helps!
+  ```
+
+  An idea is to check for differences in the output of `pldd` when comparing
+  an snapshot app that uses a dynamic Qt6 and one that uses a static Qt6. I
+  the past, a dynamic Qt6 worked on WSL, so it is likely that something goes
+  wrong during the static linking.
+
+  I think it has to do with support for the GPU. I think it is not possible
+  to make a stand-alone structure that support all GPU's. So it is likely to
+  be better that the user installs the GPU drivers themselves. I am not sure
+  what the best way is to do this. It does explain why the build on the
+  ubuntu server fails on my arch machine, but when I build it myself, it
+  works. This may also be the case on my WSL+arch machine when I install the
+  GPU drivers as is explained
+  [here](https://github.com/lutris/docs/blob/master/InstallingDrivers.md#amd--intel).
