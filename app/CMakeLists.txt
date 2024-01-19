@@ -14,6 +14,7 @@ install(
           POST_EXCLUDE_REGEXES
           # Compatability with standard C libraries across linux distributions
           # is assumed.
+          ".*ld-linux.*\\.so.*"
           ".*libc\\.so.*"
           ".*libm\\.so.*"
           ".*libdbm\\.so.*"

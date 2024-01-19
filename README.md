@@ -417,6 +417,7 @@ more information.
         can also be linked statically.
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
+  - [ ] Test if it works on x11 and wayland.
 
 - [ ] Cross compile for raspberry pi
 
