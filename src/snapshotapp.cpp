@@ -33,7 +33,7 @@ using ms = std::chrono::milliseconds;
  * @param argc
  * @param argv
  */
-App::App(int argc, char *argv[])
+App::App(int &argc, char *argv[])
     : QApplication(argc, argv), parser(argc, argv) {
   signal(SIGINT, sigintHandler);
   QObject::connect(this, &App::aboutToQuit, this, &App::stop);
@@ -113,9 +113,9 @@ int App::start() {
   makeRecorder();
 
   if (window || recorder) {
+    startGui();
     startVideo();
     startRecorder();
-    startGui();
     return execWithFlag(settings.get<bool>("no-event-loop"));
   } else {
     spdlog::warn("No gui, or recorder created. Exiting...");
@@ -228,6 +228,7 @@ bool App::list() {
  * Connect to the camera specified in the config file, if it is found.
  */
 void App::makeVideo() {
+  spdlog::debug("Creating video");
   std::string id = settings.get<std::string>("camera");
   std::string timeout = settings.get<std::string>("timeout");
   auto optional = videoFactory(id, stringToSec(timeout));
@@ -251,6 +252,7 @@ void App::makeGui() {
     return;
   }
 
+  spdlog::debug("Creating gui");
   window = std::make_unique<MainWindow>();
   if (video) {
     window->scene.setVideo(video);
@@ -269,6 +271,7 @@ void App::makeRecorder() {
     return;
   }
 
+  spdlog::debug("Creating recorder");
   path path_save(Path::expand(settings.get<std::string>("folder")));
   QVideoSink *sink_ptr = video->getVideoSink();
   recorder = std::make_unique<Recorder>(sink_ptr, path_save);
@@ -308,6 +311,7 @@ void App::startVideo() {
  */
 void App::startGui() {
   if (window) {
+    spdlog::debug("Starting gui");
     window->show();
   }
 }
@@ -322,6 +326,7 @@ void App::startRecorder() {
     std::string maxBytesString = settings.get<std::string>("max-bytes");
     uint64_t maxBytes = static_cast<uint64_t>(std::stod(maxBytesString));
 
+    spdlog::debug("Starting recorder");
     recorder->start(ms(interval), ms(duration), ms(1000), maxBytes);
   }
 }

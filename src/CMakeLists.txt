@@ -6,14 +6,13 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
 include(${CMAKE_SOURCE_DIR}/cmake/FindFFmpeg_patched.cmake)
 
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
-set(QT6_LIB_TYPE ${QT6_LIB_TYPE} PARENT_SCOPE)
-
-get_target_property(FFMPEG_LIB_TYPE FFmpeg::FFmpeg TYPE)
+set(QT6_LIB_TYPE
+    ${QT6_LIB_TYPE}
+    PARENT_SCOPE)
 
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
 message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
 message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
-message(STATUS "FFmpeg library type is ${FFMPEG_LIB_TYPE}")
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
@@ -56,4 +55,6 @@ qt_import_plugins(
   ${PLATFORM_PLUGINS}
   INCLUDE_BY_TYPE
   multimedia
-  ${MULTIMEDIA_PLUGINS})
+  ${MULTIMEDIA_PLUGINS}
+)
+

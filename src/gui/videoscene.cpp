@@ -168,7 +168,6 @@ void VideoScene::setVideo(std::shared_ptr<BaseVideo> video_) {
   video = video_;
   video->setVideoSink(videoItem.videoSink());
   connect(video.get(), &BaseVideo::stateChanged, this, &VideoScene::update);
-  video->start();
 }
 
 /**

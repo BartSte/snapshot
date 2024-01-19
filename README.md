@@ -415,51 +415,129 @@ more information.
         [docs](https://doc.qt.io/qt-6/linux-deployment.html) to run the app.
   - [ ] Go through all the remaining dynamic libs using ldd and see which ones
         can also be linked statically.
+
+    - [ ] FFMPEG?
+          Chatgpt help:
+
+    ```
+    Here are some steps you can try to resolve the issue:
+
+    Ensure that the libavutil.a library is linked correctly with your
+    application. You can do this by checking the linker flags in your build
+    system.
+
+    Check that the version of the libavutil.a library matches the version of
+    the application. If there is a version mismatch, you may need to update the
+    library or the application.
+
+    Ensure that the hwcontext_vaapi.o file is present in the libavutil.a
+    library. If it is missing, you may need to recompile the library with the
+    hwcontext_vaapi.o file included.
+    ```
+
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
   - [ ] Test if it works on x11 and wayland.
 
+    - Wayland is fine
+    - When running on XWayland, and setting the QT_QPA_PLATFORM="xcb" the
+      program crashes (only in release mode). I will compile Qt6 in debug mode
+      an my app in RelWithDebInfo mode to see if I can get more information.
+
+    - Oke it does not always happen on xcb. When it does the following logs are
+      printed:
+
+    ```
+    ❯ build/bin/snapshot -g --loglevel debug
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Loglevel: debug
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Pattern: [%Y-%m-%d %H:%M:%S.%e] [%l] [%s:%# @ %!] %v
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Compare potential stream rtsp:// to default
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Compare potential stream udp:// to default
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Compare potential stream http:// to default
+    [2024-01-20 17:10:27.982] [debug] [: @ ] Compare potential stream https:// to default
+    [2024-01-20 17:10:27.982] [debug] [: @ ] No valid stream found.
+    [2024-01-20 17:10:27.982] [debug] [: @ ] No file found.
+    [2024-01-20 17:10:27.987] [debug] [: @ ] Camera name: default
+    [2024-01-20 17:10:27.987] [info] [: @ ] Selecting default camera
+    [2024-01-20 17:10:27.987] [info] [: @ ] Camera created.
+    [2024-01-20 17:10:27.988] [debug] [: @ ] Starting video
+    [2024-01-20 17:10:28.029] [debug] [: @ ] formats: 11
+    [2024-01-20 17:10:28.029] [debug] [: @ ] resolution: 640x360
+    [2024-01-20 17:10:28.029] [debug] [: @ ] resolution: 1280x720
+    [2024-01-20 17:10:28.029] [debug] [: @ ] aspectRatio: 3.146875
+    [2024-01-20 17:10:28.029] [debug] [: @ ] Video state changed to Search
+    zsh: segmentation fault (core dumped)  build/bin/snapshot -g --loglevel debug
+    ```
+
+    lldb shows, when a crash occured, that the video object in the window is a
+    nullptr so that will have something to do with it.
+
 - [ ] Cross compile for raspberry pi
+- [ ] Segmentation fault when running --record without a camera being
+      available.
+- [ ] Add to FAQ:
 
-- [ ] Issues graphics on WSL. I get the following error:
+  - WSL + ubuntu:
+    App works find, but I get the following errors/warnings:
 
-  ```
-  snapshot-0.0.0-Linux/snapshot -g
-  [2024-01-09 18:18:41.573] [warning] [: @ ] No cameras found
-  MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
-  libEGL warning: egl: failed to create dri2 screen
-  ```
+    - Fontconfig error: Cannot load default config file
 
-  According to bing:
+      - install fontconfig on system: refer to https://doc.qt.io/qt-6/qt-embedded-fonts.html in faq
 
-  ```
-  It seems that you are encountering an error while running your Qt app on
-  Arch Linux with WSL. The error message you provided indicates that the
-  vkCreateInstance function failed with the error code
-  VK_ERROR_INCOMPATIBLE_DRIVER. This error is usually caused by a mismatch
-  between the Vulkan driver and the hardware it is running on 1.
+    - qt.multimedia.ffmpeg.libsymbolsresolver: Couldn't load VAAPI library
+      - User needs to install `libva` (add to faq)
 
-  One possible solution is to install the latest graphics drivers for your
-  system 2. Another possible solution is to try running the app without any
-  Vulkan layers at all 3.
+  - Issue with nvidia drivers, not my problem (add to faq):
 
-  It’s also worth noting that there is an ongoing issue with
-  hardware-accelerated Vulkan in WSL2 4. You may want to check if this issue
-  is related to your problem.
+    - Failed to open VDPAU backend libvdpau_nvidia.so: cannot open shared object file: No such file or directory
+    - QRhi* initializeRHI(QRhi*) : No RHI backend. Using CPU conversion.
 
-  I hope this helps!
-  ```
+  - not resolved, guess wsl issue:
 
-  An idea is to check for differences in the output of `pldd` when comparing
-  an snapshot app that uses a dynamic Qt6 and one that uses a static Qt6. I
-  the past, a dynamic Qt6 worked on WSL, so it is likely that something goes
-  wrong during the static linking.
+    - qt.qpa.wayland: EGL not available .
 
-  I think it has to do with support for the GPU. I think it is not possible
-  to make a stand-alone structure that support all GPU's. So it is likely to
-  be better that the user installs the GPU drivers themselves. I am not sure
-  what the best way is to do this. It does explain why the build on the
-  ubuntu server fails on my arch machine, but when I build it myself, it
-  works. This may also be the case on my WSL+arch machine when I install the
-  GPU drivers as is explained
-  [here](https://github.com/lutris/docs/blob/master/InstallingDrivers.md#amd--intel).
+  - Issues graphics on WSL. I get the following error:
+
+    ```
+    snapshot-0.0.0-Linux/snapshot -g
+    [2024-01-09 18:18:41.573] [warning] [: @ ] No cameras found
+    MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    libEGL warning: egl: failed to create dri2 screen
+    ```
+
+    According to bing:
+
+    ```
+    It seems that you are encountering an error while running your Qt app on
+    Arch Linux with WSL. The error message you provided indicates that the
+    vkCreateInstance function failed with the error code
+    VK_ERROR_INCOMPATIBLE_DRIVER. This error is usually caused by a mismatch
+    between the Vulkan driver and the hardware it is running on 1.
+
+    One possible solution is to install the latest graphics drivers for your
+    system 2. Another possible solution is to try running the app without any
+    Vulkan layers at all 3.
+
+    It’s also worth noting that there is an ongoing issue with
+    hardware-accelerated Vulkan in WSL2 4. You may want to check if this issue
+    is related to your problem.
+
+    I hope this helps!
+    ```
+
+    An idea is to check for differences in the output of `pldd` when comparing
+    an snapshot app that uses a dynamic Qt6 and one that uses a static Qt6. I
+    the past, a dynamic Qt6 worked on WSL, so it is likely that something goes
+    wrong during the static linking.
+
+    I think it has to do with support for the GPU. I think it is not possible
+    to make a stand-alone structure that support all GPU's. So it is likely to
+    be better that the user installs the GPU drivers themselves. I am not sure
+    what the best way is to do this. It does explain why the build on the
+    ubuntu server fails on my arch machine, but when I build it myself, it
+    works. This may also be the case on my WSL+arch machine when I install the
+    GPU drivers as is explained
+    [here](https://github.com/lutris/docs/blob/master/InstallingDrivers.md#amd--intel).
+
+    I also have the issue when using Qutebrowser on wsl, so it is probably not
+    related to snapshot.

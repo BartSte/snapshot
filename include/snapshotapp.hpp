@@ -17,7 +17,7 @@ class App : public QApplication {
   using path = std::filesystem::path;
 
  public:
-  App(int argc, char *argv[]);
+  App(int &argc, char *argv[]);
   ptree getSettings();
   int exec();
 
