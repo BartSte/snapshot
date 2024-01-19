@@ -421,7 +421,6 @@ more information.
 
 - [ ] Cross compile for raspberry pi
 
-
 - [ ] Issues graphics on WSL. I get the following error:
 
   ```

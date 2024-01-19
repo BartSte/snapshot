@@ -3,9 +3,17 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
+include(${CMAKE_SOURCE_DIR}/cmake/FindFFmpeg_patched.cmake)
+
+get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
+set(QT6_LIB_TYPE ${QT6_LIB_TYPE} PARENT_SCOPE)
+
+get_target_property(FFMPEG_LIB_TYPE FFmpeg::FFmpeg TYPE)
 
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
+message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
 message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
+message(STATUS "FFmpeg library type is ${FFMPEG_LIB_TYPE}")
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
@@ -28,6 +36,7 @@ set(PLATFORM_PLUGINS
     Qt6::QWaylandEglPlatformIntegrationPlugin
     Qt6::QWaylandIntegrationPlugin
     Qt6::QXcbIntegrationPlugin)
+set(MULTIMEDIA_PLUGINS Qt6::QFFmpegMediaPlugin)
 
 target_link_libraries(
   snapshotapp
@@ -37,7 +46,7 @@ target_link_libraries(
          Qt6::Widgets
          Qt6::Multimedia
          Qt6::MultimediaWidgets
-         Qt6::QFFmpegMediaPlugin
+         ${MULTIMEDIA_PLUGINS}
          ${PLATFORM_PLUGINS})
 
 qt_import_plugins(
@@ -47,4 +56,4 @@ qt_import_plugins(
   ${PLATFORM_PLUGINS}
   INCLUDE_BY_TYPE
   multimedia
-  Qt6::QFFmpegMediaPlugin)
+  ${MULTIMEDIA_PLUGINS})
