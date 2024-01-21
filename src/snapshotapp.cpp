@@ -283,8 +283,11 @@ void App::makeRecorder() {
  * @brief Quit when the recorder is stopped and no gui is active.
  */
 void App::quitWhenHeadless() {
-  spdlog::debug("Quit if no gui is active");
-  if (guiActive()) {
+  spdlog::debug("quitWhenHeadless called");
+  if (recorder->getState() != RecorderState::Stop) {
+    spdlog::debug("Recorder is not stopped.");
+    return;
+  } else if (guiActive()) {
     spdlog::debug("Gui is active");
     return;
   } else if (App::closingDown()) {

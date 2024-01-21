@@ -421,6 +421,15 @@ more information.
 - [ ] Cross compile for raspberry pi
 - [ ] Segmentation fault when running --record without a camera being
       available.
+- [ ] Fix issue with ffmpeg + hw acceleration on my arch machine:
+
+  ```
+  [h264 @ 0x5594b31d6b40] A hardware frames or device context is required for hardware accelerated decoding.
+  [h264 @ 0x5594b31d6b40] Failed setup for format vaapi: hwaccel initialisation returned error.
+  ```
+
+  When solved, document it in the faq.
+
 - [ ] Add to FAQ:
 
   - WSL + ubuntu:
@@ -441,6 +450,34 @@ more information.
   - not resolved, guess wsl issue:
 
     - qt.qpa.wayland: EGL not available .
+
+  - Issues with your graphics card need to be resolved by the user itself. You
+    need to setup your graphics card yourself. Here are some tips:
+
+    For Intel graphics cards:
+
+    - Most Linux-based* distributions already include Intel® Graphics Drivers.
+      These drivers are provided and maintained by the Linux* distribution
+      vendors and not by Intel, we recommend contacting the Linux\* Operating
+      System Vendors.
+    - On arch, ffmpeg gave warnings that harware acceleration did not work.
+      After installing the `libva-intel-driver` the issue was resolved.
+
+    For Nvidia graphics cards:
+
+    - TODO
+
+    For AMD graphics cards:
+
+    - TODO
+
+    Checkout the arch wiki for more information:
+
+    - [General](https://wiki.archlinux.org/title/Hardware_video_acceleration)
+    - [Intel](https://wiki.archlinux.org/title/Intel_graphics)
+    - [Nvidia](https://wiki.archlinux.org/title/NVIDIA)
+    - [Nouveau](https://wiki.archlinux.org/title/Nouveau)
+    - [AMD](https://wiki.archlinux.org/title/AMDGPU)
 
   - Issues graphics on WSL. I get the following error:
 
