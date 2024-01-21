@@ -8,7 +8,7 @@
  *
  * @param strings A vector of strings.
  */
-CharPointers::CharPointers(const std::vector<std::string> &strings) {
+CharPointers::CharPointers(const std::vector<std::string> &strings) : argc(0) {
   pointers.reserve(strings.size());
   auto func = [this](const std::string &s) { push_back(s); };
   std::for_each(strings.begin(), strings.end(), func);
@@ -47,3 +47,17 @@ void CharPointers::push_back(const std::string &s) {
  * @return
  */
 int CharPointers::size() { return pointers.size(); }
+
+/**
+ * @brief argc is the number of arguments and is the same as the size of the
+ * vector. This method is provided such that it can be used as a reference
+ * when calling the constructor of QApplication. In contrast to the size()
+ * method, the returned value is a reference to a member variable holding the
+ * size of the vector.
+ *
+ * @return
+ */
+int &CharPointers::getArgc() {
+  argc = pointers.size();
+  return argc;
+}

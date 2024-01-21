@@ -5,6 +5,7 @@
 
 class CharPointers {
  private:
+  int argc;
   std::vector<char *> pointers;
 
  public:
@@ -13,4 +14,5 @@ class CharPointers {
   char **data();
   void push_back(const std::string &s);
   int size();
+  int &getArgc();
 };

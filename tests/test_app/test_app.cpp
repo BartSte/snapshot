@@ -47,7 +47,7 @@ CharPointers getArgv(std::vector<std::string> vec = {}) {
 TEST(testApp, testGetArgv) {
   CharPointers argv = getArgv({"foo", "bar"});
   spdlog::info("config: {}", config_test.string());
-  EXPECT_EQ(argv.size(), 5);
+  EXPECT_EQ(argv.getArgc(), 5);
   EXPECT_STREQ(argv.data()[0], "test_app");
   EXPECT_STREQ(argv.data()[1], "--config");
   EXPECT_STREQ(argv.data()[2], config_test.string().c_str());
@@ -57,7 +57,7 @@ TEST(testApp, testGetArgv) {
 
 TEST_F(GTestApp, testParseConfig) {
   CharPointers argv = getArgv();
-  App app(argv.size(), argv.data());
+  App app(argv.getArgc(), argv.data());
   ptree settings = app.getSettings();
 
   // Changed by config
@@ -86,7 +86,7 @@ TEST_F(GTestApp, testParseConfig) {
 
 TEST_F(GTestApp, testPrintHelp) {
   CharPointers argv = getArgv({"--help"});
-  App app(argv.size(), argv.data());
+  App app(argv.getArgc(), argv.data());
   std::cout << app.exec();
 
   EXPECT_TRUE(buffer.str().find("Usage:") != std::string::npos);
@@ -94,7 +94,7 @@ TEST_F(GTestApp, testPrintHelp) {
 
 TEST_F(GTestApp, testList) {
   CharPointers argv = getArgv({"--list"});
-  App app(argv.size(), argv.data());
+  App app(argv.getArgc(), argv.data());
   std::cout << app.exec();
 
   for (auto &column : {"Index", "Name", "ID", "Is Default"}) {
@@ -128,7 +128,7 @@ class QTestApp : public QObject {
    */
   void testCamera() {
     CharPointers argv = getArgv({"--camera", debug_video.string()});
-    App app(argv.size(), argv.data());
+    App app(argv.getArgc(), argv.data());
     app.exec();
     QTest::qWait(2000);
   }
@@ -144,7 +144,7 @@ class QTestApp : public QObject {
     CharPointers argv =
         getArgv({"--record", "--camera", debug_video.string(), "--interval",
                  "1s", "--duration", "2s", "--folder", tmpDir.string()});
-    App app(argv.size(), argv.data());
+    App app(argv.getArgc(), argv.data());
     app.exec();
     QTest::qWait(4000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 2);
@@ -162,7 +162,7 @@ class QTestApp : public QObject {
     CharPointers argv =
         getArgv({"--record", "--camera", debug_video.string(), "--interval",
                  "1s", "--max-bytes", "1", "--folder", tmpDir.string()});
-    App app(argv.size(), argv.data());
+    App app(argv.getArgc(), argv.data());
     app.exec();
     QTest::qWait(2000);
     QCOMPARE(Path::numberOfFilesRecursive(tmpDir), 1);
