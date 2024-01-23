@@ -41,7 +41,7 @@ copy_patched_findffmpeg() {
     echo "Apply patch to fix FindFFmpeg.cmake"
     original="$qt_dir/lib/cmake/Qt6/FindFFmpeg.cmake"
     rm "$original" || true
-    cp "$root/cmake/FindFFmpeg_patched.cmake" "$original"
+    cp "$root/cmake/FindFFmpegPatched.cmake" "$original"
 }
 
 configure() {

@@ -1,9 +1,11 @@
+include(${CMAKE_SOURCE_DIR}/cmake/Find.cmake)
+
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
-include(${CMAKE_SOURCE_DIR}/cmake/FindFFmpeg_patched.cmake)
+find_libva()
 
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
 set(QT6_LIB_TYPE
@@ -42,6 +44,10 @@ target_link_libraries(
   PUBLIC spdlog::spdlog_header_only
          Boost::boost
          Boost::filesystem
+         Libva::va
+         Libva::va-drm
+         Libva::va-x11
+         Libva::va-wayland
          Qt6::Widgets
          Qt6::Multimedia
          Qt6::MultimediaWidgets
