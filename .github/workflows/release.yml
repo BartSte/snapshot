@@ -21,22 +21,22 @@ jobs:
       - name: Install build dependencies
         run: sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
 
-      - name: Install vulkan
-        run: ./scripts/install-vulkan
+      - name: Build vulkan
+        run: ./scripts/build-vulkan
 
       - name: Install project dependencies
         run: |
            sudo apt-get install -y libboost-all-dev libspdlog-dev
 
-      - name: Install ffmpeg
-        run: ./scripts/install-ffmpeg-static
+      - name: Build ffmpeg
+        run: ./scripts/build-ffmpeg
 
       - name: Download Qt source
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
            mkdir /tmp/Qt
-           ./scripts/install-qt --root /tmp/Qt qt.qt6.661.src
+           ./scripts/download-qt --root /tmp/Qt qt.qt6.661.src
 
       - name: Build Qt from source with static linking
         env: 
