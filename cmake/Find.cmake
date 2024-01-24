@@ -2,7 +2,7 @@
 
 # Functon wrapper around the `FindFFmpegPatched.cmake` script.
 function(find_ffmpeg)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindFFmpegPatched.cmake)
+  include(${CMAKE_SOURCE_DIR}/cmake/FindFFmpegPatched.cmake)
 endfunction()
 
 # Finds static libraries for `LIB_NAME` and sets the variable `OUT` to the

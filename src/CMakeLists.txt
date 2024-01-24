@@ -5,7 +5,8 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
-find_libva()
+find_ffmpeg() # creates FFmpeg::FFmpeg
+find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
 
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
 set(QT6_LIB_TYPE
@@ -44,6 +45,7 @@ target_link_libraries(
   PUBLIC spdlog::spdlog_header_only
          Boost::boost
          Boost::filesystem
+         FFmpeg::FFmpeg
          Libva::va
          Libva::va-drm
          Libva::va-x11
