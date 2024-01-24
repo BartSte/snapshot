@@ -5,7 +5,6 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
-find_ffmpeg() # creates FFmpeg::FFmpeg
 find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
 
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
@@ -40,12 +39,12 @@ set(PLATFORM_PLUGINS
     Qt6::QXcbIntegrationPlugin)
 set(MULTIMEDIA_PLUGINS Qt6::QFFmpegMediaPlugin)
 
+# FFmpeg is included in Qt6::Multimedia
 target_link_libraries(
   snapshotapp
   PUBLIC spdlog::spdlog_header_only
          Boost::boost
          Boost::filesystem
-         FFmpeg::FFmpeg
          Libva::va
          Libva::va-drm
          Libva::va-x11
