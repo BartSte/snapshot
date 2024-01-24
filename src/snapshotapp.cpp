@@ -269,6 +269,9 @@ void App::makeGui() {
 void App::makeRecorder() {
   if (!settings.get<bool>("record")) {
     return;
+  } else if (!video) {
+    spdlog::warn("No video found, not starting recorder.");
+    return;
   }
 
   spdlog::debug("Creating recorder");
