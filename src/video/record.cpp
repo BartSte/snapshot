@@ -52,7 +52,7 @@ void ImageSaver::save() {
  */
 void ImageSaver::saveFrame(const QVideoFrame &frame) {
   if (!frame.isValid()) {
-    spdlog::warn("Invalid frame");
+    spdlog::warn("Recorder received an invalid frame. Not saving.");
     return;
   }
 
