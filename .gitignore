@@ -7,6 +7,7 @@ nvim.shada
 include/version.h
 3rdparty/Qt
 3rdparty/ffmpeg
+3rdparty/libva
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

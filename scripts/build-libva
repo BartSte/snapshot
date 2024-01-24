@@ -1,0 +1,78 @@
+#!/bin/env bash
+set -euo pipefail
+
+usage="$(basename "$0") [-h] <prefix> -- Compiles libva from source and 
+installs it to <prefix>. The libraries will be installed to <prefix>/lib. If 
+the prefix is not provided, the script will exit.
+
+The packages managers \`apt\` and \`pacman\` are supported.
+
+where:
+    -h, --help          show this help text
+    -s, --source-dir    source directory (default: ./libva)
+    <prefix>            the prefix to install libva to"
+
+src="./libva"
+prefix=""
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -h | --help)
+            echo "$usage"
+            exit
+            ;;
+        -s | --source-dir)
+            src="$2"
+            shift
+            shift
+            ;;
+        *)
+            prefix="$key"
+            shift
+            ;;
+    esac
+done
+
+if [[ -z "$prefix" ]]; then
+    echo "Prefix cannot be empty"
+    echo "$usage"
+    exit 1
+fi
+
+src=$(realpath "$src")
+prefix=$(realpath "$prefix")
+
+install_deps() {
+    if command -v apt-get &>/dev/null; then
+        echo "apt-get found"
+        install_deps_apt
+    elif command -v pacman &>/dev/null; then
+        echo "pacman found"
+        install_deps_pacman
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
+}
+
+install_deps_apt() {
+    sudo apt-get -y install git cmake pkg-config meson libdrm-dev automake libtool autogen
+}
+
+install_deps_pacman() {
+    sudo pacman -S --noconfirm git cmake pkg-config meson libdrm automake libtool autogen
+}
+
+build_libva() {
+    dir=$(pwd)
+    cd "$(dirname "$src")"
+    git clone https://github.com/intel/libva.git -o "$(basename "$src")"
+    cd "$(basename "$src")"
+    ./autogen.sh --prefix="$prefix" --libdir="$prefix/lib"
+    make
+    sudo make install
+    cd "$dir"
+}
+
+install_deps
+build_libva
