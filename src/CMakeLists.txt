@@ -27,13 +27,9 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
 # When building the project with a static Qt6 library, we need to link the
-# following components statically as well:
-# - Platform plugins
-# - Multimedia plugins
-# - FFmpeg
-# - Libva
-# Furthermore, the Qt plugins need to be imported manually using the
-# qt_import_plugins() function.
+# following components statically as well: - Platform plugins - Multimedia
+# plugins - FFmpeg - Libva Furthermore, the Qt plugins need to be imported
+# manually using the qt_import_plugins() function.
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   set(PLATFORM_PLUGINS
       Qt6::QEglFSIntegrationPlugin
@@ -52,10 +48,19 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
   message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
+  get_target_property(VA_LIBRARY Libva::va LOCATION)
+  get_target_property(VA_DRM_LIBRARY Libva::va-drm LOCATION)
+  get_target_property(VA_X11_LIBRARY Libva::va-x11 LOCATION)
+  get_target_property(VA_WAYLAND_LIBRARY Libva::va-wayland LOCATION)
+
+  message(STATUS "Libva::va library is: ${VA_LIBRARY}")
+  message(STATUS "Libva::va-drm library is: ${VA_DRM_LIBRARY}")
+  message(STATUS "Libva::va-x11 library is: ${VA_X11_LIBRARY}")
+  message(STATUS "Libva::va-wayland library is: ${VA_WAYLAND_LIBRARY}")
+
   list(
     APPEND
     LINK_LIBS
-    FFmpeg::FFmpeg
     Libva::va
     Libva::va-drm
     Libva::va-x11

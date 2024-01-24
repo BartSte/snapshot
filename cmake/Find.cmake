@@ -86,14 +86,25 @@ function(find_libva)
   set(libva_shorts va va-drm va-wayland va-x11)
   set(libva_longs LIBVA_LIBRARY LIBVA_DRM_LIBRARY LIBVA_WAYLAND_LIBRARY
                   LIBVA_X11_LIBRARY)
+  if(LIBVA_DIR)
+    message(STATUS "LIBVA_DIR: ${LIBVA_DIR}")
+    set(find_args PATHS ${LIBVA_DIR} NO_DEFAULT_PATH)
+  endif()
 
   find_libdrm()
-  find_path(LIBVA_INCLUDE_DIR NAMES va/va.h)
+  find_path(
+    LIBVA_INCLUDE_DIR
+    NAMES va/va.h
+    PATH_SUFFIXES include ${find_args})
+  message(STATUS "LIBVA_INCLUDE_DIR: ${LIBVA_INCLUDE_DIR}")
 
   foreach(libva_short ${libva_shorts})
     _short2long(${libva_short}) # creates libva_long
 
-    find_library(${libva_long} NAMES ${libva_short})
+    find_library(
+      ${libva_long}
+      NAMES ${libva_short}
+      PATH_SUFFIXES lib ${find_args})
     add_library(Libva::${libva_short} UNKNOWN IMPORTED)
     set_target_properties(
       Libva::${libva_short}

@@ -421,6 +421,7 @@ more information.
 - [ ] Cross compile for raspberry pi
 - [ ] Segmentation fault when running --record without a camera being
       available.
+- [ ] Fix release workflow such that it links libva correctly to static ffmpeg.
 - [ ] Fix issue with ffmpeg + hw acceleration on my arch machine:
 
   ```
