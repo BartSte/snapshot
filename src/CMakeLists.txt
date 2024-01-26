@@ -3,15 +3,18 @@ include(${CMAKE_SOURCE_DIR}/cmake/Find.cmake)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
+
+# Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables
+# that are created
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
-
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
 set(QT6_LIB_TYPE
     ${QT6_LIB_TYPE}
     PARENT_SCOPE)
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
 message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
+message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
@@ -44,9 +47,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
       Qt6::QXcbIntegrationPlugin)
   set(MULTIMEDIA_PLUGINS Qt6::QFFmpegMediaPlugin)
 
-  find_ffmpeg() # creates FFmpeg::FFmpeg
   find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
-  message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
   get_target_property(VA_LIBRARY Libva::va LOCATION)
   get_target_property(VA_DRM_LIBRARY Libva::va-drm LOCATION)
@@ -61,6 +62,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   list(
     APPEND
     LINK_LIBS
+    FFmpeg::FFmpeg
     Libva::va
     Libva::va-drm
     Libva::va-x11

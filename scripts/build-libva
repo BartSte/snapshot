@@ -64,14 +64,14 @@ remove_libva_apt() {
     sudo apt-get -y remove libva2 || true
 }
 
+install_deps_apt() {
+    echo "Installing apt dependencies"
+    sudo apt-get -y install autogen automake cmake git libdrm-dev libtool libwayland-dev libx11-dev libx11-xcb-dev libx11-xcb-perl libx11-xcb1 libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev
+}
+
 remove_libva_pacman() {
     echo "Removing libva"
     sudo pacman -R --noconfirm -dd libva || true
-}
-
-install_deps_apt() {
-    echo "Installing apt dependencies"
-    sudo apt-get -y install autogen automake cmake git libdrm-dev libtool libwayland-dev libx11-dev libx11-dev libx11-xcb-perl libx11-xcb1 libxcb-dri3-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev
 }
 
 install_deps_pacman() {
@@ -92,5 +92,16 @@ build_libva() {
     cd "$dir"
 }
 
+check() {
+    echo "Checking libva"
+    if ! pkg-config --exists libva libva-drm libva-x11 libva-wayland; then
+        echo "One of the following packages is missing: libva, libva-drm, libva-x11, libva-wayland"
+        exit 1
+    else
+        echo "libva, libva-drm, libva-x11, and libva-wayland are installed"
+    fi
+}
+
 install_deps
 build_libva
+check
