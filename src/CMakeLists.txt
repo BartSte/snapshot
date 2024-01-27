@@ -62,6 +62,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   list(
     APPEND
     LINK_LIBS
+    FFmpeg::FFmpeg
     Libva::va
     Libva::va-drm
     Libva::va-x11
@@ -82,5 +83,6 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
     multimedia
     ${MULTIMEDIA_PLUGINS}
     EXCLUDE
-    Qt6::QGstreamerMediaPlugin)
+    Qt6::QGstreamerMediaPlugin
+    NO_DEFAULT)
 endif()
