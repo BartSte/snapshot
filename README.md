@@ -433,6 +433,9 @@ more information.
 
 - [ ] Add to FAQ:
 
+  - `/usr/bin/ld: cannot find -lSvtAv1Enc`
+    Solution is to place the `libSvtAv1Enc.a` file in the search path of the
+    linker (dirty solution is to place it in `/usr/lib`).
   - WSL + ubuntu:
     App works find, but I get the following errors/warnings:
 
