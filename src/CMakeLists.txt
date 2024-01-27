@@ -4,8 +4,8 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-# Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables
-# that are created
+# Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables that
+# are created
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
@@ -62,14 +62,17 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   list(
     APPEND
     LINK_LIBS
-    FFmpeg::FFmpeg
     Libva::va
     Libva::va-drm
     Libva::va-x11
     Libva::va-wayland
     ${PLATFORM_PLUGINS}
     ${MULTIMEDIA_PLUGINS})
+endif()
 
+target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
+
+if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   qt_import_plugins(
     snapshotapp
     INCLUDE_BY_TYPE
@@ -77,7 +80,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
     ${PLATFORM_PLUGINS}
     INCLUDE_BY_TYPE
     multimedia
-    ${MULTIMEDIA_PLUGINS})
+    ${MULTIMEDIA_PLUGINS}
+    EXCLUDE
+    Qt6::QGstreamerMediaPlugin)
 endif()
-
-target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
