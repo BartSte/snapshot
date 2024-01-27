@@ -56,25 +56,30 @@ install_dependencies_apt() {
     echo "Updating apt-get"
     sudo apt-get update -qq
     echo "Installing build tools and dependencies"
-    sudo apt-get -y install autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev meson ninja-build pkg-config texinfo wget yasm zlib1g-dev gnutls-bin libunistring-dev libaom-dev libdav1d-dev tar
+    sudo apt-get -y install autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev meson ninja-build pkg-config texinfo wget yasm zlib1g-dev gnutls-bin libunistring-dev libaom-dev libdav1d-dev tar || true
 
     echo "Installing ffmpeg dependencies"
-    sudo apt-get -y install nasm libx264-dev libx265-dev libvpx-dev libfdk-aac-dev libopus-dev libdav1d-dev libnuma-dev
+    sudo apt-get -y install nasm libx264-dev libx265-dev libvpx-dev libfdk-aac-dev libopus-dev libdav1d-dev libnuma-dev || true
 }
 
 install_dependencies_pacman() {
     echo "Installing build tools and dependencies"
-    sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar
+    sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar || true
     sudo pacman -S --noconfirm zlib || true
 
     echo "Installing ffmpeg dependencies"
-    sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl
+    sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl || true
     sudo pacman -S --noconfirm libvpx || true
+}
+
+build_libdrm() {
+    echo "Building libdrm"
+    "$this_dir/build-libdrm" -s "$source_dir/libdrm"
 }
 
 build_libva() {
     echo "Building libva"
-    "$this_dir/build-libva"
+    "$this_dir/build-libva" -s "$source_dir/libva"
 }
 
 compile_libaom() {
@@ -148,7 +153,8 @@ dir=$(pwd)
 
 mkdir -p "$source_dir" "$bin_dir"
 install_dependencies
-build_libva -s "$source_dir/libva"
+build_libdrm
+build_libva
 compile_libaom
 compile_libsvtav1
 compile_libvmaf

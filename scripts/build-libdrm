@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+usage="$(basename "$0") [-h] [-s, --source-dir] [-p, --prefix] -- Compiles libdrm from source
+
+The packages managers \`apt\` and \`pacman\` are supported.
+
+where:
+    -h, --help          show this help text
+    -s, --source-dir    libdrm source directory (default: ./libdrm_sources)
+    -p, --prefix        libdrm install directory (default: /usr)"
+
+src="./libdrm"
+prefix="/usr"
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -h | --help)
+            echo "$usage"
+            exit
+            ;;
+        -s | --source-dir)
+            src="$2"
+            shift
+            shift
+            ;;
+        *)
+            prefix="$key"
+            shift
+            ;;
+    esac
+done
+
+install_dependencies() {
+    if command -v apt-get &>/dev/null; then
+        echo "apt-get found"
+        install_dependencies_apt
+    elif command -v pacman &>/dev/null; then
+        echo "pacman found"
+        install_dependencies_pacman
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
+}
+
+install_dependencies_apt() {
+    echo "Installing build tools and dependencies"
+    sudo dpkg --remove --force-depends libdrm-dev || true
+    sudo apt-get -y install meson ninja-build python3 || true
+}
+
+install_dependencies_pacman() {
+    echo "Installing build tools and dependencies"
+    sudo pacman -R --noconfirm -dd libdrm || true
+    sudo pacman -S --noconfirm --needed meson ninja python || true
+}
+
+build() {
+    dir=$(pwd)
+    echo "Removing path: $src"
+    rm -rf "$src"
+    echo "Cd to base dir: $(dirname "$src")"
+    cd "$(dirname "$src")"
+    echo "Cloning libdrm with output dir: $(basename "$src")"
+    git clone https://gitlab.freedesktop.org/mesa/drm.git "$(basename "$src")"
+    echo "Cd into: $src"
+    cd "$src"
+    meson setup builddir/ --prefix="$prefix"
+    ninja -C builddir/ 
+    sudo ninja -C builddir/ install
+    cd "$dir"
+}
+
+install_dependencies
+build

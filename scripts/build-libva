@@ -60,13 +60,13 @@ install_deps() {
 
 remove_libva_apt() {
     echo "Removing libva"
-    sudo apt-get -y remove libva-dev || true
-    sudo apt-get -y remove libva2 || true
+    sudo dpkg --remove --force-depends libva-dev || true
+    sudo dpkg --remove --force-depends libva2 || true
 }
 
 install_deps_apt() {
     echo "Installing apt dependencies"
-    sudo apt-get -y install autogen automake cmake git libdrm-dev libtool libwayland-dev libx11-dev libx11-xcb-dev libx11-xcb-perl libx11-xcb1 libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev
+    sudo apt-get -y install autogen automake cmake git libtool libwayland-dev libx11-dev libx11-xcb-dev libx11-xcb-perl libx11-xcb1 libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev || true
 }
 
 remove_libva_pacman() {
@@ -76,16 +76,19 @@ remove_libva_pacman() {
 
 install_deps_pacman() {
     echo "Installing pacman dependencies"
-    sudo pacman -S --noconfirm git cmake pkg-config meson libdrm automake libtool autogen xorg wayland libxext libxfixes
+    sudo pacman -S --noconfirm git cmake pkg-config meson automake libtool autogen xorg wayland libxext libxfixes || true
 }
 
 build_libva() {
     dir=$(pwd)
+    echo "Removing path: $src"
     rm -rf "$src"
+    echo "Cd to base dir $(dirname "$src")"
     cd "$(dirname "$src")"
-    echo "Cloning libva"
-    git clone https://github.com/intel/libva.git -o "$(basename "$src")"
-    cd "$(basename "$src")"
+    echo "Cloning libva with output dir: $(basename "$src")"
+    git clone https://github.com/intel/libva.git "$(basename "$src")"
+    echo "Cd into: $src"
+    cd "$src"
     ./autogen.sh --prefix="$prefix" --libdir="$prefix/lib"
     make
     sudo make install
