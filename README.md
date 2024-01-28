@@ -418,6 +418,8 @@ more information.
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
 
+- [ ] Split scripts up in arch, ubuntu, and helper scripts. Make sure all
+      scripts wosk for both arch and ubuntu.
 - [ ] Cross compile for raspberry pi
 - [ ] Segmentation fault when running --record without a camera being
       available.
