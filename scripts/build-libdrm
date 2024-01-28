@@ -34,28 +34,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 install_dependencies() {
-    if command -v apt-get &>/dev/null; then
-        echo "apt-get found"
-        install_dependencies_apt
-    elif command -v pacman &>/dev/null; then
-        echo "pacman found"
-        install_dependencies_pacman
-    else
-        echo "No supported package manager found"
-        exit 1
-    fi
-}
-
-install_dependencies_apt() {
-    echo "Installing build tools and dependencies"
-    sudo dpkg --remove --force-depends libdrm-dev || true
-    sudo apt-get -y install meson ninja-build python3 || true
-}
-
-install_dependencies_pacman() {
-    echo "Installing build tools and dependencies"
-    sudo pacman -R --noconfirm -dd libdrm || true
-    sudo pacman -S --noconfirm --needed meson ninja python || true
+    manager="$("$this_dir/helpers/get-package-manager")"
+    "${this_dir}/helpers/${manager}/install-libdrm-deps"
 }
 
 build() {

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+echo "Installing build tools and dependencies"
+sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar || true
+sudo pacman -S --noconfirm zlib || true
+
+echo "Installing ffmpeg dependencies"
+sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl || true
+sudo pacman -S --noconfirm libvpx || true

@@ -6,6 +6,9 @@ usage="Usage: install-vulkan
 Used when running apt package manager to install vulkan sdk using a PPA
 repository"
 
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+"$this_dir/helpers/apt/assert"
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h | --help)

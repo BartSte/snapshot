@@ -12,6 +12,7 @@ where:
     -s, --source-dir    source directory (default: ./libva)
     -p, --prefix        the prefix to install libva to (default: /usr)"
 
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
 src="./libva"
 prefix="/usr"
 while [[ $# -gt 0 ]]; do
@@ -42,41 +43,9 @@ fi
 src=$(realpath "$src")
 prefix=$(realpath "$prefix")
 
-install_deps() {
-    echo "Installing dependencies"
-    if command -v apt-get &>/dev/null; then
-        echo "apt-get found"
-        remove_libva_apt
-        install_deps_apt
-    elif command -v pacman &>/dev/null; then
-        echo "pacman found"
-        remove_libva_pacman
-        install_deps_pacman
-    else
-        echo "No supported package manager found"
-        exit 1
-    fi
-}
-
-remove_libva_apt() {
-    echo "Removing libva"
-    sudo dpkg --remove --force-depends libva-dev || true
-    sudo dpkg --remove --force-depends libva2 || true
-}
-
-install_deps_apt() {
-    echo "Installing apt dependencies"
-    sudo apt-get -y install autogen automake cmake git libtool libwayland-dev libx11-dev libx11-xcb-dev libx11-xcb-perl libx11-xcb1 libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev || true
-}
-
-remove_libva_pacman() {
-    echo "Removing libva"
-    sudo pacman -R --noconfirm -dd libva || true
-}
-
-install_deps_pacman() {
-    echo "Installing pacman dependencies"
-    sudo pacman -S --noconfirm git cmake pkg-config meson automake libtool autogen xorg wayland libxext libxfixes || true
+install_dependencies() {
+    manager="$("$this_dir/helpers/get-package-manager")"
+    "${this_dir}/helpers/${manager}/install-libva-deps"
 }
 
 build_libva() {
@@ -105,6 +74,6 @@ check() {
     fi
 }
 
-install_deps
+install_dependencies
 build_libva
 check

@@ -40,36 +40,8 @@ done
 bin_dir="$build_dir/bin"
 
 install_dependencies() {
-    if command -v apt-get &>/dev/null; then
-        echo "apt-get found"
-        install_dependencies_apt
-    elif command -v pacman &>/dev/null; then
-        echo "pacman found"
-        install_dependencies_pacman
-    else
-        echo "No supported package manager found"
-        exit 1
-    fi
-}
-
-install_dependencies_apt() {
-    echo "Updating apt-get"
-    sudo apt-get update -qq
-    echo "Installing build tools and dependencies"
-    sudo apt-get -y install autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev meson ninja-build pkg-config texinfo wget yasm zlib1g-dev gnutls-bin libunistring-dev libaom-dev libdav1d-dev tar || true
-
-    echo "Installing ffmpeg dependencies"
-    sudo apt-get -y install nasm libx264-dev libx265-dev libvpx-dev libfdk-aac-dev libopus-dev libdav1d-dev libnuma-dev || true
-}
-
-install_dependencies_pacman() {
-    echo "Installing build tools and dependencies"
-    sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar || true
-    sudo pacman -S --noconfirm zlib || true
-
-    echo "Installing ffmpeg dependencies"
-    sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl || true
-    sudo pacman -S --noconfirm libvpx || true
+    manager="$("$this_dir/helpers/get-package-manager")"
+    "${this_dir}/helpers/${manager}/install-ffmpeg-deps"
 }
 
 build_libdrm() {
