@@ -4,7 +4,7 @@ this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 root="$(dirname "$this_dir")"
 
 echo "Downloading Qt sources"
-rm "$root/Qt" -rf
+rm "$root/Qt" -rf || true
 mkdir "$root/Qt"
 "$root/scripts/helpers/download-qt" --root "$root/Qt" qt.qt6.661.src
 
@@ -12,9 +12,11 @@ echo "Building Qt with static linking"
 export CC=gcc
 export CXX=g++
 export CFLAGS="-Wall"
+rm "$root/3rdparty/Qt" -rf || true
+mkdir "$root/3rdparty/Qt"
 sudo apt-get install -y '^libxcb.*-dev' build-essential libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libpulse-dev libqt5x11extras5 libssl-dev libssl1.0 libwayland-dev libwayland-egl1-mesa libwayland-server0 libx11-xcb-dev libxi-dev libxkbcommon-dev libxkbcommon-dev libxkbcommon-x11-dev libxrender-dev openssl libva-dev libva-drm2 libva-wayland2 libva-x11-2
 src=$root/Qt/6.6.1/Src
-"$src/configure -release -static -prefix $PWD/3rdparty/Qt -submodules qtbase,qtmultimedia,qtwayland -no-pch -no-gstreamer -- -S $src -B $src/build -Wdev -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg"
+"$src/configure -release -static -prefix $root/3rdparty/Qt -submodules qtbase,qtmultimedia,qtwayland -no-pch -no-gstreamer -- -S $src -B $src/build -Wdev -DFFMPEG_DIR=$root/3rdparty/ffmpeg"
 cmake --build "$src/build"
 cmake --install "$src/build"
 
