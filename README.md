@@ -418,11 +418,11 @@ more information.
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
 
-- [ ] Make setup-release-env also compatible with pacman
 - [ ] Cross compile for raspberry pi
-- [ ] Segmentation fault when running --record without a camera being
-      available.
 - [ ] Fix release workflow such that it links libva correctly to static ffmpeg.
+      It could be that I need to update the target property
+      "INTERFACE_LINK_LIBRARIES" of the QFFmpegMediaPlugin such that it also
+      links to libva.
 - [ ] Fix issue with ffmpeg + hw acceleration on my arch machine:
 
   ```

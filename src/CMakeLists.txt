@@ -45,30 +45,18 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
       Qt6::QWaylandEglPlatformIntegrationPlugin
       Qt6::QWaylandIntegrationPlugin
       Qt6::QXcbIntegrationPlugin)
-  set(MULTIMEDIA_PLUGINS Qt6::QFFmpegMediaPlugin)
 
   find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
+  get_target_property(QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES
+                      Qt6::QFFmpegMediaPlugin INTERFACE_LINK_LIBRARIES)
+  list(APPEND QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES Libva::va
+       Libva::va-drm Libva::va-x11 Libva::va-wayland)
+  set_target_properties(
+    Qt6::QFFmpegMediaPlugin
+    PROPERTIES INTERFACE_LINK_LIBRARIES
+               "${QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES}")
 
-  get_target_property(VA_LIBRARY Libva::va LOCATION)
-  get_target_property(VA_DRM_LIBRARY Libva::va-drm LOCATION)
-  get_target_property(VA_X11_LIBRARY Libva::va-x11 LOCATION)
-  get_target_property(VA_WAYLAND_LIBRARY Libva::va-wayland LOCATION)
-
-  message(STATUS "Libva::va library is: ${VA_LIBRARY}")
-  message(STATUS "Libva::va-drm library is: ${VA_DRM_LIBRARY}")
-  message(STATUS "Libva::va-x11 library is: ${VA_X11_LIBRARY}")
-  message(STATUS "Libva::va-wayland library is: ${VA_WAYLAND_LIBRARY}")
-
-  list(
-    APPEND
-    LINK_LIBS
-    FFmpeg::FFmpeg
-    Libva::va
-    Libva::va-drm
-    Libva::va-x11
-    Libva::va-wayland
-    ${PLATFORM_PLUGINS}
-    ${MULTIMEDIA_PLUGINS})
+  list(APPEND LINK_LIBS FFmpeg::FFmpeg Qt6::QFFmpegMediaPlugin ${PLATFORM_PLUGINS})
 endif()
 
 target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
@@ -81,7 +69,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
     ${PLATFORM_PLUGINS}
     INCLUDE_BY_TYPE
     multimedia
-    ${MULTIMEDIA_PLUGINS}
+    Qt6::QFFmpegMediaPlugin
     EXCLUDE
     Qt6::QGstreamerMediaPlugin
     NO_DEFAULT)
