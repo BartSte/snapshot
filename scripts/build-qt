@@ -3,7 +3,10 @@ set -euo pipefail
 
 this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 root="$(dirname "$this_dir")"
-
+static=true
+shared=false
+source_dir="$root/Qt"
+install_dir="$root/3rdparty/Qt"
 usage="Usage: build-qt [--static] [--shared]
 
 Build Qt with static or shared linking.
@@ -11,13 +14,9 @@ Build Qt with static or shared linking.
 Options:
     --static            Build Qt with static linking (default=true)
     --shared            Build Qt with shared linking (default=false)
-    -s, --source-dir    Qt source directory (default=$root/Qt)
-    -i, --install-dir   Qt build directory (default=$root/3rdparty/Qt)"
+    -s, --source-dir    Qt source directory (default=$source_dir)
+    -i, --install-dir   Qt build directory (default=$install_dir)"
 
-static=true
-shared=false
-source_dir="$root/Qt"
-install_dir="$root/3rdparty/Qt"
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
@@ -71,9 +70,12 @@ build-qt-static() {
 
 build-qt-shared() {
     echo "Downloading Qt sources with shared linking"
+    rm "$source_dir" -rf || true
     rm "$install_dir" -rf || true
+    mkdir "$source_dir"
     mkdir "$install_dir"
-    "$root/scripts/helpers/download-qt" --root "$install_dir" qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia
+    "$root/scripts/helpers/download-qt" --root "$source_dir" qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia
+    cp "$source_dir/6.6.1/gcc_64" "$install_dir" -rf
 }
 
 if [[ "$static" = true ]]; then

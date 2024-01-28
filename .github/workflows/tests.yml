@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
@@ -21,4 +22,13 @@ jobs:
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
-          ./scripts/setup-debug-environment
+          ./scripts/setup --shared
+
+      - name: Build project
+        run: |
+          ./scripts/configure -- -DBUILD_TESTING=ON
+          cmake --build ./build
+
+      - name: Run test
+        run: |
+          ctest --test-dir ./build --verbose

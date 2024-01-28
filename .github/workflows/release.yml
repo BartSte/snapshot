@@ -16,7 +16,17 @@ jobs:
       - name: Setup release environment
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
-        run: ./scripts/setup-release-environment
+        run: |
+          ./scripts/setup --static
+
+      - name: Build project
+        run: |
+          ./scripts/configure -- -DBUILD_TESTING=ON
+          cmake --build ./build --target package
+
+      - name: Run test
+        run: |
+          ctest --test-dir ./build --verbose
 
       - name: Publish
         uses: "marvinpinto/action-automatic-releases@latest"

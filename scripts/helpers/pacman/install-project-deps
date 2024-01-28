@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 echo "Installing build dependencies"
 sudo pacman -S --noconfirm --needed clang ninja git cmake llvm pkg-config
