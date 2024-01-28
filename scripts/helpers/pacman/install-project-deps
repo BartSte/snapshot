@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+root="$(dirname "$(dirname "$(dirname "$this_dir")")")"
+
+echo "Installing build dependencies"
+sudo pacman -S --noconfirm --needed clang ninja git cmake llvm pkg-config
+
+echo "Installing project dependencies"
+sudo pacman -S --noconfirm --needed boost spdlog
+
+echo "Installing ffmpeg"
+"$root/scripts/build-ffmpeg"

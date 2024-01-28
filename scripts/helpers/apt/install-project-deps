@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+root="$(dirname "$(dirname "$(dirname "$this_dir")")")"
+
+echo "Update apt database"
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo "$root/scripts/helpers/apt/enable-kitware-repo"
+
+echo "Installing build dependencies"
+sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
+
+echo "Installing project dependencies"
+"$root/scripts/build-vulkan"
+sudo apt-get install -y libboost-all-dev libspdlog-dev
+
+echo "Installing ffmpeg"
+"$root/scripts/build-ffmpeg"

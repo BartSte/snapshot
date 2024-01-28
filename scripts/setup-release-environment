@@ -13,34 +13,12 @@ if [[ -z "$token" ]]; then
     exit 1
 fi
 
-echo "Update apt database"
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo ./scripts/enable-kitware-repo
-
-echo "Installing build dependencies"
-sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
-
 echo "Installing project dependencies"
-"$root/scripts/build-vulkan"
-sudo apt-get install -y libboost-all-dev libspdlog-dev
+manager="$("$root/scripts/helpers/get-package-manager")"
+"$root/scripts/helpers/${manager}/install-project-deps"
 
-echo "Installing ffmpeg"
-"$root/scripts/build-ffmpeg"
-
-echo "Downloading Qt sources"
-mkdir "$HOME/Qt" || true
-"$root/scripts/download-qt" --root "$HOME/Qt" qt.qt6.661.src
-
-echo "Building Qt with static linking"
-export CC=gcc
-export CXX=g++
-export CFLAGS="-Wall"
-sudo apt-get install -y '^libxcb.*-dev' build-essential libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libpulse-dev libqt5x11extras5 libssl-dev libssl1.0 libwayland-dev libwayland-egl1-mesa libwayland-server0 libx11-xcb-dev libxi-dev libxkbcommon-dev libxkbcommon-dev libxkbcommon-x11-dev libxrender-dev openssl libva-dev libva-drm2 libva-wayland2 libva-x11-2
-src=$HOME/Qt/6.6.1/Src
-"$src/configure -release -static -prefix $PWD/3rdparty/Qt -submodules qtbase,qtmultimedia,qtwayland -no-pch -no-gstreamer -- -S $src -B $src/build -Wdev -DFFMPEG_DIR=$PWD/3rdparty/ffmpeg"
-cmake --build "$src/build"
-cmake --install "$src/build"
+echo "Build Qt with static linking"
+"$root/scripts/build-qt-static"
 
 echo "Building project"
 "$root/scripts/configure" -- -DBUILD_TESTING=ON
