@@ -10,6 +10,8 @@ include/version.h
 3rdparty/libva
 ffmpeg_sources
 Qt
+config.opt*
+config.redo*
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
