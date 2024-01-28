@@ -2,16 +2,17 @@
 set -euxo pipefail
 
 this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+root="$(dirname "$this_dir")"
 usage="$(basename "$0") [-h] [-s, --source-dir] [-b, --build-dir] -- Compiles ffmpeg from source
 
 The packages managers \`apt\` and \`pacman\` are supported.
 
 where:
     -h, --help      show this help text
-    -s, --source-dir    ffmpeg source directory (default: $HOME/ffmpeg_sources)
+    -s, --source-dir    ffmpeg source directory (default: $root/ffmpeg_sources)
     -b, --build-dir     ffmpeg build directory (default: $this_dir/../3rdparty/ffmpeg)"
 
-source_dir="$HOME/ffmpeg_sources"
+source_dir="$root/ffmpeg_sources"
 build_dir="$this_dir/../3rdparty/ffmpeg"
 while [[ $# -gt 0 ]]; do
     key="$1"
