@@ -29,8 +29,8 @@ echo "Installing ffmpeg"
 "$root/scripts/build-ffmpeg"
 
 echo "Downloading Qt sources"
-mkdir "$HOME/Qt"
-"$root/scripts/download-qt" --root "$HOME/Qt qt.qt6.661.src"
+mkdir "$HOME/Qt" || true
+"$root/scripts/download-qt" --root "$HOME/Qt" qt.qt6.661.src
 
 echo "Building Qt with static linking"
 export CC=gcc
