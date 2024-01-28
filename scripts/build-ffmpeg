@@ -50,9 +50,9 @@ build_libdrm() {
     # "$this_dir/build-libdrm" -s "$source_dir/libdrm"
     
     if command -v apt-get &>/dev/null; then
-        sudo apt -y install libdrm-dev
+        sudo apt -y install libdrm-dev || true
     elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm libdrm
+        sudo pacman -S --noconfirm libdrm || true
     else
         echo "No supported package manager found"
         exit 1
@@ -64,9 +64,9 @@ build_libva() {
     # "$this_dir/build-libva" -s "$source_dir/libva"
     
     if command -v apt-get &>/dev/null; then
-        sudo apt -y install libva-dev
+        sudo apt -y install libva-dev || true
     elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm libva
+        sudo pacman -S --noconfirm libva || true
     else
         echo "No supported package manager found"
         exit 1

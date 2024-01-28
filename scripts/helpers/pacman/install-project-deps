@@ -11,7 +11,9 @@ echo "Installing project dependencies"
 sudo pacman -S --noconfirm --needed boost spdlog
 
 echo "Installing Qt dependencies"
-sudo pacman -S --noconfirm --needed libpulse libx11-xcb libxkbcommon-x11 libxrender openssl libva libva-drm libva-wayland libva-x11 libwayland libx11-xcb libxi libxkbcommon libxkbcommon-x11 libxrender openssl 
+sudo pacman -S --noconfirm --needed libpulse xorg libxkbcommon-x11 libxrender openssl wayland libxi libxkbcommon libxkbcommon-x11 libxrender openssl 
+sudo pacman -S --noconfirm libva || true
+sudo pacman -S --noconfirm libdrm || true
 
 echo "Installing ffmpeg"
 "$root/scripts/build-ffmpeg"
