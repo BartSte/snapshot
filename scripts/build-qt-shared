@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+root="$(dirname "$this_dir")"
+
+echo "Downloading Qt sources with shared linking"
+rm "$root/Qt" -rf
+rm "$root/3rdparty/Qt" -rf
+mkdir "$root/Qt"
+"$root/scripts/helpers/download-qt" --root "$root/3rdparty/Qt" qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia

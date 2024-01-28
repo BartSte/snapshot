@@ -17,28 +17,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get upgrade -y
-          sudo ./scripts/enable-kitware-repo
-          sudo apt-get install -y clang ninja-build git cmake 
-
-      - name: Build vulkan
-        run: ./scripts/build-vulkan
-
-      - name: Install project dependencies
+      - name: Setup debug environment
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
-          sudo apt-get install -y libboost-all-dev libspdlog-dev
-          sudo apt-get install -y build-essential openssl libssl-dev libssl1.0 libgl1-mesa-dev libqt5x11extras5 '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libpulse-dev libwayland-dev libwayland-egl1-mesa libwayland-server0
-          ./scripts/download-qt --root $PWD/3rdparty/Qt qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia
-
-      - name: Build project
-        run: |
-          ./scripts/configure -- -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH=$PWD/3rdparty/Qt/6.6.1/gcc_64/lib/cmake
-          cmake --build build 
-
-      - name: Run tests
-        run: ctest --test-dir ./build --verbose
+          ./scripts/setup-debug-environment

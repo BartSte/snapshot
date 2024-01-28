@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+root="$(dirname "$this_dir")"
+
+echo "Setting up debug environment"
+
+# If environment variable QT_INSTALLER_JWT_TOKEN is not set, abort
+token="${QT_INSTALLER_JWT_TOKEN:-}"
+if [[ -z "$token" ]]; then
+    echo "QT_INSTALLER_JWT_TOKEN is not set" >&2
+    exit 1
+fi
+
+echo "Installing project dependencies"
+manager="$("$root/scripts/helpers/get-package-manager")"
+"$root/scripts/helpers/${manager}/install-project-deps"
+
+echo "Install Qt with shared linking"
+"$root/scripts/build-qt-shared"
+
+echo "Building project"
+"$root/scripts/configure" -- -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="$root/3rdparty/Qt/6.6.1/gcc_64/lib/cmake"
+cmake --build ./build --target package
+
+echo "Running tests"
+ctest --test-dir "$root/build" --verbose
