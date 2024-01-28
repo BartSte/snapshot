@@ -74,12 +74,30 @@ install_dependencies_pacman() {
 
 build_libdrm() {
     echo "Building libdrm"
-    "$this_dir/build-libdrm" -s "$source_dir/libdrm"
+    # "$this_dir/build-libdrm" -s "$source_dir/libdrm"
+    
+    if command -v apt-get &>/dev/null; then
+        sudo apt -y install libdrm-dev
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm libdrm
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
 }
 
 build_libva() {
     echo "Building libva"
-    "$this_dir/build-libva" -s "$source_dir/libva"
+    # "$this_dir/build-libva" -s "$source_dir/libva"
+    
+    if command -v apt-get &>/dev/null; then
+        sudo apt -y install libva-dev
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm libva
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
 }
 
 compile_libaom() {
@@ -118,8 +136,8 @@ compile_libvmaf() {
 compile_ffmpeg() {
     echo "Compiling ffmpeg"
     cd ~/ffmpeg_sources &&
-        wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 &&
-        tar xjvf ffmpeg-snapshot.tar.bz2 &&
+        wget -O ffmpeg-6.0.tar.bz2 https://ffmpeg.org/releases/ffmpeg-6.0.tar.bz2 &&
+        tar xjvf ffmpeg-6.0.tar.bz2 &&
         cd ffmpeg &&
         PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$build_dir/lib/pkgconfig" ./configure \
             --pkg-config-flags="--static" \
