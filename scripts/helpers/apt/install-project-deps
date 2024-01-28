@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 root="$(dirname "$(dirname "$(dirname "$this_dir")")")"
@@ -19,5 +19,3 @@ sudo apt-get install -y libboost-all-dev libspdlog-dev
 echo "Installing Qt dependencies"
 sudo apt-get install -y '^libxcb.*-dev' build-essential libboost-all-dev libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libpulse-dev libqt5x11extras5 libspdlog-dev libssl-dev libssl-dev libssl1.0 libva-dev libva-drm2 libva-wayland2 libva-x11-2 libwayland-dev libwayland-egl1-mesa libwayland-server0 libx11-xcb-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libxrender-dev openssl
 
-echo "Installing ffmpeg"
-"$root/scripts/build-ffmpeg"

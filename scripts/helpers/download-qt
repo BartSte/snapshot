@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 usage="Usage: $0 <packages>
 
@@ -14,6 +14,7 @@ Options:
   -r, --root    The root directory to install Qt to.
   -h, --help    Show this help message and exit"
 
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 packages=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -32,11 +33,4 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-
-tmp_dir=$(mktemp -d)
-
-curl "https://d13lb3tujbc8s0.cloudfront.net/onlineinstallers/qt-unified-linux-x64-4.6.1-online.run" -o "$tmp_dir/qt-installer.run"
-chmod +x "$tmp_dir/qt-installer.run"
-"$tmp_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $packages
-
-rm -rf "$tmp_dir"
+"$this_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $packages

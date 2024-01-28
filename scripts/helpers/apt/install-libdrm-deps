@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 echo "Installing build tools and dependencies"
 sudo dpkg --remove --force-depends libdrm-dev || true

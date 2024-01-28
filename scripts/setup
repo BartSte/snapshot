@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage="Usage setup [--help] [--shared] [--static]
+
+Install project dependencies using the system package manager. After this,
+ffmpeg and Qt will be built and installed in the 3rdparty directory. By
+default, static libraries are built and installed. If you want to build and
+install shared libraries, use the --shared option. This is much faster, as Qt
+does not need to be built from, it is only downloaded. Please note that in the
+release, static libraries are used, so you should test your changes with static
+linking in the end anyway.
+
+Options:
+    --help      Show this help message.
+    --shared    Install shared libraries. (default=false)
+    --static    Install static libraries (default=true)."
+
+shared=false
+static=true
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --help)
+            echo "$usage"
+            exit
+            ;;
+        --shared)
+            echo "Shared libraries will be installed"
+            shared=true
+            static=false
+            shift
+            ;;
+        --static)
+            echo "Static libraries will be installed"
+            shared=false
+            static=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $key"
+            echo "$usage"
+            exit 1
+            ;;
+    esac
+done
+
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+root="$(dirname "$this_dir")"
+
+# If environment variable QT_INSTALLER_JWT_TOKEN is not set, abort
+token="${QT_INSTALLER_JWT_TOKEN:-}"
+if [[ -z "$token" ]]; then
+    echo "QT_INSTALLER_JWT_TOKEN is not set" >&2
+    exit 1
+fi
+
+echo "Installing project dependencies"
+manager="$("$root/scripts/helpers/get-package-manager")"
+"$root/scripts/helpers/${manager}/install-project-deps"
+
+echo "Installing ffmpeg and qt"
+type=""
+if [[ "$static" = true ]]; then
+    echo "Installing static libraries for ffmpeg and qt"
+    type="--static"
+elif [[ "$shared" = true ]]; then
+    echo "Installing shared libraries for ffmpeg and qt"
+    type="--shared"
+else
+    echo "Unknown build type"
+    echo "$usage"
+    exit 1
+fi
+
+echo "Installing ffmpeg"
+"$root/scripts/build-ffmpeg" "$type" -s "$root/ffmpeg_sources" -i "$root/3rdparty/ffmpeg"
+
+echo "Installing qt"
+"$root/scripts/build-qt" "$type" -s "$root/Qt" -i "$root/3rdparty/Qt"

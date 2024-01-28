@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 echo "Installing build tools and dependencies"
 sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar || true

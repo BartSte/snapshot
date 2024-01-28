@@ -8,6 +8,8 @@ include/version.h
 3rdparty/Qt
 3rdparty/ffmpeg
 3rdparty/libva
+ffmpeg_sources
+Qt
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

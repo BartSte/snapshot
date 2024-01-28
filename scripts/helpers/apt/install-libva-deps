@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 echo "Removing libva"
 sudo dpkg --remove --force-depends libva-dev || true

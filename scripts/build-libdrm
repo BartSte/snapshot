@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
 usage="$(basename "$0") [-h] [-s, --source-dir] [-p, --prefix] -- Compiles libdrm from source
