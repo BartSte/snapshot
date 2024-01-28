@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+manager="$("$this_dir/../get-package-manager")"
+if [[ "$manager" != "apt" ]]; then
+    echo "This script only supports apt package manager"
+    exit 1
+fi

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Removing libva"
+sudo dpkg --remove --force-depends libva-dev || true
+sudo dpkg --remove --force-depends libva2 || true
+echo "Installing apt dependencies"
+sudo apt-get -y install autogen automake cmake git libtool libwayland-dev libx11-dev libx11-xcb-dev libx11-xcb-perl libx11-xcb1 libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb1-dev libxext-dev libxfixes-dev meson pkg-config xorg-dev || true

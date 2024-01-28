@@ -3,15 +3,18 @@ include(${CMAKE_SOURCE_DIR}/cmake/Find.cmake)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
+
+# Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables that
+# are created
 find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
                                      WaylandClient)
-
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
 set(QT6_LIB_TYPE
     ${QT6_LIB_TYPE}
     PARENT_SCOPE)
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
 message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
+message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
@@ -27,13 +30,9 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
 # When building the project with a static Qt6 library, we need to link the
-# following components statically as well:
-# - Platform plugins
-# - Multimedia plugins
-# - FFmpeg
-# - Libva
-# Furthermore, the Qt plugins need to be imported manually using the
-# qt_import_plugins() function.
+# following components statically as well: - Platform plugins - Multimedia
+# plugins - FFmpeg - Libva Furthermore, the Qt plugins need to be imported
+# manually using the qt_import_plugins() function.
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   set(PLATFORM_PLUGINS
       Qt6::QEglFSIntegrationPlugin
@@ -48,9 +47,17 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
       Qt6::QXcbIntegrationPlugin)
   set(MULTIMEDIA_PLUGINS Qt6::QFFmpegMediaPlugin)
 
-  find_ffmpeg() # creates FFmpeg::FFmpeg
   find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
-  message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
+
+  get_target_property(VA_LIBRARY Libva::va LOCATION)
+  get_target_property(VA_DRM_LIBRARY Libva::va-drm LOCATION)
+  get_target_property(VA_X11_LIBRARY Libva::va-x11 LOCATION)
+  get_target_property(VA_WAYLAND_LIBRARY Libva::va-wayland LOCATION)
+
+  message(STATUS "Libva::va library is: ${VA_LIBRARY}")
+  message(STATUS "Libva::va-drm library is: ${VA_DRM_LIBRARY}")
+  message(STATUS "Libva::va-x11 library is: ${VA_X11_LIBRARY}")
+  message(STATUS "Libva::va-wayland library is: ${VA_WAYLAND_LIBRARY}")
 
   list(
     APPEND
@@ -62,7 +69,11 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
     Libva::va-wayland
     ${PLATFORM_PLUGINS}
     ${MULTIMEDIA_PLUGINS})
+endif()
 
+target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
+
+if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   qt_import_plugins(
     snapshotapp
     INCLUDE_BY_TYPE
@@ -70,7 +81,8 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
     ${PLATFORM_PLUGINS}
     INCLUDE_BY_TYPE
     multimedia
-    ${MULTIMEDIA_PLUGINS})
+    ${MULTIMEDIA_PLUGINS}
+    EXCLUDE
+    Qt6::QGstreamerMediaPlugin
+    NO_DEFAULT)
 endif()
-
-target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})

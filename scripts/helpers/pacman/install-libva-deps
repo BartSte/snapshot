@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Removing libva"
+sudo pacman -R --noconfirm -dd libva || true
+echo "Installing pacman dependencies"
+sudo pacman -S --noconfirm git cmake pkg-config meson automake libtool autogen xorg wayland libxext libxfixes || true

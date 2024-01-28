@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+root="$(dirname "$this_dir")"
+usage="$(basename "$0") [-h] [-s, --source-dir] [-b, --install-dir] -- Compiles ffmpeg from source
+
+The packages managers \`apt\` and \`pacman\` are supported.
+
+where:
+    -h, --help          show this help text
+    --static            build static libraries (default: true)
+    --shared            build shared libraries (default: false)
+    -s, --source-dir    ffmpeg source directory (default: $root/ffmpeg_sources)
+    -i, --install-dir   ffmpeg build directory (default: $this_dir/../3rdparty/ffmpeg)"
+
+static=true
+shared=false
+source_dir="$root/ffmpeg_sources"
+install_dir="$this_dir/../3rdparty/ffmpeg"
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -h | --help)
+            echo "$usage"
+            exit
+            ;;
+        --static)
+            static=true
+            shared=false
+            shift
+            ;;
+        --shared)
+            shared=true
+            static=false
+            shift
+            ;;
+        -s | --source-dir)
+            source_dir="$2"
+            shift
+            shift
+            ;;
+        -i | --install-dir)
+            install_dir="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $key"
+            echo "$usage"
+            exit 1
+            ;;
+    esac
+done
+
+bin_dir="$install_dir/bin"
+
+install_dependencies() {
+    manager="$("$this_dir/helpers/get-package-manager")"
+    "${this_dir}/helpers/${manager}/install-ffmpeg-deps"
+}
+
+build_libdrm() {
+    echo "Building libdrm"
+    # "$this_dir/build-libdrm" -s "$source_dir/libdrm"
+
+    if command -v apt-get &>/dev/null; then
+        sudo apt -y install libdrm-dev || true
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm libdrm || true
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
+}
+
+build_libva() {
+    echo "Building libva"
+    # "$this_dir/build-libva" -s "$source_dir/libva"
+
+    if command -v apt-get &>/dev/null; then
+        sudo apt -y install libva-dev || true
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm libva || true
+    else
+        echo "No supported package manager found"
+        exit 1
+    fi
+}
+
+compile_libaom() {
+    echo "Compiling libaom"
+    cd "$source_dir" &&
+        git -C aom pull 2>/dev/null || git clone --depth 1 https://aomedia.googlesource.com/aom &&
+        mkdir -p aom_build &&
+        cd aom_build &&
+        PATH="$bin_dir:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DENABLE_TESTS=OFF -DENABLE_NASM=on ../aom &&
+        PATH="$bin_dir:$PATH" make -j"$(nproc)" &&
+        make install
+}
+
+compile_libsvtav1() {
+    echo "Compiling libsvtav1"
+    cd "$source_dir" &&
+        git -C SVT-AV1 pull 2>/dev/null || git clone https://gitlab.com/AOMediaCodec/SVT-AV1.git &&
+        mkdir -p SVT-AV1/build &&
+        cd SVT-AV1/build &&
+        PATH="$bin_dir:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TYPE=Release -DBUILD_DEC=OFF -DBUILD_SHARED_LIBS=OFF .. &&
+        PATH="$bin_dir:$PATH" make -j"$(nproc)" &&
+        make install
+}
+
+compile_libvmaf() {
+    echo "Compiling libvmaf"
+    cd "$source_dir" &&
+        wget https://github.com/Netflix/vmaf/archive/v2.3.1.tar.gz && tar xvf v2.3.1.tar.gz &&
+        mkdir -p vmaf-2.3.1/libvmaf/build &&
+        cd vmaf-2.3.1/libvmaf/build &&
+        meson setup -Denable_tests=false -Denable_docs=false --buildtype=release --default-library=static .. --prefix "$install_dir" --bindir="$bin_dir" --libdir="$install_dir/lib" &&
+        ninja &&
+        ninja install
+}
+
+compile_ffmpeg-static() {
+    echo "Compiling ffmpeg"
+    cd "$source_dir" &&
+        wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 &&
+        tar xjvf ffmpeg-snapshot.tar.bz2 &&
+        cd ffmpeg &&
+        PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure \
+            --pkg-config-flags="--static" \
+            --prefix="$install_dir" \
+            --extra-cflags="-I$install_dir/include" \
+            --extra-ldflags="-L$install_dir/lib" \
+            --extra-libs="-lpthread -lm" \
+            --ld="g++" \
+            --bindir="$bin_dir" \
+            --enable-gpl \
+            --enable-gnutls \
+            --enable-libaom \
+            --enable-libass \
+            --enable-libfdk-aac \
+            --enable-libfreetype \
+            --enable-libmp3lame \
+            --enable-libopus \
+            --enable-libsvtav1 \
+            --enable-libdav1d \
+            --enable-libvorbis \
+            --enable-libvpx \
+            --enable-libx264 \
+            --enable-libx265 \
+            --enable-nonfree &&
+        PATH="$bin_dir:$PATH" make -j"$(nproc)" &&
+        make install &&
+        hash -r
+}
+
+compile_ffmpeg-shared() {
+    echo "Compiling ffmpeg"
+    cd "$source_dir" &&
+        wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 &&
+        tar xjvf ffmpeg-snapshot.tar.bz2 &&
+        cd ffmpeg &&
+        PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure \
+            --disable-static \
+            --enable-shared \
+            --prefix="$install_dir" \
+            --extra-cflags="-I$install_dir/include" \
+            --extra-ldflags="-L$install_dir/lib" \
+            --extra-libs="-lpthread -lm" \
+            --ld="g++" \
+            --bindir="$bin_dir" \
+            --enable-gpl \
+            --enable-gnutls \
+            --enable-libaom \
+            --enable-libass \
+            --enable-libfdk-aac \
+            --enable-libfreetype \
+            --enable-libmp3lame \
+            --enable-libopus \
+            --enable-libsvtav1 \
+            --enable-libdav1d \
+            --enable-libvorbis \
+            --enable-libvpx \
+            --enable-libx264 \
+            --enable-libx265 \
+            --enable-nonfree &&
+        PATH="$bin_dir:$PATH" make -j"$(nproc)" &&
+        make install &&
+        hash -r
+}
+
+dir=$(pwd)
+
+rm -rf "$source_dir" || true
+rm -rf "$install_dir" || true
+mkdir -p "$source_dir" "$bin_dir"
+install_dependencies
+build_libdrm
+build_libva
+compile_libaom
+compile_libsvtav1
+compile_libvmaf
+
+if [[ "$static" == true ]]; then
+    compile_ffmpeg-static
+elif [[ "$shared" == true ]]; then
+    compile_ffmpeg-shared
+fi
+
+cd "$dir"
