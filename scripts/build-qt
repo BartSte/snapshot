@@ -75,7 +75,7 @@ build-qt-shared() {
     mkdir "$source_dir"
     mkdir "$install_dir"
     "$root/scripts/helpers/download-qt" --root "$source_dir" qt.qt6.661.gcc_64 qt.qt6.661.addons.qtmultimedia
-    cp "$source_dir/6.6.1/gcc_64" "$install_dir" -rf
+    cp "${source_dir}"/6.6.1/gcc_64/** "$install_dir" -r
 }
 
 if [[ "$static" = true ]]; then

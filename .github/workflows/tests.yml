@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup debug environment
+      - name: Install dependencies
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
