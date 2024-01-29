@@ -4,14 +4,14 @@ on:
   push:
     branches:
       - main
-      - develop
+      # - develop
   pull_request:
     branches:
       - main
       - develop
 
 jobs:
-  run-tests:
+  run-tests-shared:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,28 @@ jobs:
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
           ./scripts/setup --shared
+
+      - name: Build project
+        run: |
+          ./scripts/configure -- -DBUILD_TESTING=ON
+          cmake --build ./build
+
+      - name: Run test
+        run: |
+          ctest --test-dir ./build --verbose
+
+  run-tests-static:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        env: 
+          QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
+        run: |
+          ./scripts/setup --static
 
       - name: Build project
         run: |
