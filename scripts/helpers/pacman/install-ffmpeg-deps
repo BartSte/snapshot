@@ -6,5 +6,5 @@ sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 lib
 sudo pacman -S --noconfirm zlib || true
 
 echo "Installing ffmpeg dependencies"
-sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl || true
+sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl libdrm libva || true
 sudo pacman -S --noconfirm libvpx || true

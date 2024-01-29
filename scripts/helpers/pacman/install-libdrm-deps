@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-echo "Installing build tools and dependencies"
-sudo pacman -R --noconfirm -dd libdrm || true
-sudo pacman -S --noconfirm --needed meson ninja python || true
