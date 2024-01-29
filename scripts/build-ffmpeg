@@ -61,34 +61,6 @@ install_dependencies() {
     "${this_dir}/helpers/${manager}/install-ffmpeg-deps"
 }
 
-build_libdrm() {
-    echo "Building libdrm"
-    # "$this_dir/build-libdrm" -s "$source_dir/libdrm"
-
-    if command -v apt-get &>/dev/null; then
-        sudo apt -y install libdrm-dev || true
-    elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm libdrm || true
-    else
-        echo "No supported package manager found"
-        exit 1
-    fi
-}
-
-build_libva() {
-    echo "Building libva"
-    # "$this_dir/build-libva" -s "$source_dir/libva"
-
-    if command -v apt-get &>/dev/null; then
-        sudo apt -y install libva-dev || true
-    elif command -v pacman &>/dev/null; then
-        sudo pacman -S --noconfirm libva || true
-    else
-        echo "No supported package manager found"
-        exit 1
-    fi
-}
-
 compile_libaom() {
     echo "Compiling libaom"
     cd "$source_dir" &&
@@ -122,49 +94,16 @@ compile_libvmaf() {
         ninja install
 }
 
-compile_ffmpeg-static() {
-    echo "Compiling ffmpeg"
+compile_ffmpeg() {
+    local file unpack_dir
+    file="ffmpeg-snapshot.tar.bz2"
+    unpack_dir="ffmpeg"
     cd "$source_dir" &&
-        wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 &&
-        tar xjvf ffmpeg-snapshot.tar.bz2 &&
-        cd ffmpeg &&
+        wget -O "$file" https://ffmpeg.org/releases/"$file" &&
+        tar xjvf "$file" && 
+        cd "$unpack_dir" &&
         PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure \
-            --pkg-config-flags="--static" \
-            --prefix="$install_dir" \
-            --extra-cflags="-I$install_dir/include" \
-            --extra-ldflags="-L$install_dir/lib" \
-            --extra-libs="-lpthread -lm" \
-            --ld="g++" \
-            --bindir="$bin_dir" \
-            --enable-gpl \
-            --enable-gnutls \
-            --enable-libaom \
-            --enable-libass \
-            --enable-libfdk-aac \
-            --enable-libfreetype \
-            --enable-libmp3lame \
-            --enable-libopus \
-            --enable-libsvtav1 \
-            --enable-libdav1d \
-            --enable-libvorbis \
-            --enable-libvpx \
-            --enable-libx264 \
-            --enable-libx265 \
-            --enable-nonfree &&
-        PATH="$bin_dir:$PATH" make -j"$(nproc)" &&
-        make install &&
-        hash -r
-}
-
-compile_ffmpeg-shared() {
-    echo "Compiling ffmpeg"
-    cd "$source_dir" &&
-        wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 &&
-        tar xjvf ffmpeg-snapshot.tar.bz2 &&
-        cd ffmpeg &&
-        PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure \
-            --disable-static \
-            --enable-shared \
+            $@ \
             --prefix="$install_dir" \
             --extra-cflags="-I$install_dir/include" \
             --extra-ldflags="-L$install_dir/lib" \
@@ -197,16 +136,16 @@ rm -rf "$source_dir" || true
 rm -rf "$install_dir" || true
 mkdir -p "$source_dir" "$bin_dir"
 install_dependencies
-build_libdrm
-build_libva
 compile_libaom
 compile_libsvtav1
 compile_libvmaf
 
 if [[ "$static" == true ]]; then
-    compile_ffmpeg-static
+    echo "Building ffmpeg static"
+    compile_ffmpeg --pkg-config-flags="--static"
 elif [[ "$shared" == true ]]; then
-    compile_ffmpeg-shared
+    echo "Building ffmpeg shared"
+    compile_ffmpeg --disable-static --enable-shared --pkg-config-flags="--shared"
 fi
 
 cd "$dir"
