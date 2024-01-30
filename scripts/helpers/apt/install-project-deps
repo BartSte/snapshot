@@ -8,12 +8,13 @@ echo "Update apt database"
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo "$root/scripts/helpers/apt/enable-kitware-repo"
+sudo "$root/scripts/helpers/apt/enable-kisak-mesa-repo"
 
 echo "Installing build dependencies"
 sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
 
 echo "Installing project dependencies"
-"$root/scripts/build-vulkan"
+"$root/scripts/build-vulkan" || true # only ubuntu 20.04
 sudo apt-get install -y libboost-all-dev libspdlog-dev
 
 echo "Installing Qt dependencies"

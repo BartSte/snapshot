@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sudo add-apt-repository ppa:kisak/kisak-mesa -y
+sudo apt update -y
+sudo apt upgrade -y
