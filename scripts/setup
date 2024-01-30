@@ -68,6 +68,8 @@ if [[ "$static" = true ]]; then
 elif [[ "$shared" = true ]]; then
     echo "Installing shared libraries for ffmpeg and qt"
     echo "ffmpeg shared libraries are included in the Qt shared release"
+    rm -rf "$root/3rdparty/ffmpeg" || true
+    rm -rf "$root/ffmpeg_sources" || true
     "$root/scripts/build-qt" --shared -s "$root/Qt" -i "$root/3rdparty/Qt"
 
 else
