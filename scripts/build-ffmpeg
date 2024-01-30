@@ -3,7 +3,13 @@ set -euo pipefail
 
 this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
 root="$(dirname "$this_dir")"
-usage="$(basename "$0") [-h] [-s, --source-dir] [-b, --install-dir] -- Compiles ffmpeg from source
+static=true
+shared=false
+source_dir="$root/ffmpeg_sources"
+install_dir="$this_dir/../3rdparty/ffmpeg"
+
+usage="$(basename "$0") [-h] [-s, --source-dir] [-b, --install-dir] --
+Compiles ffmpeg from source.
 
 The packages managers \`apt\` and \`pacman\` are supported.
 
@@ -11,13 +17,8 @@ where:
     -h, --help          show this help text
     --static            build static libraries (default: true)
     --shared            build shared libraries (default: false)
-    -s, --source-dir    ffmpeg source directory (default: $root/ffmpeg_sources)
-    -i, --install-dir   ffmpeg build directory (default: $this_dir/../3rdparty/ffmpeg)"
-
-static=true
-shared=false
-source_dir="$root/ffmpeg_sources"
-install_dir="$this_dir/../3rdparty/ffmpeg"
+    -s, --source-dir    ffmpeg source directory (default: $source_dir)
+    -i, --install-dir   ffmpeg build directory (default: $install_dir)"
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -61,6 +62,78 @@ install_dependencies() {
     "${this_dir}/helpers/${manager}/install-ffmpeg-deps"
 }
 
+compile_nasm() {
+    cd "$source_dir" &&
+        wget https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/nasm-2.16.01.tar.bz2 &&
+        tar xjvf nasm-2.16.01.tar.bz2 &&
+        cd nasm-2.16.01 &&
+        ./autogen.sh &&
+        PATH="$bin_dir:$PATH" ./configure --prefix="$install_dir" --bindir="$bin_dir" &&
+        make &&
+        make install
+}
+
+compile_x264() {
+    cd "$source_dir" &&
+        git -C x264 pull 2>/dev/null || git clone --depth 1 https://code.videolan.org/videolan/x264.git &&
+        cd x264 &&
+        PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure --prefix="$install_dir" --bindir="$bin_dir" --enable-static --enable-pic &&
+        PATH="$bin_dir:$PATH" make &&
+        make install
+}
+
+compile_x265() {
+    cd "$source_dir" &&
+        wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/master.tar.bz2 &&
+        tar xjvf x265.tar.bz2 &&
+        cd multicoreware*/build/linux &&
+        PATH="$bin_dir:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DENABLE_SHARED=off ../../source &&
+        PATH="$bin_dir:$PATH" make &&
+        make install
+}
+
+compile_libvpx() {
+    cd "$source_dir" &&
+        git -C libvpx pull 2>/dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git &&
+        cd libvpx &&
+        PATH="$bin_dir:$PATH" ./configure --prefix="$install_dir" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm &&
+        PATH="$bin_dir:$PATH" make &&
+        make install
+}
+
+compile_fdk-aac() {
+    cd "$source_dir" &&
+        PATH="$bin_dir:$PATH" &&
+        git -C fdk-aac pull 2>/dev/null || git clone --depth 1 https://github.com/mstorsjo/fdk-aac &&
+        cd fdk-aac &&
+        autoreconf -fiv &&
+        ./configure --prefix="$install_dir" --disable-shared &&
+        make &&
+        make install
+}
+
+compile_libopus() {
+    cd "$source_dir" &&
+        PATH="$bin_dir:$PATH" &&
+        git -C opus pull 2>/dev/null || git clone --depth 1 https://github.com/xiph/opus.git &&
+        cd opus &&
+        ./autogen.sh &&
+        ./configure --prefix="$install_dir" --disable-shared &&
+        make &&
+        make install
+}
+
+compile_libdav1d() {
+    cd "$source_dir" &&
+        PATH="$bin_dir:$PATH" &&
+        git -C dav1d pull 2>/dev/null || git clone --depth 1 https://code.videolan.org/videolan/dav1d.git &&
+        mkdir -p dav1d/build &&
+        cd dav1d/build &&
+        meson setup -Denable_tools=false -Denable_tests=false --default-library=static .. --prefix "$install_dir" --libdir="$install_dir/lib" &&
+        ninja &&
+        ninja install
+}
+
 compile_libaom() {
     echo "Compiling libaom"
     cd "$source_dir" &&
@@ -86,6 +159,7 @@ compile_libsvtav1() {
 compile_libvmaf() {
     echo "Compiling libvmaf"
     cd "$source_dir" &&
+        PATH="$bin_dir:$PATH" &&
         wget https://github.com/Netflix/vmaf/archive/v2.3.1.tar.gz && tar xvf v2.3.1.tar.gz &&
         mkdir -p vmaf-2.3.1/libvmaf/build &&
         cd vmaf-2.3.1/libvmaf/build &&
@@ -100,7 +174,7 @@ compile_ffmpeg() {
     unpack_dir="ffmpeg"
     cd "$source_dir" &&
         wget -O "$file" https://ffmpeg.org/releases/"$file" &&
-        tar xjvf "$file" && 
+        tar xjvf "$file" &&
         cd "$unpack_dir" &&
         PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure \
             $@ \
@@ -136,6 +210,13 @@ rm -rf "$source_dir" || true
 rm -rf "$install_dir" || true
 mkdir -p "$source_dir" "$bin_dir"
 install_dependencies
+compile_nasm
+compile_x264
+compile_x265
+compile_libvpx
+compile_fdk-aac
+compile_libopus
+compile_libdav1d
 compile_libaom
 compile_libsvtav1
 compile_libvmaf

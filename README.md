@@ -420,10 +420,6 @@ more information.
 
 - [ ] Cross compile for raspberry pi
 
-- [ ] For ffmpeg, build the other dependencies from source as well such that
-      these can be linked statically as well. Do this only for the dependencies
-      that are included in the ffmpeg docs.
-
 - [ ] Use ffmpeg 6.0, that is tested by Qt. If not possible, fix the version
       instead of using the latest version.
 

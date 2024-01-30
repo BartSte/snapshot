@@ -2,9 +2,8 @@
 set -euo pipefail
 
 echo "Installing build tools and dependencies"
-sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring aom dav1d tar || true
-sudo pacman -S --noconfirm zlib || true
+sudo pacman -S --noconfirm autoconf automake cmake git libass freetype2 sdl2 libtool libvdpau libvorbis libxcb meson ninja pkgconf texinfo wget yasm gnutls libunistring tar
+sudo pacman -S --noconfirm zlib
 
 echo "Installing ffmpeg dependencies"
-sudo pacman -S --noconfirm nasm x264 x265 fdkaac opus numactl libdrm libva || true
-sudo pacman -S --noconfirm libvpx || true
+sudo pacman -S --noconfirm numactl libdrm libva numactl
