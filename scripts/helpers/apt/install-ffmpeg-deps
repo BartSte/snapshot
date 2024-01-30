@@ -4,7 +4,7 @@ set -euo pipefail
 echo "Updating apt-get"
 sudo apt-get update -qq
 echo "Installing build tools and dependencies"
-sudo apt-get -y install python3 autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev meson ninja-build pkg-config texinfo wget yasm zlib1g-dev gnutls-bin libunistring-dev libaom-dev libdav1d-dev tar
+sudo apt-get -y install python3 autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev meson ninja-build pkg-config texinfo wget yasm zlib1g-dev gnutls-bin libunistring-dev tar
 
 echo "Installing ffmpeg dependencies"
 sudo apt-get -y install libnuma-dev libva-dev libdrm-dev
