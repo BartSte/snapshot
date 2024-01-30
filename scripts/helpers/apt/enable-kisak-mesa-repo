@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+# Ensure  that the latest version of mesa is installed
 sudo add-apt-repository ppa:kisak/kisak-mesa -y
 sudo apt update -y
 sudo apt upgrade -y

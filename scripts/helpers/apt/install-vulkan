@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage="Usage: install-vulkan
+
+Used when running apt package manager to install vulkan sdk using a PPA
+repository"
+
+this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
+"$this_dir/assert"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h | --help)
+            echo "$usage"
+            exit 0
+            ;;
+    esac
+done
+
+# For ubuntu 22.04
+jammy() {
+    echo "Running jammy, installing vulkan sdk"
+    wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+    sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
+    sudo apt -y update
+    sudo apt -y upgrade
+    sudo apt -y install vulkan-sdk
+}
+
+# For ubuntu 20.04
+focal() {
+    echo "Running focal, installing vulkan sdk"
+    wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+    sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
+    sudo apt -y update
+    sudo apt -y upgrade
+    sudo apt -y install vulkan-sdk
+}
+
+case "$(lsb_release -cs)" in
+    jammy)
+        jammy
+        ;;
+    focal)
+        focal
+        ;;
+    *)
+        echo "Only Ubuntu Focal (20.04) and Jammy (22.04) are supported. Aborting." >/dev/stderr
+        exit 1
+        ;;
+esac

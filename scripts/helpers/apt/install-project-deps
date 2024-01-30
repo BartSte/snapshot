@@ -14,7 +14,7 @@ echo "Installing build dependencies"
 sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
 
 echo "Installing project dependencies"
-"$root/scripts/build-vulkan" || true # only ubuntu 20.04
+"$root/scripts/helpers/apt/install-vulkan"
 sudo apt-get install -y libboost-all-dev libspdlog-dev
 
 echo "Installing Qt dependencies"
