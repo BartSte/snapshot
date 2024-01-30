@@ -5,14 +5,20 @@ on:
     branches:
       - main
       - develop
+
   pull_request:
     branches:
       - main
       - develop
 
 jobs:
-  run-tests-shared:
-    runs-on: ubuntu-22.04
+  run-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04]
+        flag: [--static, --shared]
 
     steps:
       - name: Checkout code
@@ -22,29 +28,10 @@ jobs:
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
-          ./scripts/setup --shared
+          echo "Running on ${{ matrix.os }}"
+          echo "With flag ${{ matrix.flag }}"
+          ./scripts/setup ${{ matrix.flag }}
 
-      - name: Build project
-        run: |
-          ./scripts/configure -- -DBUILD_TESTING=ON
-          cmake --build ./build
-
-      - name: Run test
-        run: |
-          ctest --test-dir ./build --verbose
-
-  run-tests-static:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        env: 
-          QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
-        run: |
-          ./scripts/setup --static
 
       - name: Build project
         run: |
