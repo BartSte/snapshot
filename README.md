@@ -413,18 +413,21 @@ more information.
   - [x] Add the remaining dynamic libs to the same directory tree as the
         executable and using the script that is provided in the Qt
         [docs](https://doc.qt.io/qt-6/linux-deployment.html) to run the app.
-  - [ ] Go through all the remaining dynamic libs using ldd and see which ones
+  - [x] Go through all the remaining dynamic libs using ldd and see which ones
         can also be linked statically.
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
+
+- [ ] Fix failing test -> see TODO
 
 - [ ] Cross compile for raspberry pi
 
 - [ ] Use ffmpeg 6.0, that is tested by Qt. If not possible, fix the version
       instead of using the latest version.
 
-- [ ] Does it also work when the user has an older version of libc installed
-      than ubuntu 22.04 has?
+- [ ] Add to docs:
+  - How to build static and shared
+  - How to run the tar archive
 
 - [ ] Add to FAQ:
 

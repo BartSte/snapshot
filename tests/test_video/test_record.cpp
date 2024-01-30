@@ -16,8 +16,8 @@ class TestRecorder : public QObject {
 
  private:
   Q_OBJECT
-  path tmp_dir;
-  QString debug_video_qstr;
+  path tmpDir;
+  QString debugVideo;
   std::unique_ptr<QApplication> app;
 
  private slots:
@@ -28,10 +28,11 @@ class TestRecorder : public QObject {
   }
 
   void init() {
-    debug_video_qstr = QString::fromStdString(debug_video.string());
-    tmp_dir = std::filesystem::temp_directory_path();
-    tmp_dir /= "test_record";
-    std::filesystem::remove_all(tmp_dir);
+    debugVideo = QString::fromStdString(debug_video.string());
+    tmpDir = std::filesystem::temp_directory_path();
+    tmpDir /= "test_record";
+    std::filesystem::remove_all(tmpDir);
+    Path::mkdir(tmpDir);
   }
 
   /**
@@ -41,9 +42,11 @@ class TestRecorder : public QObject {
    * the save method, 1 image should be saved in the temporary directory.
    */
   void testImageSaverSave() {
-    MediaPlayer player(debug_video_qstr);
+    MediaPlayer player(debugVideo);
     QVideoSink *sink = player.getVideoSink();
-    ImageSaver saver(sink, tmp_dir);
+    ImageSaver saver(sink, tmpDir);
+    int cntDir = Path::numberOfItems(tmpDir);
+    int cntFiles = Path::numberOfFilesRecursive(tmpDir);
 
     player.start();
     QTest::qWait(250);
@@ -52,8 +55,8 @@ class TestRecorder : public QObject {
     saver.save();
     player.stop();
     QCOMPARE(player.getState(), VideoState::Stop);
-    ASSERT_EQ(Path::numberOfItems(tmp_dir), 1);
-    ASSERT_EQ(Path::numberOfFilesRecursive(tmp_dir), 1);
+    ASSERT_EQ(Path::numberOfItems(tmpDir), cntDir + 1);
+    ASSERT_EQ(Path::numberOfFilesRecursive(tmpDir), cntFiles + 1);
   }
 
   /**
@@ -63,9 +66,9 @@ class TestRecorder : public QObject {
    * is used to provide a QVideoSink with frames.
    */
   void testRecorderStart() {
-    MediaPlayer player(debug_video_qstr);
+    MediaPlayer player(debugVideo);
     QVideoSink *sink = player.getVideoSink();
-    Recorder recorder(sink, tmp_dir);
+    Recorder recorder(sink, tmpDir);
 
     player.start();
     QTest::qWait(250);
@@ -82,14 +85,14 @@ class TestRecorder : public QObject {
     QCOMPARE(player.getState(), VideoState::Stop);
 
     // 1 image should be saved in the temporary directory.
-    QCOMPARE(Path::numberOfItems(tmp_dir), 1);
-    ASSERT_EQ(Path::numberOfFilesRecursive(tmp_dir), 1);
+    QCOMPARE(Path::numberOfItems(tmpDir), 1);
+    ASSERT_EQ(Path::numberOfFilesRecursive(tmpDir), 1);
   }
 
   void testRecordStartStop() {
-    MediaPlayer player(debug_video_qstr);
+    MediaPlayer player(debugVideo);
     QVideoSink *sink = player.getVideoSink();
-    Recorder recorder(sink, tmp_dir);
+    Recorder recorder(sink, tmpDir);
 
     player.start();
     QTest::qWait(250);
@@ -118,7 +121,7 @@ class TestRecorder : public QObject {
    * state.
    */
   void testRecorderNullptr() {
-    Recorder recorder(nullptr, tmp_dir);
+    Recorder recorder(nullptr, tmpDir);
 
     recorder.start(ms(1000), ms(5000));
     QCOMPARE(recorder.getState(), RecorderState::Start);
@@ -128,7 +131,7 @@ class TestRecorder : public QObject {
     QCOMPARE(recorder.getState(), RecorderState::Stop);
   }
 
-  void cleanup() { std::filesystem::remove_all(tmp_dir); }
+  void cleanup() { std::filesystem::remove_all(tmpDir); }
 };
 
 TEST(testRecord, testRecorder) {
