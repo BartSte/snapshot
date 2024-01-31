@@ -418,14 +418,10 @@ more information.
   - [x] Publish the directory tree as an archive as a release. Other more
         sophisticated release methods can be used later.
 
-- [ ] Fix failing test -> see TODO
-
 - [ ] Cross compile for raspberry pi
 
-- [ ] Use ffmpeg 6.0, that is tested by Qt. If not possible, fix the version
-      instead of using the latest version.
-
 - [ ] Add to docs:
+
   - How to build static and shared
   - How to run the tar archive
 
