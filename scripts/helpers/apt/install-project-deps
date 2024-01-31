@@ -8,7 +8,6 @@ echo "Update apt database"
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo "$root/scripts/helpers/apt/enable-kitware-repo"
-sudo "$root/scripts/helpers/apt/enable-kisak-mesa-repo"
 
 echo "Installing build dependencies"
 sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
