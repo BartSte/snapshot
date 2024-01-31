@@ -407,18 +407,14 @@ more information.
 
 # TODO:
 
-- [ ] Add pre built binaries to the github releases
-
-  - [x] Link the app statically against Qt6, boost and spdlog
-  - [x] Add the remaining dynamic libs to the same directory tree as the
-        executable and using the script that is provided in the Qt
-        [docs](https://doc.qt.io/qt-6/linux-deployment.html) to run the app.
-  - [x] Go through all the remaining dynamic libs using ldd and see which ones
-        can also be linked statically.
-  - [x] Publish the directory tree as an archive as a release. Other more
-        sophisticated release methods can be used later.
-
 - [ ] Cross compile for raspberry pi
+
+- [ ] Release v0.0.0 gives the following error on wsl arch:
+
+```
+/home/foo/Downloads/snapshot-0.0.0-Linux/./bin/snapshot: /usr/lib/libpthread.so.0: version `GLIBC_PRIVATE' not found (required by /home/foo/Downloads/snapshot-0.0.0-Linux/./lib/librt.so.1)
+```
+
 
 - [ ] Add to docs:
 

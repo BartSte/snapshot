@@ -60,7 +60,8 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
 endif()
 
 # CMAKE_DL_LIBS is needed for building on Ubuntu 20.04
-target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS} ${CMAKE_DL_LIBS})
+find_library(LIBDL dl)
+target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS} ${LIBDL})
 
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   qt_import_plugins(
