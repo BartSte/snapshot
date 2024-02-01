@@ -409,17 +409,15 @@ more information.
 
 - [ ] Cross compile for raspberry pi
 
-- [ ] Release v0.0.0 gives the following error on wsl arch:
-
-```
-/home/foo/Downloads/snapshot-0.0.0-Linux/./bin/snapshot: /usr/lib/libpthread.so.0: version `GLIBC_PRIVATE' not found (required by /home/foo/Downloads/snapshot-0.0.0-Linux/./lib/librt.so.1)
-```
-
-
 - [ ] Add to docs:
 
   - How to build static and shared
   - How to run the tar archive
+  - Requirements for running the app:
+    - Tested and released on ubuntu 22.04
+    - Also used on Arch linux
+    - Older versions of ubuntu might not work, as Qt 6.6 does not support
+      older versions of ubuntu.
 
 - [ ] Add to FAQ:
 

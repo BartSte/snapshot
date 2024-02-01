@@ -59,9 +59,7 @@ if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   list(APPEND LINK_LIBS FFmpeg::FFmpeg Qt6::QFFmpegMediaPlugin ${PLATFORM_PLUGINS})
 endif()
 
-# CMAKE_DL_LIBS is needed for building on Ubuntu 20.04
-find_library(LIBDL dl)
-target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS} ${LIBDL})
+target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
 
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   qt_import_plugins(
