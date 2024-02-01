@@ -12,11 +12,10 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
 
       matrix:
-        os: ubuntu-22.04
         flag: [--static, --shared]
 
     steps:
@@ -27,7 +26,6 @@ jobs:
         env: 
           QT_INSTALLER_JWT_TOKEN: ${{ secrets.QT_INSTALLER_JWT_TOKEN }}
         run: |
-          echo "Running on ${{ matrix.os }}"
           echo "With flag ${{ matrix.flag }}"
           ./scripts/setup ${{ matrix.flag }}
 
