@@ -77,7 +77,7 @@ compile_x264() {
     local commit
     commit="4815ccadb1890572f2bf8b9d9553d56f6c9122ad"
     cd "$source_dir" &&
-        git -C x264 pull 2>/dev/null || git clone --depth 1 https://code.videolan.org/videolan/x264.git &&
+        git -C x264 pull 2>/dev/null || git clone https://code.videolan.org/videolan/x264.git &&
         cd x264 &&
         git reset --hard $commit &&
         PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure --prefix="$install_dir" --bindir="$bin_dir" --enable-static --enable-pic &&
@@ -99,7 +99,7 @@ compile_libvpx() {
     local commit
     commit="8630b183230e7d4b87f8535e8d5e458e96366117"
     cd "$source_dir" &&
-        git -C libvpx pull 2>/dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git &&
+        git -C libvpx pull 2>/dev/null || git clone https://chromium.googlesource.com/webm/libvpx.git &&
         cd libvpx &&
         git reset --hard $commit &&
         PATH="$bin_dir:$PATH" ./configure --prefix="$install_dir" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm &&
@@ -112,7 +112,7 @@ compile_fdk-aac() {
     commit="716f4394641d53f0d79c9ddac3fa93b03a49f278" 
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
-        git -C fdk-aac pull 2>/dev/null || git clone --depth 1 https://github.com/mstorsjo/fdk-aac &&
+        git -C fdk-aac pull 2>/dev/null || git clone https://github.com/mstorsjo/fdk-aac &&
         cd fdk-aac &&
         git reset --hard $commit &&
         autoreconf -fiv &&
@@ -126,7 +126,7 @@ compile_libopus() {
     commit="c85499757c148fede8604cffa12454206b6138ba"
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
-        git -C opus pull 2>/dev/null || git clone --depth 1 https://github.com/xiph/opus.git &&
+        git -C opus pull 2>/dev/null || git clone https://github.com/xiph/opus.git &&
         cd opus &&
         git reset --hard $commit &&
         ./autogen.sh &&
@@ -137,10 +137,10 @@ compile_libopus() {
 
 compile_libdav1d() {
     local commit
-    commit="16ed8e8b99f2fcfffe016e929d3626e15267ad3e"
+    commit="a6878be7e07114f5a2915ad46300700f0db55197"
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
-        git -C dav1d pull 2>/dev/null || git clone --depth 1 https://code.videolan.org/videolan/dav1d.git &&
+        git -C dav1d pull 2>/dev/null || git clone https://code.videolan.org/videolan/dav1d.git &&
         cd dav1d &&
         git reset --hard $commit &&
         mkdir -p build &&
@@ -155,7 +155,7 @@ compile_libaom() {
     commit="f8c91a2080beb6a98c909435fb5937f82a8ef83f"
     echo "Compiling libaom"
     cd "$source_dir" &&
-        git -C aom pull 2>/dev/null || git clone --depth 1 https://aomedia.googlesource.com/aom &&
+        git -C aom pull 2>/dev/null || git clone https://aomedia.googlesource.com/aom &&
         cd aom &&
         git reset --hard $commit &&
         cd - &&
@@ -232,9 +232,17 @@ compile_ffmpeg() {
 
 dir=$(pwd)
 
+echo "Building ffmpeg"
+echo "Source directory: $source_dir"
+echo "Install directory: $install_dir"
+echo "Static: $static"
+echo "Shared: $shared"
+
+echo "Clearing the source and install directories"
 rm -rf "$source_dir" || true
 rm -rf "$install_dir" || true
 mkdir -p "$source_dir" "$bin_dir"
+
 install_dependencies
 compile_nasm
 compile_x264
