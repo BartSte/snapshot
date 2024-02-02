@@ -57,13 +57,25 @@ build-qt-static() {
     "$root/scripts/helpers/download-qt" --root "$source_dir" qt.qt6.661.src
 
     echo "Building Qt with static linking"
+    rm "$install_dir" -rf || true
+    mkdir "$install_dir"
+
     export CC=gcc
     export CXX=g++
     export CFLAGS="-Wall"
-    rm "$install_dir" -rf || true
-    mkdir "$install_dir"
     src="$source_dir/6.6.1/Src"
-    "$src/configure" -release -static -prefix "$install_dir" -submodules qtbase,qtmultimedia,qtwayland -no-pch -no-gstreamer -- -S "$src" -B "$src/build" -Wdev -DFFMPEG_DIR="$root/3rdparty/ffmpeg"
+    "$src/configure" \
+	-static \
+	-release \
+	-prefix "$install_dir" \
+	-submodules qtbase,qtmultimedia,qtwayland \
+	-no-gstreamer \
+	-- \
+	-S "$src" \
+	-B "$src/build" \
+	-Wdev \
+	-DFFMPEG_DIR="$root/3rdparty/ffmpeg"
+
     cmake --build "$src/build"
     cmake --install "$src/build"
 }

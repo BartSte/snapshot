@@ -318,6 +318,101 @@ configure -release -static -no-pch -prefix ~/code/snapshot/3rdparty/Qt/ -no-gstr
   For now lets ignore this and just use dynamic libs for all deps that are not
   boost, qt or spdlog.
 
+#### Distribution
+
+##### Tar.gz archive
+
+Contains:
+
+- `snapshot` executable in the form of a bash script. This script sets the
+  `LD_LIBRARY_PATH` to the `lib` directory and runs the `snapshot` binary.
+- `bin` directory with the `snapshot` binary.
+- `lib` directory with the shared libraries that the `snapshot` binary depends
+  on.
+
+The `lib` directory does not include the standard c/c++ libraries (`libc`,
+`libstdc++`, `libm`, `libdbm`, `libpthread`) toghether with the dynamic linker
+as they are assumed to be present on the system. The following libraries are
+included, using a general categorization based on common software packages and
+systems:
+
+- OpenGL / Graphics Libraries
+
+  - libEGL.so - Part of the OpenGL ES and EGL graphics libraries.
+  - libGLX.so - Part of the X11 GLX (OpenGL Extension to the X Window System).
+  - libGLdispatch.so - Associated with the OpenGL dispatch library.
+  - libOpenGL.so - Part of the OpenGL graphics system.
+  - libgbm.so - Mesa's Generic Buffer Management (GBM) for handling graphics buffers.
+  - libdrm.so - Direct Rendering Manager (DRM), part of the Linux kernel graphics.
+  - libvdpau.so - Video Decode and Presentation API for Unix.
+
+- X11 Libraries
+
+  - libICE.so - Inter-Client Exchange (ICE) protocol library.
+  - libSM.so - Session Management library.
+  - libX11-xcb.so, libX11.so - X11 client-side library.
+  - libXau.so - X11 authorization library.
+  - libXdmcp.so - X Display Manager Control Protocol library.
+  - libXext.so - X11 extensions library.
+  - libXrender.so - X Rendering Extension library.
+  - libxcb-\*.so - X protocol C-language Binding (XCB) libraries.
+  - libxkbcommon-x11.so, libxkbcommon.so - Keyboard handling libraries for X11.
+
+- Audio Libraries
+
+  - libFLAC.so - Free Lossless Audio Codec library.
+  - libasyncns.so - Asynchronous name service query library.
+  - libogg.so - Ogg bitstream format library.
+  - libopus.so - Opus audio codec library.
+  - libpulse.so, libpulsecommon-15.99.so - PulseAudio sound system libraries.
+  - libsndfile.so - Library for reading and writing files containing sampled sound.
+  - libvorbis.so, libvorbisenc.so - Vorbis audio compression library.
+
+- System Libraries
+
+  - libapparmor.so - AppArmor library.
+  - libblkid.so - Block device ID library.
+  - libcap.so - POSIX capabilities library.
+  - libdbus-1.so - D-Bus message bus system library.
+  - libffi.so - Foreign Function Interface library.
+  - libgcrypt.so - Cryptographic library.
+  - libglib-2.0.so, libgmodule-2.0.so, libgio-2.0.so, libgobject-2.0.so - GLib library of C routines.
+  - libsystemd.so - systemd system and service manager library.
+  - libudev.so - udev device manager library.
+
+- Compression and Encoding Libraries
+
+  - libbrotlicommon.so, libbrotlidec.so - Brotli compression library.
+  - libbz2.so - Bzip2 compression library.
+  - libdeflate.so - Deflate compression library.
+  - liblz4.so - LZ4 compression library.
+  - liblzma.so - LZMA compression library.
+  - libz.so, libzstd.so - zlib and Zstandard compression libraries.
+
+- Miscellaneous Libraries
+  - libbsd.so - BSD library for various functions.
+  - libexpat.so - XML parsing C library.
+  - libfmt.so - Formatting library.
+  - libfontconfig.so, libfreetype.so - Font libraries.
+  - libgcc_s.so, libstdc++.so - GCC low-level support library and standard C++ library.
+  - libgmp.so, libnettle.so, libhogweed.so - Cryptographic libraries.
+  - libgnutls.so - GNU TLS library.
+  - libgpg-error.so - GPG error reporting library.
+  - libgraphite2.so, libharfbuzz.so - Font shaping libraries.
+  - libicudata.so, libicui18n.so, libicuuc.so - International Components for Unicode libraries.
+  - libidn2.so - International domain name library.
+  - libjbig.so, libjpeg.so, libpng16.so, libtiff.so, libwebp.so - Image format libraries.
+  - libmd.so - Message Digest library.
+  - libmount.so, libuuid.so - Device mounting and UUID libraries.
+  - libmp3lame.so - MP3 encoding library.
+  - libnuma.so - NUMA (Non-Uniform Memory Access) library.
+  - libp11-kit.so - PKCS#11 toolkit library.
+  - libpcre.so, libpcre2-8.so, libpcre2-16.so - Perl Compatible Regular Expression libraries.
+  - libselinux.so - SELinux library.
+  - libtasn1.so - ASN.1 structure parsing library.
+  - libunistring.so - Unicode string library.
+  - libwayland-\*.so - Wayland protocol libraries.
+
 ### Test
 
 Googletest and QTest are used for building the unit tests and the end-to-end
@@ -407,8 +502,14 @@ more information.
 
 # TODO:
 
+- [ ] lib folder:
+  - Check the list of shared libs in the docs. Filter out the libs that are not
+    needed:
+    - I see audio apps, I do not need this.
+    - I still see libstdc++ and other c libraries. Should these be provided
+      by the system?
 - [ ] Cross compile for raspberry pi
-
+- [ ] Release a 64bit and a 32bit version of the app
 - [ ] Add to docs:
 
   - How to build static and shared
