@@ -5,6 +5,7 @@ this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 root="$(dirname "$this_dir")"
 static=true
 shared=false
+use_pch=-no-pch
 source_dir="$root/Qt"
 install_dir="$root/3rdparty/Qt"
 usage="Usage: build-qt [--static] [--shared]
@@ -14,6 +15,7 @@ Build Qt with static or shared linking.
 Options:
     --static            Build Qt with static linking (default=true)
     --shared            Build Qt with shared linking (default=false)
+    --use-pch           Use precompiled headers (default=false)
     -s, --source-dir    Qt source directory (default=$source_dir)
     -i, --install-dir   Qt build directory (default=$install_dir)"
 
@@ -30,6 +32,11 @@ while [[ $# -gt 0 ]]; do
             echo "Qt will be built with shared linking"
             static=false
             shared=true
+            shift
+            ;;
+        --use-pch)
+            echo "Qt will be built with precompiled headers"
+            use_pch=-pch
             shift
             ;;
         -s | --source-dir)
@@ -50,6 +57,17 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+##############################################################################
+# build-qt-static
+#   Explanation of configure flags where needed:
+#    -no-pch: Disable precompiled headers. Using precompiled improves build
+#         times, but it also increases memory usage. This results in a crash
+#         when building the project in a github workflow. The precompiled 
+#         headers can be enabled by passing --use-pch to the script. See
+#         --help.
+#   -no-gstreamer: Disable gstreamer. We use ffmpeg only.
+#   -DFFMPEG_DIR: Path to thel local ffmpeg build.
+##############################################################################
 build-qt-static() {
     echo "Downloading Qt sources"
     rm "$source_dir" -rf || true
@@ -62,19 +80,19 @@ build-qt-static() {
 
     export CC=gcc
     export CXX=g++
-    export CFLAGS="-Wall"
     src="$source_dir/6.6.1/Src"
     "$src/configure" \
-	-static \
-	-release \
-	-prefix "$install_dir" \
-	-submodules qtbase,qtmultimedia,qtwayland \
-	-no-gstreamer \
-	-- \
-	-S "$src" \
-	-B "$src/build" \
-	-Wdev \
-	-DFFMPEG_DIR="$root/3rdparty/ffmpeg"
+        -static \
+        -release \
+        -prefix "$install_dir" \
+        -submodules qtbase,qtmultimedia,qtwayland \
+        "$use_pch" \
+        -no-gstreamer \
+        -- \
+        -S "$src" \
+        -B "$src/build" \
+        -Wdev \
+        -DFFMPEG_DIR="$root/3rdparty/ffmpeg"
 
     cmake --build "$src/build"
     cmake --install "$src/build"
