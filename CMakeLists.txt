@@ -1,12 +1,14 @@
+include(${CMAKE_SOURCE_DIR}/cmake/Version.cmake)
+
 cmake_minimum_required(VERSION 3.5)
-project(
-  snapshot
-  VERSION 0.0.0
-  LANGUAGES CXX)
+project(snapshot LANGUAGES CXX)
+set_git_tag_as_project_version()
+set(PROJECT_VERSION ${PROJECT_VERSION_TAG})
 
 option(BUILD_TESTING "Build tests" OFF)
 option(INSTALL_GTEST OFF)
 
+message(STATUS "Project version: ${PROJECT_VERSION}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build tests: ${BUILD_TESTING}")
 

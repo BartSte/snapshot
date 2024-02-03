@@ -88,7 +88,6 @@ build-qt-static() {
         -submodules qtbase,qtmultimedia,qtwayland \
         "$use_pch" \
         -no-gstreamer \
-        -no-alsa \
         -- \
         -S "$src" \
         -B "$src/build" \
