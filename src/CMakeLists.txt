@@ -1,4 +1,5 @@
 include(${CMAKE_SOURCE_DIR}/cmake/Find.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/Build.cmake)
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
@@ -29,48 +30,8 @@ target_include_directories(
 set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
-# When building the project with a static Qt6 library, we need to link the
-# following components statically as well: - Platform plugins - Multimedia
-# plugins - FFmpeg - Libva Furthermore, the Qt plugins need to be imported
-# manually using the qt_import_plugins() function.
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
-  set(PLATFORM_PLUGINS
-      Qt6::QEglFSIntegrationPlugin
-      Qt6::QLinuxFbIntegrationPlugin
-      Qt6::QMinimalEglIntegrationPlugin
-      Qt6::QMinimalIntegrationPlugin
-      Qt6::QOffscreenIntegrationPlugin
-      Qt6::QVkKhrDisplayIntegrationPlugin
-      Qt6::QVncIntegrationPlugin
-      Qt6::QWaylandEglPlatformIntegrationPlugin
-      Qt6::QWaylandIntegrationPlugin
-      Qt6::QXcbIntegrationPlugin)
-
-  find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
-  get_target_property(QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES
-                      Qt6::QFFmpegMediaPlugin INTERFACE_LINK_LIBRARIES)
-  list(APPEND QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES Libva::va
-       Libva::va-drm Libva::va-x11 Libva::va-wayland)
-  set_target_properties(
-    Qt6::QFFmpegMediaPlugin
-    PROPERTIES INTERFACE_LINK_LIBRARIES
-               "${QT6_QFFMPEGMEDIAPLUGIN_INTERFACE_LINK_LIBRARIES}")
-
-  list(APPEND LINK_LIBS FFmpeg::FFmpeg Qt6::QFFmpegMediaPlugin ${PLATFORM_PLUGINS})
-endif()
-
-target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
-
-if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
-  qt_import_plugins(
-    snapshotapp
-    INCLUDE_BY_TYPE
-    platforms
-    ${PLATFORM_PLUGINS}
-    INCLUDE_BY_TYPE
-    multimedia
-    Qt6::QFFmpegMediaPlugin
-    EXCLUDE
-    Qt6::QGstreamerMediaPlugin
-    NO_DEFAULT)
+  build_snapshotapp_static()
+else()
+  build_snapshotapp_shared()
 endif()
