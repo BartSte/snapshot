@@ -1,14 +1,17 @@
-#!/bin/sh
-# Copied from Qt's website at: https://doc.qt.io/qt-6/linux-deployment.html
+#!/bin/env bash
 
-appname=$(basename $0 | sed s,\.sh$,,)
+source=${BASH_SOURCE[0]}
+# resolve $source until the file is no longer a symlink
+while [ -L "$source" ]; do
+    this_dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
+    source=$(readlink "$source")
 
-dirname=$(dirname $0)
-tmp="${dirname#?}"
+    # if $source was a relative symlink, we need to resolve it relative to
+    # the path where the symlink file was located
+    [[ $source != /* ]] && source=$this_dir/$source
+done
+this_dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
 
-if [ "${dirname%$tmp}" != "/" ]; then
-    dirname=$PWD/$dirname
-fi
-LD_LIBRARY_PATH="$dirname/lib"
+LD_LIBRARY_PATH="$this_dir/lib"
 export LD_LIBRARY_PATH
-"$dirname/bin/$appname" "$@"
+"$this_dir/bin/snapshot" "$@"

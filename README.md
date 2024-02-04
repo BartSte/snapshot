@@ -3,7 +3,7 @@
 [![Tests](https://github.com/BartSte/snapshot/actions/workflows/tests.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/tests.yml)  
 [![Release](https://github.com/BartSte/snapshot/actions/workflows/release.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/release.yml)
 
-> WORK IN PROGRESS!  
+> WORK IN PROGRESS  
 > This project is still under development. The code is still experimental and
 > is subject to change.
 
@@ -11,17 +11,19 @@
 
 - [Summary](#summary)
   - [Features](#features)
-- [Dependencies](#dependencies)
+  - [Dependencies](#dependencies)
 - [Installation](#installation)
-  - [Building](#building)
+  - [Stand-alone tarball](#tarball-standalone)
+    - [Linux](#linux)
+  - [Build from source](#building)
     - [Linux](#linux)
     - [Raspberry Pi OS](#raspberry-pi-os)
 - [Usage](#usage)
   - [List the available cameras](#list-the-available-cameras)
   - [Display a video](#display-a-video)
   - [Record a video stream](#record-a-video-stream)
-  - [Set the logging level](#set-the-logging-level)
   - [Using the configuration file](#using-the-configuration-file)
+  - [Set the logging level](#set-the-logging-level)
 - [Development](#development)
   - [Build](#build)
   - [Test](#test)
@@ -36,9 +38,10 @@
 set of snapshots. This is useful when you want to make a time-lapse of a video.
 The application has a graphical user interface to view the video and a command
 line interface to configure the application. It can also be configured using a
-configuration file. The project is written in C++ and uses the [Qt6
-framework](https://www.qt.io/). For more information, run `snapshot --help`, or
-continue reading.
+configuration file. The project is written in C++ and uses
+[Qt6](https://www.qt.io/). It was tested on Ubuntu 22.04, Arch linux and also
+on Raspberry Pi OS. For more information, run `snapshot --help`, or continue
+reading.
 
 ### Features
 
@@ -53,16 +56,18 @@ In short, `snapshot` contains the following features:
 - [x] Configure the application using a configuration file.
 - [x] Has a command line interface.
 - [ ] Runs on linux (including raspberry pi).
+- [x] Supports 64bit systems only.
 
-## Dependencies
+### Dependencies
 
-Ensure the following dependencies are installed:
+Snapshot relies on the following dependencies:
 
-| Dependency                                                    | Version  |
-| ------------------------------------------------------------- | -------- |
-| [Qt6](https://www.qt.io/download): base & multimedia (ffmpeg) | ≥ 6.6.0  |
-| [boost](https://www.boost.org/)                               | ≥ 1.83   |
-| [spdlog](https://github.com/gabime/spdlog)                    | ≥ 1.12.0 |
+| Dependency                                           | Version |
+| ---------------------------------------------------- | ------- |
+| [Qt6](https://www.qt.io/download): base & multimedia | 6.6     |
+| [ffmpeg](https://ffmpeg.org/)                        | 6.1     |
+| [boost](https://www.boost.org/)                      | 1.74    |
+| [spdlog](https://github.com/gabime/spdlog)           | 1.9     |
 
 For building the project, the following dependencies are required:
 
@@ -77,10 +82,49 @@ is installed using `cmake`.
 ## Installation
 
 The following sections explain how to install the project. You have two
-options: building the project from source, or using the pre built binaries. The
-easiest way is to use the pre built binaries.
+options: using the pre-built binaries. The easiest way is to use the pre-built
+binaries, i.e., the stand-alone tarball.
+
+### Stand-alone tarball
+
+Go to the [releases](https://github.com/BartSte/snapshot/releases) page and
+download the latest `tar.gz` file. Extract the file using the following
+command:
+
+```bash
+tar -xvf snapshot-<version>-Linux.tar.gz
+```
+
+This creates a `snapshot-<version>` directory with the following structure:
+
+```bash
+snapshot-<version>
+  ├── bin/
+  ├── lib/
+  └── snapshot
+```
+
+where `bin` and `lib` are directories that you should not touch. On the other
+hand, the `snapshot` script is the one that you should use to interact with the
+application. For example:
+
+```bash
+./snapshot-<version>/snapshot --help
+```
+
+will print the help message. For convenience, you can place the
+`snapshot-<version>` folder anywhere you like, and create a symlink to the
+`snapshot` script in a directory that is in your `PATH`. For example:
+
+```bash
+ln -s /path/to/snapshot-<version>/snapshot $HOME/bin/snapshot
+```
+
+here it is assumed that the `$HOME/bin` directory is in your `PATH`.
 
 ### From source
+
+- Needs an update!
 
 The next steps explain how to build this project from source. The following
 sections explain how to build the project on different environments: Linux,
@@ -502,6 +546,7 @@ more information.
 
 # TODO:
 
+- [ ] Does the tarball work when you do a symlink to the bash script?
 - [ ] lib folder:
   - Check the list of shared libs in the docs. Filter out the libs that are not
     needed:
