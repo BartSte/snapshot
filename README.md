@@ -39,9 +39,8 @@ set of snapshots. This is useful when you want to make a time-lapse of a video.
 The application has a graphical user interface to view the video and a command
 line interface to configure the application. It can also be configured using a
 configuration file. The project is written in C++ and uses
-[Qt6](https://www.qt.io/). It was tested on Ubuntu 22.04, Arch linux and also
-on Raspberry Pi OS. For more information, run `snapshot --help`, or continue
-reading.
+[Qt6](https://www.qt.io/). For more information, run `snapshot --help`, or
+continue reading.
 
 ### Features
 
@@ -56,28 +55,14 @@ In short, `snapshot` contains the following features:
 - [x] Configure the application using a configuration file.
 - [x] Has a command line interface.
 - [ ] Runs on linux (including raspberry pi).
-- [x] Supports 64bit systems only.
 
-### Dependencies
+### Limitations
 
-Snapshot relies on the following dependencies:
-
-| Dependency                                           | Version |
-| ---------------------------------------------------- | ------- |
-| [Qt6](https://www.qt.io/download): base & multimedia | 6.6     |
-| [ffmpeg](https://ffmpeg.org/)                        | 6.1     |
-| [boost](https://www.boost.org/)                      | 1.74    |
-| [spdlog](https://github.com/gabime/spdlog)           | 1.9     |
-
-For building the project, the following dependencies are required:
-
-- [git](https://git-scm.com/)
-- [CMake](https://cmake.org/download/)
-- [Ninja](https://ninja-build.org/)
-
-`cxxopts` and `googletest` are also dependencies, but they are included in the
-project. The former as a header file in the `3rdparty` directory, and the latter
-is installed using `cmake`.
+- Linux only
+- $\text{glibc} \geq 2.35$ (when using the tarball)
+- 64 bit systems only
+- X11, Wayland are supported. EGLFS is support is added, but not tested.
+- Tested on Ubuntu 22.04, Arch linux and Raspberry Pi OS (bullseye).
 
 ## Installation
 
@@ -86,6 +71,10 @@ options: using the pre-built binaries. The easiest way is to use the pre-built
 binaries, i.e., the stand-alone tarball.
 
 ### Stand-alone tarball
+
+> Requires that $\text{glibc} \geq 2.35$
+
+This is the easiest way to install the application.
 
 Go to the [releases](https://github.com/BartSte/snapshot/releases) page and
 download the latest `tar.gz` file. Extract the file using the following
@@ -104,9 +93,9 @@ snapshot-<version>
   └── snapshot
 ```
 
-where `bin` and `lib` are directories that you should not touch. On the other
-hand, the `snapshot` script is the one that you should use to interact with the
-application. For example:
+where `bin` and `lib` are directories that you should not touch. The `snapshot`
+script is the one that you should use to interact with the application. For
+example:
 
 ```bash
 ./snapshot-<version>/snapshot --help
@@ -123,6 +112,116 @@ ln -s /path/to/snapshot-<version>/snapshot $HOME/bin/snapshot
 here it is assumed that the `$HOME/bin` directory is in your `PATH`.
 
 ### From source
+
+In this section, the steps to build the project from source are explained. In
+short:
+
+- You can use the `setup` script to install the dependencies.
+- A static or shared Qt build can be selected.
+- A Qt account is needed in order to use the `setup` script.
+- Using the `configure` script, the build can be configured.
+
+### Dependencies
+
+Snapshot relies on the following dependencies:
+
+| Dependency                                           | Version     |
+| ---------------------------------------------------- | ----------- |
+| [Qt6](https://www.qt.io/download): base & multimedia | 6.6         |
+| [ffmpeg](https://ffmpeg.org/)                        | 6.0, 6.1    |
+| [boost](https://www.boost.org/)                      | $\geq$ 1.74 |
+| [spdlog](https://github.com/gabime/spdlog)           | $\geq$ 1.9  |
+
+Here, the Qt6 version is fixed. Other versions of ffmpeg, boost, and spdlog
+might work, but are not tested.
+
+For building the project, the following dependencies are required:
+
+- [git](https://git-scm.com/)
+- [CMake](https://cmake.org/download/)
+- [Ninja](https://ninja-build.org/)
+
+Building the project was tested using $\text{clang}\geq 14$ and $\text{gcc}\geq
+11$
+
+`cxxopts` and `googletest` are also dependencies, but they are included in the
+project. The former as a header file in the `3rdparty` directory, and the latter
+is installed using `cmake`.
+
+#### Setting up the environment
+
+> The `setup` script only supports Arch Linux and Ubuntu 22.04. If you are
+> using a different distribution, you need to install the dependencies
+> yourself.
+
+The following sections explain how to set up the environment for building the
+project. Since you need a specific version of Qt6, it is recommended to use the
+online installer of Qt which is included in this project. Do the following:
+
+- Clone the project:
+
+  ```bash
+  git clone https://github.com/BartSte/snapshot
+  ```
+
+  and `cd` into root directly the project (containing the `.git` directory).
+
+- Register a Qt account on the [website of Qt](https://www.qt.io).
+
+- Run the `login-qt` script with your credentials:
+
+  ```bash
+  ./scripts/login-qt --pw <password> --email <email>
+  ```
+
+  This creates a `qtaccount.ini` file at `~/.local/share/Qt` which is used when
+  downloading Qt.
+
+- Run the `setup` script to install the dependencies:
+
+  ```bash
+  ./scripts/setup
+  ```
+
+  You can pass the `--static` (default) or `--shared` option to the script, to
+  build Qt as a static or shared library. The `--static` option results in a
+  longer build time, when compared do `--shared`, as Qt and ffmpeg are built
+  from source. The `--shared` option results in a less build time as pre built
+  Qt and ffmpeg libraries are used. However, the `--shared` option results in
+  more libraries (\*.so files) that need to be installed on your system.
+
+  Once, the script is done, you can find the Qt libraries in the `3rdparty/Qt`
+  directory (ffmpeg is included). If you choose the `--shared` option, you can
+  also find the ffmpeg libraries in the `3rdparty/ffmpeg` directory.
+
+- Ensure that the root of the project is your current work directory. Run the
+  `configure` script to configure the build:
+
+  ```bash
+  ./scripts/configure
+  ```
+
+  This script creates a `build` directory containing the ninja build files. You
+  can pass `-- -DDBUILD_TESTING=ON` to the script to enable the tests. Here,
+  all arguments after the `--` are passed to `cmake` directly.
+
+- Build the project:
+
+  ```bash
+  cmake --build ./build
+  ```
+
+  This creates the `snapshot` executable in the `build/bin` directory.
+
+- Install the project:
+
+  ```bash
+  cmake --install ./build
+  ```
+
+  - TODO: test installing the project for both static and shared qt builds.
+
+#### Building
 
 - Needs an update!
 
@@ -546,13 +645,11 @@ more information.
 
 # TODO:
 
-- [ ] Does the tarball work when you do a symlink to the bash script?
-- [ ] lib folder:
-  - Check the list of shared libs in the docs. Filter out the libs that are not
-    needed:
-    - I see audio apps, I do not need this.
-    - I still see libstdc++ and other c libraries. Should these be provided
-      by the system?
+- [ ] Configure `cmake --install` for both static and shared qt builds. This is
+      needed after building the project from source.
+    - [ ] Ensure that the tarball can also be made using the --shared option. 
+      - The current issue is that the needed plugins are not added by the
+      install command. Therefore, the tarball does not work.
 - [ ] Cross compile for raspberry pi
 - [ ] Release a 64bit and a 32bit version of the app
 - [ ] Add to docs:

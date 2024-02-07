@@ -48,10 +48,13 @@ done
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 root="$(dirname "$this_dir")"
 
-# If environment variable QT_INSTALLER_JWT_TOKEN is not set, abort
 token="${QT_INSTALLER_JWT_TOKEN:-}"
-if [[ -z "$token" ]]; then
-    echo "QT_INSTALLER_JWT_TOKEN is not set" >&2
+qt_account_file="$HOME/.local/share/Qt/qtaccount.ini"
+# check if the file $qt_account_file exists or if the token is set
+if [[ ! -f "$qt_account_file" && -z "$token" ]]; then
+    echo "No login to a Qt account found. You have 2 options:" >&2
+    echo "- Login to a Qt account by running the login-qt script" >&2
+    echo "- Set the environment variable QT_INSTALLER_JWT_TOKEN" >&2
     exit 1
 fi
 

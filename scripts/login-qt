@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage="Usage: login-qt [--help] --pw <password> --email <email>
+
+Login to a Qt account. This will create a file at ~/.local/share/Qt/qtaccount.ini
+that is used by the Qt installer to authenticate you.
+
+Options:
+    --help      Show this help message.
+    --pw        The password of your Qt account.
+    --email     The email of your Qt account."
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --help)
+            echo "$usage"
+            exit
+            ;;
+        --pw)
+            pw="$2"
+            shift
+            shift
+            ;;
+        --email)
+            email="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $key"
+            echo "$usage"
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "${pw:-}" ]]; then
+    echo "No password provided"
+    echo "$usage"
+    exit 1
+fi
+
+if [[ -z "${email:-}" ]]; then
+    echo "No email provided"
+    echo "$usage"
+    exit 1
+fi
+
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+"$this_dir"/helpers/qt-installer.run update --pw "$pw" --email "$email"
