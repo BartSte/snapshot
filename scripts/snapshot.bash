@@ -12,6 +12,6 @@ while [ -L "$source" ]; do
 done
 this_dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
 
-LD_LIBRARY_PATH="$this_dir/lib"
+LD_LIBRARY_PATH="$this_dir"
 export LD_LIBRARY_PATH
-"$this_dir/bin/snapshot" "$@"
+"$this_dir/snapshot" "$@"

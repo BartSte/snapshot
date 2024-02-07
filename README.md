@@ -647,9 +647,13 @@ more information.
 
 - [ ] Configure `cmake --install` for both static and shared qt builds. This is
       needed after building the project from source.
-    - [ ] Ensure that the tarball can also be made using the --shared option. 
-      - The current issue is that the needed plugins are not added by the
-      install command. Therefore, the tarball does not work.
+  - [ ] Ensure that the tarball can also be made using the --shared option.
+    - How to load plugins using a shared Qt build is explained [here](https://doc.qt.io/qt-6/linux-deployment.html)
+      Follow the conventions they use. See the tmp commit.
+    - It would be good to run the unittest on the tarball aswel, to ensure that
+      all the so files are included. Best idea is to create the same tarball as
+      the release, but with the tests included (with gtest). Then run the tests
+      like you run the snapshot executable, through a bash script.
 - [ ] Cross compile for raspberry pi
 - [ ] Release a 64bit and a 32bit version of the app
 - [ ] Add to docs:

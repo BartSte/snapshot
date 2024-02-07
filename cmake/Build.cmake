@@ -27,7 +27,7 @@ endmacro()
 # Furthermore, the Qt plugins need to be imported manually using the
 # qt_import_plugins() function.
 # cmake-format: on
-macro(build_snapshotapp_static)
+macro(target_link_libraries_static_qt)
   set(PLATFORM_PLUGINS
       Qt6::QEglFSIntegrationPlugin
       Qt6::QLinuxFbIntegrationPlugin
@@ -60,8 +60,4 @@ macro(build_snapshotapp_static)
     EXCLUDE
     Qt6::QGstreamerMediaPlugin
     NO_DEFAULT)
-endmacro()
-
-macro(build_snapshotapp_shared)
-  target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
 endmacro()

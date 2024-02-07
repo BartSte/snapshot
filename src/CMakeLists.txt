@@ -31,7 +31,7 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
-  build_snapshotapp_static()
+  target_link_libraries_static_qt()
 else()
-  build_snapshotapp_shared()
+  target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
 endif()
