@@ -1,4 +1,5 @@
-add_executable(snapshot_bin main.cpp ${CMAKE_SOURCE_DIR}/resources/resources.qrc)
+add_executable(snapshot_bin main.cpp
+                            ${CMAKE_SOURCE_DIR}/resources/resources.qrc)
 target_link_libraries(snapshot_bin PRIVATE snapshot)
 
 install(
@@ -20,13 +21,15 @@ install(
 # alongside the application in the platforms directory.
 if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
 
+  # TODO: use the path to Qt from the find_package command, instead of assuming
+  # the path to Qt is in the 3rdparty directory.
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/egldeviceintegrations/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/egldeviceintegrations/
     DESTINATION egldeviceintegrations
     PATTERN "libqeglfs-.*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/platforms/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/platforms/
     DESTINATION platforms
     PATTERN "libqwayland-.*"
     PATTERN "libqxcb.*"
@@ -34,23 +37,22 @@ if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
     PATTERN "libqoffscreen.*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/imageformats/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/imageformats/
     DESTINATION imageformats
     PATTERN "libqjpeg\\..*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/multimedia/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/multimedia/
     DESTINATION multimedia
     PATTERN "libffmpegmediaplugin\\..*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/tls/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/tls/
     DESTINATION tls
     PATTERN "libqopenssl\\..*")
 
   install(
-    DIRECTORY
-      ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/wayland-graphics-integration-client/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/wayland-graphics-integration-client/
     DESTINATION wayland-graphics-integration-client
     PATTERN "libqt-plugin-wayland-egl.*"
     PATTERN "libdmabuf-server\\..*"
@@ -60,14 +62,14 @@ if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
     PATTERN "libvulkan-server\\..*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/wayland-shell-integration/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/wayland-shell-integration/
     DESTINATION wayland-shell-integration
     PATTERN ".*-shell\\..*"
     PATTERN ".*-shell-v1\\..*"
     PATTERN ".*-shell-plugin\\..*")
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/Qt/plugins/xcbglintegrations/
+    DIRECTORY ${QT6_TOP_DIR}/plugins/xcbglintegrations/
     DESTINATION xcbglintegrations
     PATTERN "libqxcb-.*-integration\\.*")
 

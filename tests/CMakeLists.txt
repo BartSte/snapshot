@@ -8,9 +8,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-file(COPY static DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY static DESTINATION .)
 file(GLOB_RECURSE TEST_SOURCES "*.cpp")
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests snapshot gtest gmock Qt6::Test)
-add_test(NAME tests COMMAND tests)
-set_tests_properties(tests PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+add_executable(tests_bin ${TEST_SOURCES})
+target_link_libraries(tests_bin snapshot gtest gmock Qt6::Test)
+add_test(NAME tests_bin COMMAND tests_bin)
+set_tests_properties(tests_bin PROPERTIES ENVIRONMENT
+                                          "QT_QPA_PLATFORM=offscreen")
+
+install(TARGETS tests_bin DESTINATION .)
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_tests DESTINATION .)
+install(DIRECTORY static DESTINATION .)
+
+# When Qt is built as a shared library, the Qt6::Test must be added as well.
+if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
+  install(FILES $<TARGET_FILE:Qt6::Test> DESTINATION .)
+endif()

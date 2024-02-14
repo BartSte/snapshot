@@ -12,8 +12,14 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
 get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
 set(QT6_LIB_TYPE
     ${QT6_LIB_TYPE}
-    PARENT_SCOPE)
+    CACHE STRING "Type of the Qt6 library (STATIC_LIBRARY or SHARED_LIBRARY)")
+
+set(_qt6_top_dir_relative "${Qt6_DIR}/../../../")
+cmake_path(NORMAL_PATH _qt6_top_dir_relative OUTPUT_VARIABLE _qt6_top_dir)
+set(QT6_TOP_DIR "${_qt6_top_dir}" CACHE PATH "Qt6 top directory")
+
 message(STATUS "Qt6 was found at ${Qt6_DIR}")
+message(STATUS "Qt6 its top directory is ${QT6_TOP_DIR}")
 message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
 message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 
