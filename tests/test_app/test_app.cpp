@@ -6,7 +6,7 @@
 #include <helpers/coutredirect.hpp>
 #include <qobject.h>
 #include <qtestcase.h>
-#include <snapshotapp.hpp>
+#include <snapshot.hpp>
 #include <string>
 #include <vector>
 #include <video/connect.hpp>

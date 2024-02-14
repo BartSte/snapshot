@@ -6,7 +6,7 @@
 #include <helpers/config.hpp>
 #include <helpers/path.hpp>
 #include <memory>
-#include <snapshotapp.hpp>
+#include <snapshot.hpp>
 #include <string>
 
 using path = std::filesystem::path;

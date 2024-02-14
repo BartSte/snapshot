@@ -3,7 +3,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/Find.cmake)
 # cmake-format: off
 # When building the project with a static Qt6 library, we need to link the
 # Libva library to the Qt6 FFmpeg media plugin. This is necessary because
-# otherwise some symbols are not found when linking the snapshotapp.
+# otherwise some symbols are not found when linking the snapshot.
 # cmake-format: on
 macro(link_libva_to_ffmpeg_plugin)
   find_libva() # creates Libva::va/va-drm/va-x11/va-wayland
@@ -46,11 +46,11 @@ macro(target_link_libraries_static_qt)
   # library, so we need to link them manually.
   list(APPEND LINK_LIBS FFmpeg::FFmpeg Qt6::QFFmpegMediaPlugin
        ${PLATFORM_PLUGINS})
-  target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
+  target_link_libraries(snapshot PUBLIC ${LINK_LIBS})
 
   # Import the Qt plugins in the code by setting macros.
   qt_import_plugins(
-    snapshotapp
+    snapshot
     INCLUDE_BY_TYPE
     platforms
     ${PLATFORM_PLUGINS}

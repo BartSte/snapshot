@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <helpers/path.hpp>
 #include <qvideosink.h>
-#include <snapshotapp.hpp>
+#include <snapshot.hpp>
 #include <video/record.hpp>
 
 using path = std::filesystem::path;

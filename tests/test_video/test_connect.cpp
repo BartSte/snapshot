@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <qapplication.h>
-#include <snapshotapp.hpp>
+#include <snapshot.hpp>
 #include <video/connect.hpp>
 
 using ms = std::chrono::milliseconds;

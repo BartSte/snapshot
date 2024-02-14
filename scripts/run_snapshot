@@ -14,4 +14,4 @@ this_dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
 
 LD_LIBRARY_PATH="$this_dir"
 export LD_LIBRARY_PATH
-"$this_dir/snapshot" "$@"
+"$this_dir/snapshot_bin" "$@"

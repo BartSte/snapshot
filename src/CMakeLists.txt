@@ -20,12 +20,12 @@ message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
 
-add_library(snapshotapp ${SOURCES} ${INCLUDES})
+add_library(snapshot ${SOURCES} ${INCLUDES})
 target_include_directories(
-  snapshotapp
+  snapshot
   PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/3rdparty/include
          ${Boost_INCLUDE_DIRS}
-  INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/snapshotapp_autogen/include)
+  INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/snapshot_autogen/include)
 
 set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
@@ -33,5 +33,5 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   target_link_libraries_static_qt()
 else()
-  target_link_libraries(snapshotapp PUBLIC ${LINK_LIBS})
+  target_link_libraries(snapshot PUBLIC ${LINK_LIBS})
 endif()
