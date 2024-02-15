@@ -1,4 +1,5 @@
 include(${CMAKE_SOURCE_DIR}/cmake/Version.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/Constants.cmake)
 
 cmake_minimum_required(VERSION 3.5)
 project(snapshot LANGUAGES CXX)
@@ -19,6 +20,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION_FULL})
+set(CPACK_GENERATOR "TGZ")
+
 configure_file(${CMAKE_SOURCE_DIR}/include/version.h.in
                ${CMAKE_SOURCE_DIR}/include/version.h @ONLY)
 
@@ -29,10 +34,5 @@ if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
 endif()
-
-
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION_FULL})
-set(CPACK_GENERATOR "TGZ")
 
 include(CPack)

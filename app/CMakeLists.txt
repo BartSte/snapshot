@@ -2,30 +2,19 @@ add_executable(snapshot_bin main.cpp
                             ${CMAKE_SOURCE_DIR}/resources/resources.qrc)
 target_link_libraries(snapshot_bin PRIVATE snapshot)
 
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_snapshot DESTINATION .)
 install(
   TARGETS snapshot_bin
   DESTINATION .
-  RUNTIME_DEPENDENCIES
-  DIRECTORIES
-  ${FFMPEG_LIBRARY_DIRS}
-  POST_EXCLUDE_REGEXES
-  # Compatability with standard C libraries across linux distributions is
-  # assumed.
-  ".*ld-linux.*\\.so.*"
-  ".*libc\\.so.*"
-  ".*libm\\.so.*"
-  ".*libdbm\\.so.*"
-  ".*libpthread\\.so.*")
-
-# Copy the entrypoint to the install directory.
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_snapshot DESTINATION .)
+  RUNTIME_DEPENDENCIES DIRECTORIES ${FFMPEG_LIBRARY_DIRS} POST_EXCLUDE_REGEXES
+  ${EXCLUDE_C_LIBS_REGEX})
 
 # When Qt is built as a shared library, the platform plugins must be installed
 # alongside the application in the platforms directory.
 if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
 
-  # TODO: use the path to Qt from the find_package command, instead of assuming
-  # the path to Qt is in the 3rdparty directory.
+  # TODO: is it not better if I use the cmake targets to point to the plugins?
+  # Like Qt6::WaylandIntegrationPlugin?
   install(
     DIRECTORY ${QT6_TOP_DIR}/plugins/egldeviceintegrations/
     DESTINATION egldeviceintegrations

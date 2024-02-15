@@ -22,14 +22,5 @@ install(DIRECTORY static DESTINATION .)
 install(
   TARGETS tests_bin
   DESTINATION .
-  RUNTIME_DEPENDENCIES
-  DIRECTORIES
-  ${FFMPEG_LIBRARY_DIRS}
-  POST_EXCLUDE_REGEXES
-  # Compatability with standard C libraries across linux distributions is
-  # assumed.
-  ".*ld-linux.*\\.so.*"
-  ".*libc\\.so.*"
-  ".*libm\\.so.*"
-  ".*libdbm\\.so.*"
-  ".*libpthread\\.so.*")
+  RUNTIME_DEPENDENCIES DIRECTORIES ${FFMPEG_LIBRARY_DIRS} POST_EXCLUDE_REGEXES
+  ${EXCLUDE_C_LIBS_REGEX})

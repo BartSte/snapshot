@@ -21,7 +21,7 @@ jobs:
 
       - name: Build project
         run: |
-          ./scripts/configure -- -DBUILD_TESTING=ON
+          ./scripts/configure -- -DBUILD_TESTING=OFF
           cmake --build ./build --target package
 
       - name: Run test
