@@ -29,3 +29,10 @@ if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
 endif()
+
+
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION_FULL})
+set(CPACK_GENERATOR "TGZ")
+
+include(CPack)

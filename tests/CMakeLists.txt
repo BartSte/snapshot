@@ -19,8 +19,17 @@ set_tests_properties(tests_bin PROPERTIES ENVIRONMENT
 install(TARGETS tests_bin DESTINATION .)
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_tests DESTINATION .)
 install(DIRECTORY static DESTINATION .)
-
-# When Qt is built as a shared library, the Qt6::Test must be added as well.
-if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
-  install(FILES $<TARGET_FILE:Qt6::Test> DESTINATION .)
-endif()
+install(
+  TARGETS tests_bin
+  DESTINATION .
+  RUNTIME_DEPENDENCIES
+  DIRECTORIES
+  ${FFMPEG_LIBRARY_DIRS}
+  POST_EXCLUDE_REGEXES
+  # Compatability with standard C libraries across linux distributions is
+  # assumed.
+  ".*ld-linux.*\\.so.*"
+  ".*libc\\.so.*"
+  ".*libm\\.so.*"
+  ".*libdbm\\.so.*"
+  ".*libpthread\\.so.*")

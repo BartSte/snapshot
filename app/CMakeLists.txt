@@ -17,6 +17,9 @@ install(
   ".*libdbm\\.so.*"
   ".*libpthread\\.so.*")
 
+# Copy the entrypoint to the install directory.
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_snapshot DESTINATION .)
+
 # When Qt is built as a shared library, the platform plugins must be installed
 # alongside the application in the platforms directory.
 if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
@@ -74,12 +77,3 @@ if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")
     PATTERN "libqxcb-.*-integration\\.*")
 
 endif()
-
-# Copy the entrypoint to the install directory.
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_snapshot DESTINATION .)
-
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION_FULL})
-set(CPACK_GENERATOR "TGZ")
-
-include(CPack)
