@@ -1,3 +1,5 @@
+include(${CMAKE_SOURCE_DIR}/cmake/Install.cmake)
+
 find_package(Qt6 REQUIRED COMPONENTS Test)
 include(GoogleTest)
 include(FetchContent)
@@ -18,8 +20,4 @@ set_tests_properties(tests_bin PROPERTIES ENVIRONMENT
 
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_tests DESTINATION .)
 install(DIRECTORY static DESTINATION .)
-install(
-  TARGETS tests_bin
-  DESTINATION .
-  RUNTIME_DEPENDENCIES DIRECTORIES ${FFMPEG_LIBRARY_DIRS} POST_EXCLUDE_REGEXES
-  ${EXCLUDE_C_LIBS_REGEX})
+install_with_runtime_dependencies(tests_bin)

@@ -1,5 +1,4 @@
 include(${CMAKE_SOURCE_DIR}/cmake/Version.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/Constants.cmake)
 
 cmake_minimum_required(VERSION 3.5)
 project(snapshot LANGUAGES CXX)

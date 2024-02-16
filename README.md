@@ -645,6 +645,7 @@ more information.
 
 # TODO:
 
+- [ ] currently, all plugins are installed, the regexes are not working.
 - [ ] Configure `cmake --install` for both static and shared qt builds. This is
       needed after building the project from source.
   - [ ] Ensure that the tarball can also be made using the --shared option.
