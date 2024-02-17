@@ -220,6 +220,15 @@ online installer of Qt which is included in this project. Do the following:
   ```
 
   - TODO: test installing the project for both static and shared qt builds.
+  - TODO: explain why `/opt` is used instead of `/usr/local`:
+    - `/opt` is for self contained packages. This way, libs and bins are not
+      migled with those in local.
+    - Can be easily uninstalled by removing the `/opt/snapshot` directory +
+      symlink.
+    - This way, I can keep the tarball and the `cmake --install` identical to
+      each other.
+  - TODO: make a symlonk from `/opt/snapshot/run_snapshot` to
+    `/usr/local/bin/snapshot`
 
 #### Building
 
