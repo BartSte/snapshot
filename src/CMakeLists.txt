@@ -4,24 +4,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/Build.cmake)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
-
-# Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables that
-# are created
-find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
-                                     WaylandClient)
-get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
-set(QT6_LIB_TYPE
-    ${QT6_LIB_TYPE}
-    CACHE STRING "Type of the Qt6 library (STATIC_LIBRARY or SHARED_LIBRARY)")
-
-set(_qt6_top_dir_relative "${Qt6_DIR}/../../../")
-cmake_path(NORMAL_PATH _qt6_top_dir_relative OUTPUT_VARIABLE _qt6_top_dir)
-set(QT6_TOP_DIR "${_qt6_top_dir}" CACHE PATH "Qt6 top directory")
-
-message(STATUS "Qt6 was found at ${Qt6_DIR}")
-message(STATUS "Qt6 its top directory is ${QT6_TOP_DIR}")
-message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
-message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
+find_qt6_base_and_multimedia() # Sets QT6_LIB_TYPE and QT6_TOP_DIR
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*")
 file(GLOB_RECURSE INCLUDES "${CMAKE_SOURCE_DIR}/include/*")
@@ -37,7 +20,7 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
               Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets)
 
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
-  target_link_libraries_static_qt()
+  target_link_libraries_static_qt() # macro
 else()
   target_link_libraries(snapshot PUBLIC ${LINK_LIBS})
 endif()

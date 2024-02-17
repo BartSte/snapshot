@@ -117,3 +117,36 @@ function(find_libva)
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(Libva DEFAULT_MSG ${libva_longs})
 endfunction()
+
+# cmake-format: off
+# Finds the following Qt6 libraries:
+# - Qt6::Widgets
+# - Qt6::Multimedia
+# - Qt6::MultimediaWidgets
+# - Qt6::WaylandClient
+# - FFmpeg libraries (indirectly)
+# It sets the following variables:
+# - QT6_LIB_TYPE: Type of the Qt6 library (STATIC_LIBRARY or SHARED_LIBRARY)
+# - QT6_TOP_DIR: Qt6 top directory
+# cmake-format: on
+function(find_qt6_base_and_multimedia)
+  # Also finds FFmpeg libraries see FindFFmpegPatched.cmake for the variables
+  # that are created
+  find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets
+                                       WaylandClient)
+  get_target_property(QT6_LIB_TYPE Qt6::Widgets TYPE)
+  set(QT6_LIB_TYPE
+      ${QT6_LIB_TYPE}
+      CACHE STRING "Type of the Qt6 library (STATIC_LIBRARY or SHARED_LIBRARY)")
+
+  set(qt6_top_dir_relative "${Qt6_DIR}/../../../")
+  cmake_path(NORMAL_PATH qt6_top_dir_relative OUTPUT_VARIABLE qt6_top_dir)
+  set(QT6_TOP_DIR
+      "${qt6_top_dir}"
+      CACHE PATH "Qt6 top directory")
+
+  message(STATUS "Qt6 was found at ${Qt6_DIR}")
+  message(STATUS "Qt6 its top directory is ${QT6_TOP_DIR}")
+  message(STATUS "Qt6 library type is ${QT6_LIB_TYPE}")
+  message(STATUS "FFmpeg libraries are: ${FFMPEG_LIBRARIES}")
+endfunction()
