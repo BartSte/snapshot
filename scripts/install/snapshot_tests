@@ -12,8 +12,11 @@ while [ -L "$source" ]; do
 done
 this_dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
 
-export LD_LIBRARY_PATH="$this_dir"
-export QT_QPA_PLATFORM=offscreen
+LD_LIBRARY_PATH="$this_dir/runtime"
+export LD_LIBRARY_PATH
+
+QT_QPA_PLATFORM=offscreen
+export QT_QPA_PLATFORM
 
 ldd "$this_dir/runtime/tests_bin" | grep "not found" && exit 1
 "$this_dir/runtime/tests_bin" "$@"
