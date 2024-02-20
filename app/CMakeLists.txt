@@ -4,7 +4,7 @@ add_executable(snapshot_bin main.cpp
                             ${CMAKE_SOURCE_DIR}/resources/resources.qrc)
 target_link_libraries(snapshot_bin PRIVATE snapshot)
 
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_snapshot DESTINATION .)
+install(PROGRAMS ${INSTALL_SCRIPTS}/snapshot DESTINATION .)
 install_with_runtime_dependencies(snapshot_bin)
 
 if(QT6_LIB_TYPE STREQUAL "SHARED_LIBRARY")

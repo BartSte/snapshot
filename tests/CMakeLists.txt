@@ -18,6 +18,6 @@ add_test(NAME tests_bin COMMAND tests_bin)
 set_tests_properties(tests_bin PROPERTIES ENVIRONMENT
                                           "QT_QPA_PLATFORM=offscreen")
 
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/run_tests DESTINATION .)
-install(DIRECTORY static DESTINATION .)
+install(PROGRAMS ${INSTALL_SCRIPTS}/snapshot_tests DESTINATION .)
+install(DIRECTORY static DESTINATION runtime)
 install_with_runtime_dependencies(tests_bin)

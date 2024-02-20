@@ -24,10 +24,6 @@ jobs:
           ./scripts/configure -- -DBUILD_TESTING=OFF
           cmake --build ./build --target package
 
-      - name: Run test
-        run: |
-          ctest --test-dir ./build --verbose
-
       - name: Publish
         uses: "marvinpinto/action-automatic-releases@latest"
         with:

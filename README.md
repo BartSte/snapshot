@@ -216,19 +216,40 @@ online installer of Qt which is included in this project. Do the following:
 - Install the project:
 
   ```bash
-  cmake --install ./build
+  sudo cmake --install ./build
   ```
 
-  - TODO: test installing the project for both static and shared qt builds.
-  - TODO: explain why `/opt` is used instead of `/usr/local`:
-    - `/opt` is for self contained packages. This way, libs and bins are not
-      migled with those in local.
-    - Can be easily uninstalled by removing the `/opt/snapshot` directory +
-      symlink.
-    - This way, I can keep the tarball and the `cmake --install` identical to
-      each other.
-  - TODO: make a symlonk from `/opt/snapshot/run_snapshot` to
-    `/usr/local/bin/snapshot`
+  This will install the project in the `/opt/snapshot` directory. The `/opt`
+  directory is chosen as `snapshot` is a self-contained application. The
+  installed files tree is as follows:
+
+  ```bash
+  /opt/snapshot
+   ├── runtime/
+   │   └── libs, bins, and qt plugins
+   └── snapshot
+  ```
+
+  Where `snapshot` is the entry point of the application. If you want to
+  add the `snapshot` executable to your `PATH`, you can create a symlink to
+  `/usr/local/bin`:
+
+  ```bash
+  sudo ln -s /opt/snapshot/snapshot /usr/local/bin/snapshot
+  ```
+
+  Or you can add the `/opt/snapshot` directory to your `PATH`.
+
+  If you have no root access, you can install the project in you home directory
+  by using the `--prefix` option. For example, if you want to install the
+  project in the `$HOME/opt/snapshot` directory, you can run the following:
+
+  ```bash
+  cmake --install ./build --prefix $HOME/opt/snapshot
+  ```
+
+  This will install the project in the `$HOME/opt/snapshot` directory, instead
+  of the `/opt/snapshot` directory.
 
 #### Building
 
@@ -654,16 +675,6 @@ more information.
 
 # TODO:
 
-- [ ] currently, all plugins are installed, the regexes are not working.
-- [ ] Configure `cmake --install` for both static and shared qt builds. This is
-      needed after building the project from source.
-  - [ ] Ensure that the tarball can also be made using the --shared option.
-    - How to load plugins using a shared Qt build is explained [here](https://doc.qt.io/qt-6/linux-deployment.html)
-      Follow the conventions they use. See the tmp commit.
-    - It would be good to run the unittest on the tarball aswel, to ensure that
-      all the so files are included. Best idea is to create the same tarball as
-      the release, but with the tests included (with gtest). Then run the tests
-      like you run the snapshot executable, through a bash script.
 - [ ] Cross compile for raspberry pi
 - [ ] Release a 64bit and a 32bit version of the app
 - [ ] Add to docs:

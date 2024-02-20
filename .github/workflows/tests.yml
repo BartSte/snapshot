@@ -34,10 +34,15 @@ jobs:
         run: |
           ./scripts/configure -- -DBUILD_TESTING=ON
           cmake --build ./build --target package
+          sudo cmake --install ./build
 
-      - name: Run test
+      - name: Run ctest
         run: |
           ctest --test-dir ./build --verbose
+
+      - name: Run installed tests
+        run: |
+          /opt/snapshot/snapshot_tests
 
       - name: Run test tarball
         run: |

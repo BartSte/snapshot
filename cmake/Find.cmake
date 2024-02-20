@@ -32,7 +32,7 @@ endfunction()
 # https://github.com/shiguredo/sora-cpp-sdk/blob/develop/cmake/FindLibdrm.cmake
 # The script not modified.
 function(find_libdrm)
-  find_package(Libdrm REQUIRED)
+  find_package(Libdrm QUIET)
   find_package(PkgConfig)
 
   pkg_check_modules(Libdrm libdrm)

@@ -8,7 +8,7 @@ function(install_with_runtime_dependencies binary)
 
   install(
     TARGETS ${binary}
-    DESTINATION .
+    DESTINATION runtime
     RUNTIME_DEPENDENCIES DIRECTORIES ${FFMPEG_LIBRARY_DIRS}
     POST_EXCLUDE_REGEXES ${exclude_c_libs_regex})
 endfunction()
@@ -29,7 +29,7 @@ macro(install_qt_shared_plugins)
           ${_plugin_dir}/platforms/libqwayland-egl.so
           ${_plugin_dir}/platforms/libqwayland-generic.so
           ${_plugin_dir}/platforms/libqxcb.so
-    DESTINATION platforms)
+    DESTINATION runtime/platforms)
 
   # Support all the wayland graphics integrations, except emulation.
   install(
@@ -38,26 +38,26 @@ macro(install_qt_shared_plugins)
       ${_plugin_dir}/wayland-graphics-integration-client/libdrm-egl-server.so
       ${_plugin_dir}/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so
       ${_plugin_dir}/wayland-graphics-integration-client/libvulkan-server.so
-    DESTINATION wayland-graphics-integration-client)
+    DESTINATION runtime/wayland-graphics-integration-client)
 
   # X11 support for eglfs can be used by Raspberry Pi.
   install(
     FILES ${_plugin_dir}/egldeviceintegrations/libqeglfs-x11-integration.so
-    DESTINATION egldeviceintegrations)
+    DESTINATION runtime/egldeviceintegrations)
 
   # Jpeg is needded for image support.
   install(FILES ${_plugin_dir}/imageformats/libqjpeg.so
-          DESTINATION imageformats)
+          DESTINATION runtime/imageformats)
 
   # Only ffmpeg is supported.
   install(FILES ${_plugin_dir}/multimedia/libffmpegmediaplugin.so
-          DESTINATION multimedia)
+          DESTINATION runtime/multimedia)
 
   # Support both egl and glx.
   install(DIRECTORY ${_plugin_dir}/xcbglintegrations/
-          DESTINATION xcbglintegrations)
+          DESTINATION runtime/xcbglintegrations)
 
   # Support all shells
   install(DIRECTORY ${_plugin_dir}/wayland-shell-integration/
-          DESTINATION wayland-shell-integration)
+          DESTINATION runtime/wayland-shell-integration)
 endmacro()
