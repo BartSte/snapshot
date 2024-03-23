@@ -11,26 +11,19 @@
 
 - [Summary](#summary)
   - [Features](#features)
-  - [Dependencies](#dependencies)
+  - [Limitations](#limitations)
 - [Installation](#installation)
-  - [Stand-alone tarball](#tarball-standalone)
-    - [Linux](#linux)
-  - [Build from source](#building)
-    - [Linux](#linux)
-    - [Raspberry Pi OS](#raspberry-pi-os)
+  - [Stand-alone tarball](#stand-alone-tarball)
+  - [From source](#from-source)
+  - [Raspberry Pi OS](#raspberry-pi-os)
 - [Usage](#usage)
   - [List the available cameras](#list-the-available-cameras)
   - [Display a video](#display-a-video)
   - [Record a video stream](#record-a-video-stream)
-  - [Using the configuration file](#using-the-configuration-file)
   - [Set the logging level](#set-the-logging-level)
-- [Development](#development)
-  - [Build](#build)
-  - [Test](#test)
-  - [Running a camera](#running-a-camera)
-- [License](#license)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
+  - [Using the configuration file](#using-the-configuration-file)
+
+
 
 ## Summary
 
@@ -121,7 +114,7 @@ short:
 - A Qt account is needed in order to use the `setup` script.
 - Using the `configure` script, the build can be configured.
 
-### Dependencies
+#### Dependencies
 
 Snapshot relies on the following dependencies:
 
@@ -148,7 +141,7 @@ Building the project was tested using $\text{clang}\geq 14$ and $\text{gcc}\geq
 project. The former as a header file in the `3rdparty` directory, and the latter
 is installed using `cmake`.
 
-#### Setting up the environment
+#### Installing dependencies
 
 > The `setup` script only supports Arch Linux and Ubuntu 22.04. If you are
 > using a different distribution, you need to install the dependencies
@@ -194,115 +187,80 @@ online installer of Qt which is included in this project. Do the following:
   directory (ffmpeg is included). If you choose the `--shared` option, you can
   also find the ffmpeg libraries in the `3rdparty/ffmpeg` directory.
 
-- Ensure that the root of the project is your current work directory. Run the
-  `configure` script to configure the build:
+#### Configure the build
 
-  ```bash
-  ./scripts/configure
-  ```
-
-  This script creates a `build` directory containing the ninja build files. You
-  can pass `-- -DDBUILD_TESTING=ON` to the script to enable the tests. Here,
-  all arguments after the `--` are passed to `cmake` directly.
-
-- Build the project:
-
-  ```bash
-  cmake --build ./build
-  ```
-
-  This creates the `snapshot` executable in the `build/bin` directory.
-
-- Install the project:
-
-  ```bash
-  sudo cmake --install ./build
-  ```
-
-  This will install the project in the `/opt/snapshot` directory. The `/opt`
-  directory is chosen as `snapshot` is a self-contained application. The
-  installed files tree is as follows:
-
-  ```bash
-  /opt/snapshot
-   ├── runtime/
-   │   └── libs, bins, and qt plugins
-   └── snapshot
-  ```
-
-  Where `snapshot` is the entry point of the application. If you want to
-  add the `snapshot` executable to your `PATH`, you can create a symlink to
-  `/usr/local/bin`:
-
-  ```bash
-  sudo ln -s /opt/snapshot/snapshot /usr/local/bin/snapshot
-  ```
-
-  Or you can add the `/opt/snapshot` directory to your `PATH`.
-
-  If you have no root access, you can install the project in you home directory
-  by using the `--prefix` option. For example, if you want to install the
-  project in the `$HOME/opt/snapshot` directory, you can run the following:
-
-  ```bash
-  cmake --install ./build --prefix $HOME/opt/snapshot
-  ```
-
-  This will install the project in the `$HOME/opt/snapshot` directory, instead
-  of the `/opt/snapshot` directory.
-
-#### Building
-
-- Needs an update!
-
-The next steps explain how to build this project from source. The following
-sections explain how to build the project on different environments: Linux,
-Raspberry Pi OS. Despite the fact that Raspberry Pi OS is a linux distribution,
-it is discussed separately, because it requires some extra steps. It is assumed
-that the dependencies explained in the [Dependencies](#dependencies) section
-are installed.
-
-For all environments, cloning the repository is the first step:
+Ensure that the root of the project is your current work directory. Run the
+`configure` script to configure the build:
 
 ```bash
-git clone https://github.com/BartSte/snapshot
+./scripts/configure
 ```
 
-#### Linux
+This script creates a `build` directory containing the ninja build files. You
+can pass `-- -DDBUILD_TESTING=ON` to the script to enable the tests. Here, all
+arguments after the `--` are passed to `cmake` directly.
 
-Create a `build` directory by running the following command:
+#### Build
 
-```bash
-cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Release
-```
-
-This creates a `build` directory with a `Makefile` in it. To build the project,
-run the following command:
+Build the project by running the following command:
 
 ```bash
 cmake --build ./build
 ```
 
-After this, the `snapshot` executable can be found in the `build/bin`
-directory. You can install the executable by running the following command:
+This creates the `snapshot` executable in the `build/bin` directory.
+
+#### Install
+
+Install the project by running the following command:
 
 ```bash
-cmake --install ./build
+sudo cmake --install ./build
 ```
 
-#### Raspberry Pi OS
+This will install the project in the `/opt/snapshot` directory. The `/opt`
+directory is chosen as `snapshot` is a self-contained application. The installed
+files tree is as follows:
 
-- **TODO**
+```bash
+/opt/snapshot
+ ├── runtime/
+ │   └── libs, bins, and qt plugins
+ └── snapshot
+```
 
-### Pre built binaries
+Where `snapshot` is the entry point of the application. If you want to add the
+`snapshot` executable to your `PATH`, you can create a symlink to
+`/usr/local/bin`:
+
+```bash
+sudo ln -s /opt/snapshot/snapshot /usr/local/bin/snapshot
+```
+
+Or you can add the `/opt/snapshot` directory to your `PATH`.
+
+If you have no root access, you can install the project in you home directory by
+using the `--prefix` option. For example, if you want to install the project in
+the `$HOME/opt/snapshot` directory, you can run the following:
+
+```bash
+cmake --install ./build --prefix $HOME/opt/snapshot
+```
+
+This will install the project in the `$HOME/opt/snapshot` directory, instead of
+the `/opt/snapshot` directory.
+
+### Raspberry Pi OS
 
 - **TODO**
 
 ## Usage
 
-The `snapshot` executable should be runned from the command line. The following
-sections explain how to use the application. You can also run `snapshot --help`
-to get more information.
+** CONTINUE HERE **
+
+The `snapshot` executable should be executed from the command line. The
+following sections explain how to use the application. You can also run
+`snapshot --help` to get more information.
 
 ### List the available cameras
 
@@ -358,6 +316,7 @@ Note that we can feed the `--camera` option with a file, a URL or a camera
 name. Lastly, the `--timeout` option can be used to specify how long the app
 should be searching for a video at startup, or when the connection is lost. By
 default, this is set to `30s`.
+
 
 ### Record a video stream
 
