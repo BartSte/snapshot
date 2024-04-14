@@ -47,4 +47,4 @@ jobs:
       - name: Run test tarball
         run: |
           tar -xvf ./build/snapshot-*.tar.gz -C /tmp
-          /tmp/snapshot-*/run_tests
+          /tmp/snapshot-*/snapshot_tests
