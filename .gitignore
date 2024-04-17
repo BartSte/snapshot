@@ -12,6 +12,7 @@ ffmpeg_sources
 Qt
 config.opt*
 config.redo*
+rpi
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
