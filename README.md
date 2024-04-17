@@ -1,23 +1,17 @@
-# README
+# Snapshot
 
 [![Tests](https://github.com/BartSte/snapshot/actions/workflows/tests.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/tests.yml)  
 [![Release](https://github.com/BartSte/snapshot/actions/workflows/release.yml/badge.svg)](https://github.com/BartSte/snapshot/actions/workflows/release.yml)
 
-> WORK IN PROGRESS  
-> This project is still under development. The code is still experimental and
-> is subject to change.
-
-## Table of Contents
+<!--toc:start-->
 
 - [Summary](#summary)
   - [Features](#features)
-  - [Dependencies](#dependencies)
+  - [Limitations](#limitations)
 - [Installation](#installation)
-  - [Stand-alone tarball](#tarball-standalone)
-    - [Linux](#linux)
-  - [Build from source](#building)
-    - [Linux](#linux)
-    - [Raspberry Pi OS](#raspberry-pi-os)
+  - [Stand-alone tarball](#stand-alone-tarball)
+  - [From source](#from-source)
+  - [Raspberry Pi OS](#raspberry-pi-os)
 - [Usage](#usage)
   - [List the available cameras](#list-the-available-cameras)
   - [Display a video](#display-a-video)
@@ -25,12 +19,14 @@
   - [Using the configuration file](#using-the-configuration-file)
   - [Set the logging level](#set-the-logging-level)
 - [Development](#development)
-  - [Build](#build)
   - [Test](#test)
-  - [Running a camera](#running-a-camera)
+  - [Tarball](#tarball)
+  - [Debugging](#debugging)
 - [License](#license)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
+- [FAQ](#faq)
+<!--toc:end-->
 
 ## Summary
 
@@ -58,9 +54,8 @@ In short, `snapshot` contains the following features:
 
 ### Limitations
 
-- Linux only
-- $\text{glibc} \geq 2.35$ (when using the tarball)
-- 64 bit systems only
+- 64 bit Linux systems only
+- glibc $\geq$ 2.35 (when using the tarball)
 - X11, Wayland are supported. EGLFS is support is added, but not tested.
 - Tested on Ubuntu 22.04, Arch linux and Raspberry Pi OS (bullseye).
 
@@ -72,7 +67,7 @@ binaries, i.e., the stand-alone tarball.
 
 ### Stand-alone tarball
 
-> Requires that $\text{glibc} \geq 2.35$
+> Requires that glibc $\geq$ 2.35
 
 This is the easiest way to install the application.
 
@@ -88,12 +83,11 @@ This creates a `snapshot-<version>` directory with the following structure:
 
 ```bash
 snapshot-<version>
-  ├── bin/
-  ├── lib/
+  ├── runtime/
   └── snapshot
 ```
 
-where `bin` and `lib` are directories that you should not touch. The `snapshot`
+the `runtime` directory contains files you should not touch. The `snapshot`
 script is the one that you should use to interact with the application. For
 example:
 
@@ -111,6 +105,8 @@ ln -s /path/to/snapshot-<version>/snapshot $HOME/bin/snapshot
 
 here it is assumed that the `$HOME/bin` directory is in your `PATH`.
 
+Extra information about the tarball is provided in [Development](#development).
+
 ### From source
 
 In this section, the steps to build the project from source are explained. In
@@ -121,7 +117,7 @@ short:
 - A Qt account is needed in order to use the `setup` script.
 - Using the `configure` script, the build can be configured.
 
-### Dependencies
+#### Dependencies
 
 Snapshot relies on the following dependencies:
 
@@ -148,7 +144,7 @@ Building the project was tested using $\text{clang}\geq 14$ and $\text{gcc}\geq
 project. The former as a header file in the `3rdparty` directory, and the latter
 is installed using `cmake`.
 
-#### Setting up the environment
+#### Installing dependencies
 
 > The `setup` script only supports Arch Linux and Ubuntu 22.04. If you are
 > using a different distribution, you need to install the dependencies
@@ -156,7 +152,13 @@ is installed using `cmake`.
 
 The following sections explain how to set up the environment for building the
 project. Since you need a specific version of Qt6, it is recommended to use the
-online installer of Qt which is included in this project. Do the following:
+online installer of Qt which is included in this project.
+
+> Using the local installer is recommended as it installs the correct version
+> in a subdirectory of the project. This way, the system Qt version is not
+> affected.
+
+Do the following:
 
 - Clone the project:
 
@@ -194,115 +196,78 @@ online installer of Qt which is included in this project. Do the following:
   directory (ffmpeg is included). If you choose the `--shared` option, you can
   also find the ffmpeg libraries in the `3rdparty/ffmpeg` directory.
 
-- Ensure that the root of the project is your current work directory. Run the
-  `configure` script to configure the build:
+#### Configure the build
 
-  ```bash
-  ./scripts/configure
-  ```
-
-  This script creates a `build` directory containing the ninja build files. You
-  can pass `-- -DDBUILD_TESTING=ON` to the script to enable the tests. Here,
-  all arguments after the `--` are passed to `cmake` directly.
-
-- Build the project:
-
-  ```bash
-  cmake --build ./build
-  ```
-
-  This creates the `snapshot` executable in the `build/bin` directory.
-
-- Install the project:
-
-  ```bash
-  sudo cmake --install ./build
-  ```
-
-  This will install the project in the `/opt/snapshot` directory. The `/opt`
-  directory is chosen as `snapshot` is a self-contained application. The
-  installed files tree is as follows:
-
-  ```bash
-  /opt/snapshot
-   ├── runtime/
-   │   └── libs, bins, and qt plugins
-   └── snapshot
-  ```
-
-  Where `snapshot` is the entry point of the application. If you want to
-  add the `snapshot` executable to your `PATH`, you can create a symlink to
-  `/usr/local/bin`:
-
-  ```bash
-  sudo ln -s /opt/snapshot/snapshot /usr/local/bin/snapshot
-  ```
-
-  Or you can add the `/opt/snapshot` directory to your `PATH`.
-
-  If you have no root access, you can install the project in you home directory
-  by using the `--prefix` option. For example, if you want to install the
-  project in the `$HOME/opt/snapshot` directory, you can run the following:
-
-  ```bash
-  cmake --install ./build --prefix $HOME/opt/snapshot
-  ```
-
-  This will install the project in the `$HOME/opt/snapshot` directory, instead
-  of the `/opt/snapshot` directory.
-
-#### Building
-
-- Needs an update!
-
-The next steps explain how to build this project from source. The following
-sections explain how to build the project on different environments: Linux,
-Raspberry Pi OS. Despite the fact that Raspberry Pi OS is a linux distribution,
-it is discussed separately, because it requires some extra steps. It is assumed
-that the dependencies explained in the [Dependencies](#dependencies) section
-are installed.
-
-For all environments, cloning the repository is the first step:
+Ensure that the root of the project is your current work directory. Run the
+`configure` script to configure the build:
 
 ```bash
-git clone https://github.com/BartSte/snapshot
+./scripts/configure
 ```
 
-#### Linux
+This script creates a `build` directory containing the ninja build files. You
+can pass `-- -DDBUILD_TESTING=ON` to the script to enable the tests. Here, all
+arguments after the `--` are passed to `cmake` directly.
 
-Create a `build` directory by running the following command:
+#### Build
 
-```bash
-cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Release
-```
-
-This creates a `build` directory with a `Makefile` in it. To build the project,
-run the following command:
+Build the project by running the following command:
 
 ```bash
 cmake --build ./build
 ```
 
-After this, the `snapshot` executable can be found in the `build/bin`
-directory. You can install the executable by running the following command:
+This creates the `snapshot` executable in the `build/bin` directory.
+
+#### Install
+
+Install the project by running the following command:
 
 ```bash
-cmake --install ./build
+sudo cmake --install ./build
 ```
 
-#### Raspberry Pi OS
+This will install the project in the `/opt/snapshot` directory. The `/opt`
+directory is chosen as `snapshot` is a self-contained application. The installed
+files tree is as follows:
 
-- **TODO**
+```bash
+/opt/snapshot
+ ├── runtime/
+ │   └── libs, bins, and qt plugins
+ └── snapshot
+```
 
-### Pre built binaries
+Where `snapshot` is the entry point of the application. If you want to add the
+`snapshot` executable to your `PATH`, you can create a symlink to
+`/usr/local/bin`:
+
+```bash
+sudo ln -s /opt/snapshot/snapshot /usr/local/bin/snapshot
+```
+
+Or you can add the `/opt/snapshot` directory to your `PATH`.
+
+If you have no root access, you can install the project in you home directory by
+using the `--prefix` option. For example, if you want to install the project in
+the `$HOME/opt/snapshot` directory, you can run the following:
+
+```bash
+cmake --install ./build --prefix $HOME/opt/snapshot
+```
+
+This will install the project in the `$HOME/opt/snapshot` directory, instead of
+the `/opt/snapshot` directory.
+
+### Raspberry Pi OS
 
 - **TODO**
 
 ## Usage
 
-The `snapshot` executable should be runned from the command line. The following
-sections explain how to use the application. You can also run `snapshot --help`
-to get more information.
+The `snapshot` executable should be executed from the command line. The
+following sections explain how to use the application. You can also run
+`snapshot --help` to get more information.
 
 ### List the available cameras
 
@@ -387,18 +352,6 @@ the recording, the `--max-snapshots` is set to `10e9` bytes (10 GB) by default,
 which means that the recording will stop when the current session exceeds this
 size.
 
-### Set the logging level
-
-By default, the logging level is set to `warning`. If we want to set the
-logging level to `debug`, we can run the following command:
-
-```bash
-snapshot --log-level debug <other options>
-```
-
-The following logging levels are available: `trace`, `debug`, `info`,
-`warning`, `error`, and `critical`.
-
 ### Using the configuration file
 
 Instead of using the command line options, a cnfiguration file can be used. By
@@ -440,169 +393,65 @@ snapshot --config "$HOME/some/other/location/config.json"
 Note that the `~` character and environment variables are expanded. Environment
 variables must be specified using the `${VAR}` or `$VAR` syntax.
 
-## Development
+### Set the logging level
 
-If you want to contribute to this project, you can follow the next steps to to
-build the project from source. Furthermore, some information is given about
-debugging and testing the project.
-
-### Build
-
-Follow the steps in the [Building](#building) section to build the project.
-Instead of the `Release` build type, use the `Debug` build type.
-
-#### Installing Qt6
-
-When using Arch, you can install version >= 6.6.0 of Qt6 using pacman. However,
-at the time of this writing, for distributions that hold older versions of Qt6,
-like Debian and Ubuntu, you need to install Qt6 yourself. You can do this by
-building Qt6 from source, or by using their online installer.
-
-Since the CI on Github uses Ubuntu, Qt6 could not be installed using apt.
-Therefore, the online installer is used. The installation is automated using
-the `scripts/install-qt` script. This script downloads the online installer and
-installs Qt6 in the `3rdparty/Qt` folder. This folder will be picked up by
-`cmake` when building the project. You need to authenticate yourself by setting
-the `QT_INSTALLER_JWT_TOKEN` environment variable to your jwt token. More
-information on getting this token is provided on the [website of
-Qt](https://doc.qt.io/qt-6/get-and-install-qt-cli.html).
-
-#### Static build
-
-** TODO **
-
-- Explain how to statically build Qt6 and how to statically link it to
-  snapshot.
-
-- I used the following configure command:
+By default, the logging level is set to `warning`. If we want to set the
+logging level to `debug`, we can run the following command:
 
 ```bash
-export CC=/usr/bin/gcc
-export CXX=/usr/bin/g++
-export CXXFLAGS="-static-libstdc++ -static-libgcc"
-configure -release -static -no-pch -prefix ~/code/snapshot/3rdparty/Qt/ -no-gstreamer -fontconfig -submodules qtbase,qtmultimedia,qtwayland,qtimageformats -- -S . -B ./build
+snapshot --log-level debug <other options>
 ```
 
-- I appended the linker flag with `-static-libstdc++ -static-libgcc` such that
-  the `libstdc++` and `libgcc` libraries are statically linked. However, this has
-  no effect. I think the compiler has some issue with statically linking the
-  std libs (I read something about using exceptions in your code that causes
-  the compiler to add -shared-libgcc and -shared-libstdc++ to the linker flags).
-  For now lets ignore this and just use dynamic libs for all deps that are not
-  boost, qt or spdlog.
+The following logging levels are available: `trace`, `debug`, `info`,
+`warning`, `error`, and `critical`.
 
-#### Distribution
+## Development
 
-##### Tar.gz archive
-
-Contains:
-
-- `snapshot` executable in the form of a bash script. This script sets the
-  `LD_LIBRARY_PATH` to the `lib` directory and runs the `snapshot` binary.
-- `bin` directory with the `snapshot` binary.
-- `lib` directory with the shared libraries that the `snapshot` binary depends
-  on.
-
-The `lib` directory does not include the standard c/c++ libraries (`libc`,
-`libstdc++`, `libm`, `libdbm`, `libpthread`) toghether with the dynamic linker
-as they are assumed to be present on the system. The following libraries are
-included, using a general categorization based on common software packages and
-systems:
-
-- OpenGL / Graphics Libraries
-
-  - libEGL.so - Part of the OpenGL ES and EGL graphics libraries.
-  - libGLX.so - Part of the X11 GLX (OpenGL Extension to the X Window System).
-  - libGLdispatch.so - Associated with the OpenGL dispatch library.
-  - libOpenGL.so - Part of the OpenGL graphics system.
-  - libgbm.so - Mesa's Generic Buffer Management (GBM) for handling graphics buffers.
-  - libdrm.so - Direct Rendering Manager (DRM), part of the Linux kernel graphics.
-  - libvdpau.so - Video Decode and Presentation API for Unix.
-
-- X11 Libraries
-
-  - libICE.so - Inter-Client Exchange (ICE) protocol library.
-  - libSM.so - Session Management library.
-  - libX11-xcb.so, libX11.so - X11 client-side library.
-  - libXau.so - X11 authorization library.
-  - libXdmcp.so - X Display Manager Control Protocol library.
-  - libXext.so - X11 extensions library.
-  - libXrender.so - X Rendering Extension library.
-  - libxcb-\*.so - X protocol C-language Binding (XCB) libraries.
-  - libxkbcommon-x11.so, libxkbcommon.so - Keyboard handling libraries for X11.
-
-- Audio Libraries
-
-  - libFLAC.so - Free Lossless Audio Codec library.
-  - libasyncns.so - Asynchronous name service query library.
-  - libogg.so - Ogg bitstream format library.
-  - libopus.so - Opus audio codec library.
-  - libpulse.so, libpulsecommon-15.99.so - PulseAudio sound system libraries.
-  - libsndfile.so - Library for reading and writing files containing sampled sound.
-  - libvorbis.so, libvorbisenc.so - Vorbis audio compression library.
-
-- System Libraries
-
-  - libapparmor.so - AppArmor library.
-  - libblkid.so - Block device ID library.
-  - libcap.so - POSIX capabilities library.
-  - libdbus-1.so - D-Bus message bus system library.
-  - libffi.so - Foreign Function Interface library.
-  - libgcrypt.so - Cryptographic library.
-  - libglib-2.0.so, libgmodule-2.0.so, libgio-2.0.so, libgobject-2.0.so - GLib library of C routines.
-  - libsystemd.so - systemd system and service manager library.
-  - libudev.so - udev device manager library.
-
-- Compression and Encoding Libraries
-
-  - libbrotlicommon.so, libbrotlidec.so - Brotli compression library.
-  - libbz2.so - Bzip2 compression library.
-  - libdeflate.so - Deflate compression library.
-  - liblz4.so - LZ4 compression library.
-  - liblzma.so - LZMA compression library.
-  - libz.so, libzstd.so - zlib and Zstandard compression libraries.
-
-- Miscellaneous Libraries
-  - libbsd.so - BSD library for various functions.
-  - libexpat.so - XML parsing C library.
-  - libfmt.so - Formatting library.
-  - libfontconfig.so, libfreetype.so - Font libraries.
-  - libgcc_s.so, libstdc++.so - GCC low-level support library and standard C++ library.
-  - libgmp.so, libnettle.so, libhogweed.so - Cryptographic libraries.
-  - libgnutls.so - GNU TLS library.
-  - libgpg-error.so - GPG error reporting library.
-  - libgraphite2.so, libharfbuzz.so - Font shaping libraries.
-  - libicudata.so, libicui18n.so, libicuuc.so - International Components for Unicode libraries.
-  - libidn2.so - International domain name library.
-  - libjbig.so, libjpeg.so, libpng16.so, libtiff.so, libwebp.so - Image format libraries.
-  - libmd.so - Message Digest library.
-  - libmount.so, libuuid.so - Device mounting and UUID libraries.
-  - libmp3lame.so - MP3 encoding library.
-  - libnuma.so - NUMA (Non-Uniform Memory Access) library.
-  - libp11-kit.so - PKCS#11 toolkit library.
-  - libpcre.so, libpcre2-8.so, libpcre2-16.so - Perl Compatible Regular Expression libraries.
-  - libselinux.so - SELinux library.
-  - libtasn1.so - ASN.1 structure parsing library.
-  - libunistring.so - Unicode string library.
-  - libwayland-\*.so - Wayland protocol libraries.
+If you want to contribute to this project, you should start by reading
+[CONTRIBUTING](./CONTRIBUTING.md), and installing the project [from
+source](#from-source). This section provides information about: the tarball, the
+unit tests, and ways to debug the application.
 
 ### Test
 
 Googletest and QTest are used for building the unit tests and the end-to-end
 tests. To build the tests, the `BUILD_TESTING` option must be set to `ON` when
-running cmake. For example:
+configuring cmake:
 
 ```bash
-cmake -G "Ninja" -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -BUILD_TESTING=ON
+./scripts/configure --build_type Debug -- -DBUILD_TESTING=ON
 ```
 
-this will uses the `Debug` build type with the tests enabled. To run the tests,
-run the `tests` executable in the `build/bin` directory:
+this will use the `Debug` build type with the tests enabled. To run the tests,
+run the following command:
 
-### Running a camera
+```bash
+ctest --test-dir ./build
+```
 
-If you have no camera available, you can use one of the following options to
-get a video stream.
+### Tarball
+
+Additional information about the stand-alone tarball is provided here.
+
+- `snapshot` is an executable in the form of a bash script. This script:
+  - sets the `LD_LIBRARY_PATH` to the `lib` directory and runs the `snapshot`
+    binary.
+  - resolves the path to the script if it is referenced using a symlink.
+- the `runtime` directory contains shared libraries and binaries that the
+  `snapshot` script depends on. In case the project is built with the `--shared`
+  option, the `runtime` folder will also contain subdirectories with the
+  libraries of the Qt plugins. The `runtime` directory does not include the
+  standard `c/c++` libraries (`libc`, `libstdc++`, `libm`, `libdbm`,
+  `libpthread`) together with the dynamic linker as they are assumed to be
+  present on the system.
+- `snapshot_test` is an executable in the form of a bash script. This script is
+  only present when the project is built with the `cmake` option
+  `-DBUILD_TESTING=ON`. If so, when running the `snapshot_test` script, all
+  tests are executed.
+
+### Debugging
+
+You can use one of the following ways to run the application with a video stream:
 
 #### Using a file
 
@@ -671,55 +520,30 @@ If you encounter any issues, please report them on the issue tracker at:
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING](./CONTRIBUTING.md) for
-more information.
+more information. Also, read the section on [Development](#development) for
+additional information.
 
-# TODO:
+## FAQ
 
-- [ ] Cross compile for raspberry pi
-- [ ] Release a 64bit and a 32bit version of the app
-- [ ] Add to docs:
+#### WSL2 fontconfig
 
-  - How to build static and shared
-  - How to run the tar archive
-  - Requirements for running the app:
-    - Tested and released on ubuntu 22.04
-    - Also used on Arch linux
-    - Older versions of ubuntu might not work, as Qt 6.6 does not support
-      older versions of ubuntu.
+On WSL2, if you encounter the following error:
 
-- [ ] Add to FAQ:
+```bash
+Fontconfig error: Cannot load default config file
+```
 
-  - WSL + ubuntu:
-    App works find, but I get the following errors/warnings:
+install fontconfig on your system as is describe on the [website of Qt](https://doc.qt.io/qt-6/qt-embedded-fonts.html)
 
-    - Fontconfig error: Cannot load default config file
+#### Hardware acceleration
 
-      - install fontconfig on system: refer to https://doc.qt.io/qt-6/qt-embedded-fonts.html in faq
+Issues with your graphics card need to be resolved by the user itself, as this
+application has no control over it. The following pages from the arch wiki are
+very useful when you encounter issues with hardware acceleration:
 
-  - Issues with your graphics card need to be resolved by the user itself. You
-    need to setup your graphics card yourself. Here are some tips:
+- [General](https://wiki.archlinux.org/title/Hardware_video_acceleration)
+- [Intel](https://wiki.archlinux.org/title/Intel_graphics)
+- [Nvidia](https://wiki.archlinux.org/title/NVIDIA)
+- [Nouveau](https://wiki.archlinux.org/title/Nouveau)
+- [AMD](https://wiki.archlinux.org/title/AMDGPU)
 
-    For Intel graphics cards:
-
-    - Most Linux-based* distributions already include Intel® Graphics Drivers.
-      These drivers are provided and maintained by the Linux* distribution
-      vendors and not by Intel, we recommend contacting the Linux\* Operating
-      System Vendors.
-    - On arch, ffmpeg gave warnings that harware acceleration did not work.
-      After installing the `libva-intel-driver` the issue was resolved.
-
-    For Nvidia graphics cards:
-
-    - TODO
-
-    For AMD graphics cards:
-
-    - TODO
-
-    Checkout the arch wiki for more information:
-
-    - [General](https://wiki.archlinux.org/title/Hardware_video_acceleration)
-    - [Intel](https://wiki.archlinux.org/title/Intel_graphics)
-    - [Nvidia](https://wiki.archlinux.org/title/NVIDIA)
-    - [Nouveau](https://wiki.archlinux.org/title/Nouveau)
-    - [AMD](https://wiki.archlinux.org/title/AMDGPU)

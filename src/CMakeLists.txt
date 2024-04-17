@@ -22,5 +22,7 @@ set(LINK_LIBS spdlog::spdlog_header_only Boost::boost Boost::filesystem
 if(QT6_LIB_TYPE STREQUAL "STATIC_LIBRARY")
   target_link_libraries_static_qt() # macro
 else()
+  # Avoids logging a warning, FFMPEG_DIR only needed for static linking
+  set(FFMPEG_DIR _)
   target_link_libraries(snapshot PUBLIC ${LINK_LIBS})
 endif()
