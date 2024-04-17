@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+this_dir=$(dirname "$(readlink -f "$0")")
+base_dir="$this_dir/../rpi"
+qt_host_source="$this_dir/../Qt"
+qt_host="$this_dir/../3rdparty/Qt"
+toolchain_file="$this_dir/../cmake/toolchain.cmake"
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case $1 in
+        -b | --base-dir)
+            base_dir=$2
+            shift
+            ;;
+        -q | --qt-host)
+            qt_host=$2
+            shift
+            ;;
+        -t | --toolchain-file)
+            toolchain_file=$2
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            exit 1
+            ;;
+        esac
+        shift
+    done
+}
+
+make_dirs() {
+    local base_dir dir dirs
+    base_dir=$1
+    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-host qt-raspi qt-hostbuild qtpi-build"
+    for dir in $dirs; do
+        mkdir -p "$base_dir"/"$dir"
+    done
+}
+
+install_deps() {
+    package_manager=$(bash "$this_dir"/helpers/get-package-manager)
+    "$this_dir/helpers/$package_manager/install-cross-compile-deps"
+}
+
+make_sysroot() {
+    local base_dir username ip
+    base_dir=$1
+    username=$2
+    ip=$3
+
+    cd "$base_dir" || exit 1
+    rsync_cmd="rsync -avzS --rsync-path=\"rsync\" --delete ${username}@${ip}"
+    eval "$rsync_cmd:/lib/* rpi-sysroot/lib"
+    eval "$rsync_cmd:/usr/include/* rpi-sysroot/usr/include"
+    eval "$rsync_cmd:/usr/lib/* rpi-sysroot/usr/lib"
+    eval "$rsync_cmd:/opt/vc rpi-sysroot/opt/vc"
+    cd - || exit 1
+}
+
+configure_build() {
+    local base_dir qt_host toolchain_file
+    base_dir=$1
+    qt_host=$2
+    toolchain_file=$3
+
+    "$qt_host_source/configure" \
+        -release -opengl es2 -nomake examples -nomake tests \
+        -qt-host-path "$qt_host" \
+        -extprefix "$base_dir"/qt-raspi \
+        -prefix /usr/local/qt6 \
+        -device linux-rasp-pi4-aarch64 \
+        -device-option CROSS_COMPILE=aarch64-linux-gnu- \
+        -- \
+        -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
+        -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
+}
+
+sync_build() {
+    local base_dir username ip
+    base_dir=$1
+    username=$2
+    ip=$3
+
+    sync -avz --rsync-path="sudo rsync" "$base_dir"/qt-raspi/* "$username"@ <"$ip":/usr/local/qt6
+}
+
+main() {
+    parse_args "$@"
+    make_dirs "$base_dir"
+    install_deps
+    make_sysroot "$base_dir" pi ...
+    configure_build "$base_dir" "$qt_host" "$toolchain_file"
+    cmake --build "$base_dir" --parallel 4
+    cmake --install "$base_dir"
+    sync_build "$base_dir" pi ...
+}
+
+main $@

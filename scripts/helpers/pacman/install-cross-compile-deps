@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+sudo pacman -S \
+    aarch64-linux-gnu-gcc \
+    aarch64-linux-gnu-glibc \
+    aarch64-linux-gnu-binutils \
+    aarch64-linux-gnu-gdb \
+    aarch64-linux-gnu-linux-api-headers \
+    rsync
