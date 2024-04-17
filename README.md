@@ -19,8 +19,8 @@
   - [Using the configuration file](#using-the-configuration-file)
   - [Set the logging level](#set-the-logging-level)
 - [Development](#development)
-  - [Tarball](#tarball)
   - [Test](#test)
+  - [Tarball](#tarball)
   - [Debugging](#debugging)
 - [License](#license)
 - [Troubleshooting](#troubleshooting)
@@ -83,12 +83,11 @@ This creates a `snapshot-<version>` directory with the following structure:
 
 ```bash
 snapshot-<version>
-  ├── bin/
-  ├── lib/
+  ├── runtime/
   └── snapshot
 ```
 
-where `bin` and `lib` are directories that you should not touch. The `snapshot`
+the `runtime` directory contains files you should not touch. The `snapshot`
 script is the one that you should use to interact with the application. For
 example:
 
@@ -413,22 +412,6 @@ If you want to contribute to this project, you should start by reading
 source](#from-source). This section provides information about: the tarball, the
 unit tests, and ways to debug the application.
 
-### Tarball
-
-Additional information about the stand-alone tarball is provided here.
-
-- `snapshot` executable in the form of a bash script. This script:
-  - sets the `LD_LIBRARY_PATH` to the `lib` directory and runs the `snapshot`
-    binary.
-  - resolves the path to the script if it is referenced using a symlink.
-- `bin` directory with the `snapshot` binary.
-- `lib` directory with the shared libraries that the `snapshot` binary depends
-  on. In case the project is built with the `--shared` option, the `lib` folder
-  will also contain subdirectories with the libraries of the Qt plugins. The
-  `lib` directory does not include the standard `c/c++` libraries (`libc`,
-  `libstdc++`, `libm`, `libdbm`, `libpthread`) together with the dynamic linker
-  as they are assumed to be present on the system.
-
 ### Test
 
 Googletest and QTest are used for building the unit tests and the end-to-end
@@ -445,6 +428,26 @@ run the following command:
 ```bash
 ctest --test-dir ./build
 ```
+
+### Tarball
+
+Additional information about the stand-alone tarball is provided here.
+
+- `snapshot` is an executable in the form of a bash script. This script:
+  - sets the `LD_LIBRARY_PATH` to the `lib` directory and runs the `snapshot`
+    binary.
+  - resolves the path to the script if it is referenced using a symlink.
+- the `runtime` directory contains shared libraries and binaries that the
+  `snapshot` script depends on. In case the project is built with the `--shared`
+  option, the `runtime` folder will also contain subdirectories with the
+  libraries of the Qt plugins. The `runtime` directory does not include the
+  standard `c/c++` libraries (`libc`, `libstdc++`, `libm`, `libdbm`,
+  `libpthread`) together with the dynamic linker as they are assumed to be
+  present on the system.
+- `snapshot_test` is an executable in the form of a bash script. This script is
+  only present when the project is built with the `cmake` option
+  `-DBUILD_TESTING=ON`. If so, when running the `snapshot_test` script, all
+  tests are executed.
 
 ### Debugging
 
@@ -543,3 +546,4 @@ very useful when you encounter issues with hardware acceleration:
 - [Nvidia](https://wiki.archlinux.org/title/NVIDIA)
 - [Nouveau](https://wiki.archlinux.org/title/Nouveau)
 - [AMD](https://wiki.archlinux.org/title/AMDGPU)
+

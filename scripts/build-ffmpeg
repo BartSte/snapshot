@@ -74,12 +74,9 @@ compile_nasm() {
 }
 
 compile_x264() {
-    local commit
-    commit="4815ccadb1890572f2bf8b9d9553d56f6c9122ad"
     cd "$source_dir" &&
         git -C x264 pull 2>/dev/null || git clone https://code.videolan.org/videolan/x264.git &&
         cd x264 &&
-        git reset --hard $commit &&
         PATH="$bin_dir:$PATH" PKG_CONFIG_PATH="$install_dir/lib/pkgconfig" ./configure --prefix="$install_dir" --bindir="$bin_dir" --enable-static --enable-pic &&
         PATH="$bin_dir:$PATH" make &&
         make install
@@ -96,25 +93,19 @@ compile_x265() {
 }
 
 compile_libvpx() {
-    local commit
-    commit="8630b183230e7d4b87f8535e8d5e458e96366117"
     cd "$source_dir" &&
         git -C libvpx pull 2>/dev/null || git clone https://chromium.googlesource.com/webm/libvpx.git &&
         cd libvpx &&
-        git reset --hard $commit &&
         PATH="$bin_dir:$PATH" ./configure --prefix="$install_dir" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm &&
         PATH="$bin_dir:$PATH" make &&
         make install
 }
 
 compile_fdk-aac() {
-    local commit
-    commit="716f4394641d53f0d79c9ddac3fa93b03a49f278" 
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
         git -C fdk-aac pull 2>/dev/null || git clone https://github.com/mstorsjo/fdk-aac &&
         cd fdk-aac &&
-        git reset --hard $commit &&
         autoreconf -fiv &&
         ./configure --prefix="$install_dir" --disable-shared &&
         make &&
@@ -122,13 +113,10 @@ compile_fdk-aac() {
 }
 
 compile_libopus() {
-    local commit
-    commit="c85499757c148fede8604cffa12454206b6138ba"
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
         git -C opus pull 2>/dev/null || git clone https://github.com/xiph/opus.git &&
         cd opus &&
-        git reset --hard $commit &&
         ./autogen.sh &&
         ./configure --prefix="$install_dir" --disable-shared &&
         make &&
@@ -136,13 +124,10 @@ compile_libopus() {
 }
 
 compile_libdav1d() {
-    local commit
-    commit="a6878be7e07114f5a2915ad46300700f0db55197"
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
         git -C dav1d pull 2>/dev/null || git clone https://code.videolan.org/videolan/dav1d.git &&
         cd dav1d &&
-        git reset --hard $commit &&
         mkdir -p build &&
         cd build &&
         meson setup -Denable_tools=false -Denable_tests=false --default-library=static .. --prefix "$install_dir" --libdir="$install_dir/lib" &&
@@ -151,13 +136,10 @@ compile_libdav1d() {
 }
 
 compile_libaom() {
-    local commit
-    commit="f8c91a2080beb6a98c909435fb5937f82a8ef83f"
     echo "Compiling libaom"
     cd "$source_dir" &&
         git -C aom pull 2>/dev/null || git clone https://aomedia.googlesource.com/aom &&
         cd aom &&
-        git reset --hard $commit &&
         cd - &&
         mkdir -p aom_build &&
         cd aom_build &&
@@ -167,13 +149,10 @@ compile_libaom() {
 }
 
 compile_libsvtav1() {
-    local commit
-    commit="3c701b39c86d86d9adb43eb0f59a6f7a9b299b88"
     echo "Compiling libsvtav1"
     cd "$source_dir" &&
         git -C SVT-AV1 pull 2>/dev/null || git clone https://gitlab.com/AOMediaCodec/SVT-AV1.git &&
         cd SVT-AV1 &&
-        git reset --hard $commit &&
         mkdir -p build &&
         cd build &&
         PATH="$bin_dir:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TYPE=Release -DBUILD_DEC=OFF -DBUILD_SHARED_LIBS=OFF .. &&
@@ -194,10 +173,9 @@ compile_libvmaf() {
 }
 
 compile_ffmpeg() {
-    local version file unpack_dir
-    version="6.1.1"
-    file="ffmpeg-$version.tar.bz2"
-    unpack_dir="ffmpeg-$version"
+    local file unpack_dir
+    file="ffmpeg-snapshot.tar.bz2"
+    unpack_dir="ffmpeg"
     cd "$source_dir" &&
         wget -O "$file" https://ffmpeg.org/releases/"$file" &&
         tar xjvf "$file" &&
