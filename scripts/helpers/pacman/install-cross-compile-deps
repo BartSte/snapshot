@@ -7,4 +7,4 @@ sudo pacman -S --noconfirm \
     aarch64-linux-gnu-linux-api-headers \
     rsync
 
-sudo yay -S --noconfirm simlinks || echo "You need to install the AUR package 'symlinks' manually"
+yay -S --noconfirm symlinks || echo "You need to install the AUR package 'symlinks' manually"
