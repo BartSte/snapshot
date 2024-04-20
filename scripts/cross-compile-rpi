@@ -1,10 +1,41 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 this_dir=$(dirname "$(readlink -f "$0")")
+ip=""
+username=""
 base_dir="$this_dir/../rpi"
-qt_host_source="$this_dir/../Qt"
+qt_host_source="$this_dir/../Qt/6.6.1/Src"
 qt_host="$this_dir/../3rdparty/Qt"
 toolchain_file="$this_dir/../cmake/toolchain.cmake"
+verbose=false
+usage="Usage: cross-compile-rpi [OPTIONS] <username> <ip>
+
+Cross compile Qt for Raspberry Pi. The script will install the necessary 
+dependencies, create a sysroot, configure the build, build Qt, and sync the
+build to the Raspberry Pi.
+
+Options:
+  -b, --base-dir <dir>          Base directory for the build (default: $base_dir)
+  -q, --qt-host <dir>           Qt host directory (default: $qt_host)
+  -t, --toolchain-file <file>   Toolchain file (default: $toolchain_file)
+  -v, --verbose                 Enable verbose output
+  -h, --help                    Display this message and exit
+"
+
+log() {
+    # No args are passed, read from stdin
+    local msg
+    if [ $# -eq 0 ]; then
+        msg=$(cat)
+    else
+        msg="$1"
+    fi
+    if [ "$verbose" = true ]; then
+        echo "$msg" >&2
+    fi
+}
+
 parse_args() {
     while [ $# -gt 0 ]; do
         case $1 in
@@ -20,25 +51,44 @@ parse_args() {
             toolchain_file=$2
             shift
             ;;
+        -v | --verbose)
+            verbose=true
+            ;;
         *)
-            echo "Unknown argument: $1"
-            exit 1
+            if [ -z "$username" ]; then
+                username=$1
+            elif [ -z "$ip" ]; then
+                ip=$1
+            else
+                echo "Invalid argument: $1"
+                echo "$usage"
+                exit 1
+            fi
             ;;
         esac
         shift
     done
+    if [ -z "$username" ] || [ -z "$ip" ]; then
+        echo "Username and IP address are required"
+        echo "$usage"
+        exit 1
+    fi
 }
 
 make_dirs() {
     local base_dir dir dirs
     base_dir=$1
-    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-host qt-raspi qt-hostbuild qtpi-build"
+
+    log "Creating directories structure in $base_dir"
+    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-raspi qtpi-build"
     for dir in $dirs; do
         mkdir -p "$base_dir"/"$dir"
     done
 }
 
 install_deps() {
+    local package_manager
+    log "Installing cross compile dependencies"
     package_manager=$(bash "$this_dir"/helpers/get-package-manager)
     "$this_dir/helpers/$package_manager/install-cross-compile-deps"
 }
@@ -49,13 +99,17 @@ make_sysroot() {
     username=$2
     ip=$3
 
+    log "Creating sysroot in $base_dir/rpi-sysroot"
+
     cd "$base_dir" || exit 1
-    rsync_cmd="rsync -avzS --rsync-path=\"rsync\" --delete ${username}@${ip}"
-    eval "$rsync_cmd:/lib/* rpi-sysroot/lib"
-    eval "$rsync_cmd:/usr/include/* rpi-sysroot/usr/include"
-    eval "$rsync_cmd:/usr/lib/* rpi-sysroot/usr/lib"
-    eval "$rsync_cmd:/opt/vc rpi-sysroot/opt/vc"
+    rsync_cmd="sudo rsync -avzS --rsync-path=\"rsync\" --delete ${username}@${ip}"
+    eval "$rsync_cmd:/lib/* rpi-sysroot/lib" || true
+    eval "$rsync_cmd:/usr/include/* rpi-sysroot/usr/include" || true
+    eval "$rsync_cmd:/usr/lib/* rpi-sysroot/usr/lib" || true
+    eval "$rsync_cmd:/opt/vc rpi-sysroot/opt/vc" || true
     cd - || exit 1
+
+    sudo symlinks -rc "$base_dir"/rpi-sysroot
 }
 
 configure_build() {
@@ -64,6 +118,9 @@ configure_build() {
     qt_host=$2
     toolchain_file=$3
 
+    log "Configuring Qt build in $base_dir/qt-hostbuild"
+
+    export TARGET_SYSROOT="$base_dir"/rpi-sysroot
     "$qt_host_source/configure" \
         -release -opengl es2 -nomake examples -nomake tests \
         -qt-host-path "$qt_host" \
@@ -72,8 +129,10 @@ configure_build() {
         -device linux-rasp-pi4-aarch64 \
         -device-option CROSS_COMPILE=aarch64-linux-gnu- \
         -- \
+        -B "$base_dir"/qtpi-build \
         -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
         -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
+    unset TARGET_SYSROOT
 }
 
 sync_build() {
@@ -82,18 +141,19 @@ sync_build() {
     username=$2
     ip=$3
 
-    sync -avz --rsync-path="sudo rsync" "$base_dir"/qt-raspi/* "$username"@ <"$ip":/usr/local/qt6
+    log "Syncing build to Raspberry Pi"
+    rsync -avz --rsync-path="sudo rsync" "$base_dir"/qt-raspi/* "$username"@"$ip":/usr/local/qt6
 }
 
 main() {
     parse_args "$@"
     make_dirs "$base_dir"
     install_deps
-    make_sysroot "$base_dir" pi ...
+    make_sysroot "$base_dir" "$username" "$ip"
     configure_build "$base_dir" "$qt_host" "$toolchain_file"
-    cmake --build "$base_dir" --parallel 4
-    cmake --install "$base_dir"
-    sync_build "$base_dir" pi ...
+    cmake --build "$base_dir/qtpi-build" --parallel 4
+    cmake --install "$base_dir/qtpi-build"
+    sync_build "$base_dir" "$username" "$ip"
 }
 
 main $@

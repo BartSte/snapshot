@@ -1,4 +1,4 @@
-# This script was copied from the Qt website slightly modified by allowing the 
+# This script was copied from the Qt website slightly modified by allowing the
 # user to define the TARGET_SYSROOT variable. The original script can be found
 # at https://wiki.qt.io/Cross-Compile_Qt_6_for_Raspberry_Pi
 
@@ -8,17 +8,29 @@ include_guard(GLOBAL)
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-if(NOT DEFINED TARGET_SYSROOT)
-    message(FATAL_ERROR "TARGET_SYSROOT is not defined")
+# Get environment variable called TARGET_SYSROOT
+if(DEFINED ENV{TARGET_SYSROOT})
+  set(TARGET_SYSROOT $ENV{TARGET_SYSROOT})
+  message(STATUS "TARGET_SYSROOT is set to: ${TARGET_SYSROOT}")
+else()
+  message(FATAL_ERROR "TARGET_SYSROOT environment variable not set")
+endif()
+
+# The following variables are optional and can be defined by the user.
+if(NOT DEFINED CMAKE_C_COMPILER)
+  set(CMAKE_C_COMPILER /usr/bin/aarch64-linux-gnu-gcc)
+endif()
+if(NOT DEFINED CMAKE_CXX_COMPILER)
+  set(CMAKE_CXX_COMPILER /usr/bin/aarch64-linux-gnu-g++)
+endif()
+
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 
 set(ENV{PKG_CONFIG_PATH} $PKG_CONFIG_PATH:/usr/lib/aarch64-linux-gnu/pkgconfig)
-set(ENV{PKG_CONFIG_LIBDIR} /usr/lib/pkgconfig:/usr/share/pkgconfig/:${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig:${TARGET_SYSROOT}/usr/lib/pkgconfig)
+set(ENV{PKG_CONFIG_LIBDIR}
+    /usr/lib/pkgconfig:/usr/share/pkgconfig/:${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig:${TARGET_SYSROOT}/usr/lib/pkgconfig
+)
 set(ENV{PKG_CONFIG_SYSROOT_DIR} ${CMAKE_SYSROOT})
-
-# if you use other version of gcc and g++ than gcc/g++ 9, you must change the following variables
-set(CMAKE_C_COMPILER /usr/bin/aarch64-linux-gnu-gcc-9)
-set(CMAKE_CXX_COMPILER /usr/bin/aarch64-linux-gnu-g++-9)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${TARGET_SYSROOT}/usr/include")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
@@ -34,23 +46,22 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_BUILD_RPATH ${TARGET_SYSROOT})
 
-
 include(CMakeInitializeConfigs)
 
 function(cmake_initialize_per_config_variable _PREFIX _DOCSTRING)
-  if (_PREFIX MATCHES "CMAKE_(C|CXX|ASM)_FLAGS")
+  if(_PREFIX MATCHES "CMAKE_(C|CXX|ASM)_FLAGS")
     set(CMAKE_${CMAKE_MATCH_1}_FLAGS_INIT "${QT_COMPILER_FLAGS}")
-        
-    foreach (config DEBUG RELEASE MINSIZEREL RELWITHDEBINFO)
-      if (DEFINED QT_COMPILER_FLAGS_${config})
-        set(CMAKE_${CMAKE_MATCH_1}_FLAGS_${config}_INIT "${QT_COMPILER_FLAGS_${config}}")
+
+    foreach(config DEBUG RELEASE MINSIZEREL RELWITHDEBINFO)
+      if(DEFINED QT_COMPILER_FLAGS_${config})
+        set(CMAKE_${CMAKE_MATCH_1}_FLAGS_${config}_INIT
+            "${QT_COMPILER_FLAGS_${config}}")
       endif()
     endforeach()
   endif()
 
-
-  if (_PREFIX MATCHES "CMAKE_(SHARED|MODULE|EXE)_LINKER_FLAGS")
-    foreach (config SHARED MODULE EXE)
+  if(_PREFIX MATCHES "CMAKE_(SHARED|MODULE|EXE)_LINKER_FLAGS")
+    foreach(config SHARED MODULE EXE)
       set(CMAKE_${config}_LINKER_FLAGS_INIT "${QT_LINKER_FLAGS}")
     endforeach()
   endif()
@@ -61,13 +72,16 @@ endfunction()
 set(XCB_PATH_VARIABLE ${TARGET_SYSROOT})
 
 set(GL_INC_DIR ${TARGET_SYSROOT}/usr/include)
-set(GL_LIB_DIR ${TARGET_SYSROOT}:${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/:${TARGET_SYSROOT}/usr:${TARGET_SYSROOT}/usr/lib)
+set(GL_LIB_DIR
+    ${TARGET_SYSROOT}:${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/:${TARGET_SYSROOT}/usr:${TARGET_SYSROOT}/usr/lib
+)
 
 set(EGL_INCLUDE_DIR ${GL_INC_DIR})
 set(EGL_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libEGL.so)
 
 set(OPENGL_INCLUDE_DIR ${GL_INC_DIR})
-set(OPENGL_opengl_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libOpenGL.so)
+set(OPENGL_opengl_LIBRARY
+    ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libOpenGL.so)
 
 set(GLESv2_INCLUDE_DIR ${GL_INC_DIR})
 set(GLESv2_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libGLESv2.so)
