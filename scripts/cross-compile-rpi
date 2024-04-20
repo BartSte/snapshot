@@ -3,6 +3,7 @@ set -euo pipefail
 
 this_dir=$(dirname "$(readlink -f "$0")")
 ip=""
+pw=""
 username=""
 base_dir="$this_dir/../rpi"
 qt_host_source="$this_dir/../Qt/6.6.1/Src"
@@ -20,6 +21,10 @@ Options:
   -q, --qt-host <dir>           Qt host directory (default: $qt_host)
   -t, --toolchain-file <file>   Toolchain file (default: $toolchain_file)
   -v, --verbose                 Enable verbose output
+  -p, --pw <password>           Password for the Raspberry Pi. This will use
+                                sshpass to pass the password to rsync. This is
+                                not secure as your password will processed as
+                                plain text.
   -h, --help                    Display this message and exit
 "
 
@@ -49,6 +54,14 @@ parse_args() {
             ;;
         -t | --toolchain-file)
             toolchain_file=$2
+            shift
+            ;;
+        -p | --pw)
+            hash /usr/bin/sshpass 2>/dev/null || {
+                echo "sshpass is required for password automation"
+                exit 1
+            }
+            pw=$2
             shift
             ;;
         -v | --verbose)
@@ -94,7 +107,7 @@ install_deps() {
 }
 
 make_sysroot() {
-    local base_dir username ip
+    local base_dir username ip pw_insert rsync_cmd
     base_dir=$1
     username=$2
     ip=$3
@@ -102,7 +115,12 @@ make_sysroot() {
     log "Creating sysroot in $base_dir/rpi-sysroot"
 
     cd "$base_dir" || exit 1
-    rsync_cmd="sudo rsync -avzS --rsync-path=\"rsync\" --delete ${username}@${ip}"
+
+    if [ -n "$pw" ]; then
+        pw_insert="--rsh=\"/usr/bin/sshpass -p $pw ssh -o StrictHostKeyChecking=no -l $username\""
+    fi
+    rsync_cmd="sudo rsync -avzS --delete --rsync-path=\"rsync\" $pw_insert ${username}@${ip}"
+
     eval "$rsync_cmd:/lib/* rpi-sysroot/lib" || true
     eval "$rsync_cmd:/usr/include/* rpi-sysroot/usr/include" || true
     eval "$rsync_cmd:/usr/lib/* rpi-sysroot/usr/lib" || true
