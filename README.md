@@ -547,3 +547,7 @@ very useful when you encounter issues with hardware acceleration:
 - [Nouveau](https://wiki.archlinux.org/title/Nouveau)
 - [AMD](https://wiki.archlinux.org/title/AMDGPU)
 
+
+## TODO
+- [ ] Test the cross compile script on ubuntu as the docs describe a debian
+  based os is needed.
