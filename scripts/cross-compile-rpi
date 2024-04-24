@@ -2,6 +2,7 @@
 set -euo pipefail
 
 this_dir=$(dirname "$(readlink -f "$0")")
+cmd="main"
 ip=""
 pw=""
 username=""
@@ -17,6 +18,8 @@ dependencies, create a sysroot, configure the build, build Qt, and sync the
 build to the Raspberry Pi.
 
 Options:
+  -c, --cmd <command>           Only run a subset of the script. Valid commands
+                                are: install, sysroot, configure, build.
   -b, --base-dir <dir>          Base directory for the build (default: $base_dir)
   -q, --qt-host <dir>           Qt host directory (default: $qt_host)
   -t, --toolchain-file <file>   Toolchain file (default: $toolchain_file)
@@ -67,6 +70,14 @@ parse_args() {
         -v | --verbose)
             verbose=true
             ;;
+        -c | --cmd)
+            cmd=$2
+            shift
+            ;;
+        -h | --help)
+            echo "$usage"
+            exit 0
+            ;;
         *)
             if [ -z "$username" ]; then
                 username=$1
@@ -106,13 +117,17 @@ install_deps() {
     "$this_dir/helpers/$package_manager/install-cross-compile-deps"
 }
 
-make_sysroot() {
-    local base_dir username ip pw_insert rsync_cmd
+running_wsl() {
+    grep -iq "microsoft" /proc/version
+}
+
+make_sysroot_rsync() {
+    local base_dir username ip
     base_dir=$1
     username=$2
     ip=$3
 
-    log "Creating sysroot in $base_dir/rpi-sysroot"
+    log "Creating sysroot in $base_dir/rpi-sysroot using rsync"
 
     cd "$base_dir" || exit 1
 
@@ -163,15 +178,37 @@ sync_build() {
     rsync -avz --rsync-path="sudo rsync" "$base_dir"/qt-raspi/* "$username"@"$ip":/usr/local/qt6
 }
 
-main() {
-    parse_args "$@"
-    make_dirs "$base_dir"
+install() {
     install_deps
-    make_sysroot "$base_dir" "$username" "$ip"
+}
+
+sysroot() {
+    if running_wsl; then
+        log "WSL detected. Assuming sysroot is created manually as rsync/scp does not work well with WSL"
+        log "Running symlinks to fix symlinks in sysroot"
+        sudo symlinks -rc "$base_dir"/rpi-sysroot
+    else
+        make_sysroot_rsync "$base_dir" "$username" "$ip"
+    fi
+}
+
+configure() {
     configure_build "$base_dir" "$qt_host" "$toolchain_file"
+}
+
+build() {
     cmake --build "$base_dir/qtpi-build" --parallel 4
     cmake --install "$base_dir/qtpi-build"
     sync_build "$base_dir" "$username" "$ip"
 }
 
-main $@
+main() {
+    install
+    sysroot
+    configure
+    build
+}
+
+parse_args "$@"
+make_dirs "$base_dir"
+$cmd
