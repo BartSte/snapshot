@@ -169,7 +169,11 @@ configure_build() {
 
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
     "$qt_host_source/6.6.1/Src/configure" \
-        -release -opengl es2 -nomake examples -nomake tests \
+        -release \
+        -opengl es2 \
+        -nomake examples \
+        -nomake tests \
+        -submodules qtbase,qtmultimedia,qtwayland \
         -qt-host-path "$qt_host" \
         -extprefix "$base_dir"/qt-raspi \
         -prefix /usr/local/qt6 \
