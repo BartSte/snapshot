@@ -7,8 +7,7 @@ Installs Qt 6.6.1 to 3rdparty/Qt. For this script to work, you need to set the
 QT_INSTALLER_JWT_TOKEN environment variable to your jwt token. Check the
 website of Qt for more information.
 
-Optionally, you can add more Qt packages to install by adding them as
-arguments.
+You can the Qt packages you want to install by adding them as arguments.
 
 Options:
   -r, --root    The root directory to install Qt to.

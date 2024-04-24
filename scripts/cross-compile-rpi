@@ -2,12 +2,13 @@
 set -euo pipefail
 
 this_dir=$(dirname "$(readlink -f "$0")")
+root=$(dirname "$this_dir")
 cmd="main"
 ip=""
 pw=""
 username=""
 base_dir="$this_dir/../rpi"
-qt_host_source="$this_dir/../Qt/6.6.1/Src"
+qt_host_source="$this_dir/../Qt"
 qt_host="$this_dir/../3rdparty/Qt"
 toolchain_file="$this_dir/../cmake/toolchain.cmake"
 verbose=false
@@ -19,7 +20,8 @@ build to the Raspberry Pi.
 
 Options:
   -c, --cmd <command>           Only run a subset of the script. Valid commands
-                                are: install, sysroot, configure, build.
+                                are: install, sysroot, download_qt, configure,
+                                build.
   -b, --base-dir <dir>          Base directory for the build (default: $base_dir)
   -q, --qt-host <dir>           Qt host directory (default: $qt_host)
   -t, --toolchain-file <file>   Toolchain file (default: $toolchain_file)
@@ -145,6 +147,18 @@ make_sysroot_rsync() {
     sudo symlinks -rc "$base_dir"/rpi-sysroot
 }
 
+download_qt() {
+    if not_empty "$qt_host_source/6.6.1/Src"; then
+        log "Qt host directory already exists. Skipping download"
+    else
+        "$root/scripts/helpers/download-qt" --root "$qt_host_source" qt.qt6.661.src
+    fi
+}
+
+not_empty() {
+    [ -d "$1" ] && [ -n "$(ls -A "$1")" ]
+}
+
 configure_build() {
     local base_dir qt_host toolchain_file
     base_dir=$1
@@ -154,7 +168,7 @@ configure_build() {
     log "Configuring Qt build in $base_dir/qt-hostbuild"
 
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
-    "$qt_host_source/configure" \
+    "$qt_host_source/6.6.1/Src/configure" \
         -release -opengl es2 -nomake examples -nomake tests \
         -qt-host-path "$qt_host" \
         -extprefix "$base_dir"/qt-raspi \
@@ -205,6 +219,7 @@ build() {
 main() {
     install
     sysroot
+    download_qt
     configure
     build
 }
