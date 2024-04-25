@@ -8,8 +8,9 @@ ip=""
 pw=""
 username=""
 base_dir="$this_dir/../rpi"
-qt_host_source="$this_dir/../Qt"
-qt_host="$this_dir/../3rdparty/Qt"
+qt_host_source="$base_dir/qt-hostsrc"
+qt_host_build="$base_dir/qt-hostbuild"
+qt_host="$base_dir/qt-host"
 toolchain_file="$this_dir/../cmake/toolchain.cmake"
 verbose=false
 usage="Usage: cross-compile-rpi [OPTIONS] <username> <ip>
@@ -22,8 +23,10 @@ Options:
   -c, --cmd <command>           Only run a subset of the script. Valid commands
                                 are: install, sysroot, download_qt, configure,
                                 build.
-  -b, --base-dir <dir>          Base directory for the build (default: $base_dir)
-  -q, --qt-host <dir>           Qt host directory (default: $qt_host)
+  --base-dir <dir>              Base directory for the build (default: $base_dir)
+  --qt-host <dir>               Qt host directory (default: $qt_host)
+  --qt-hostsrc <dir>            Qt host source directory (default: $qt_host_source)
+  --qt-hostbuild <dir>          Qt host build directory (default: $qt_host_build)
   -t, --toolchain-file <file>   Toolchain file (default: $toolchain_file)
   -v, --verbose                 Enable verbose output
   -p, --pw <password>           Password for the Raspberry Pi. This will use
@@ -106,24 +109,35 @@ make_dirs() {
     base_dir=$1
 
     log "Creating directories structure in $base_dir"
-    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-raspi qtpi-build"
+    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-raspi qtpi-build qt-host qt-hostbuild qt-hostsrc"
     for dir in $dirs; do
         mkdir -p "$base_dir"/"$dir"
     done
 }
 
-install_deps() {
+install() {
     local package_manager
     log "Installing cross compile dependencies"
     package_manager=$(bash "$this_dir"/helpers/get-package-manager)
+    "$root/scripts/helpers/${package_manager}/install-project-deps"
     "$this_dir/helpers/$package_manager/install-cross-compile-deps"
 }
 
-running_wsl() {
+sysroot() {
+    if _running_wsl; then
+        log "WSL detected. Assuming sysroot is created manually as rsync/scp does not work well with WSL"
+        log "Running symlinks to fix symlinks in sysroot"
+        sudo symlinks -rc "$base_dir"/rpi-sysroot
+    else
+        _make_sysroot_rsync "$base_dir" "$username" "$ip"
+    fi
+}
+
+_running_wsl() {
     grep -iq "microsoft" /proc/version
 }
 
-make_sysroot_rsync() {
+_make_sysroot_rsync() {
     local base_dir username ip
     base_dir=$1
     username=$2
@@ -147,7 +161,14 @@ make_sysroot_rsync() {
     sudo symlinks -rc "$base_dir"/rpi-sysroot
 }
 
-download_qt() {
+build_qt_host() {
+    _dowload_qt_src
+    _configure_build_host
+    cmake --build "$base_dir/qt-hostbuild"
+    cmake --install "$base_dir/qt-hostbuild"
+}
+
+_dowload_qt_src() {
     if not_empty "$qt_host_source/6.6.1/Src"; then
         log "Qt host directory already exists. Skipping download"
     else
@@ -155,11 +176,33 @@ download_qt() {
     fi
 }
 
-not_empty() {
+_not_empty() {
     [ -d "$1" ] && [ -n "$(ls -A "$1")" ]
 }
 
-configure_build() {
+_configure_build_host() {
+    echo "Building Qt with shared linking"
+    export CC=gcc
+    export CXX=g++
+    src="$qt_host_source/6.6.1/Src"
+    "$src/configure" \
+        -release \
+        -prefix "$qt_host" \
+        -submodules qtbase,qtmultimedia,qtwayland \
+        -- \
+        -S "$src" \
+        -B "$src/build" \
+        -Wdev
+}
+
+build_qt_pi() {
+    _configure_build_pi "$base_dir" "$qt_host" "$toolchain_file"
+    cmake --build "$base_dir/qtpi-build" --parallel 4
+    cmake --install "$base_dir/qtpi-build"
+    _sync_build "$base_dir" "$username" "$ip"
+}
+
+_configure_build_pi() {
     local base_dir qt_host toolchain_file
     base_dir=$1
     qt_host=$2
@@ -167,6 +210,8 @@ configure_build() {
 
     log "Configuring Qt build in $base_dir/qt-hostbuild"
 
+    export CC=gcc
+    export CXX=g++
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
     "$qt_host_source/6.6.1/Src/configure" \
         -release \
@@ -186,7 +231,7 @@ configure_build() {
     unset TARGET_SYSROOT
 }
 
-sync_build() {
+_sync_build() {
     local base_dir username ip
     base_dir=$1
     username=$2
@@ -196,36 +241,11 @@ sync_build() {
     rsync -avz --rsync-path="sudo rsync" "$base_dir"/qt-raspi/* "$username"@"$ip":/usr/local/qt6
 }
 
-install() {
-    install_deps
-}
-
-sysroot() {
-    if running_wsl; then
-        log "WSL detected. Assuming sysroot is created manually as rsync/scp does not work well with WSL"
-        log "Running symlinks to fix symlinks in sysroot"
-        sudo symlinks -rc "$base_dir"/rpi-sysroot
-    else
-        make_sysroot_rsync "$base_dir" "$username" "$ip"
-    fi
-}
-
-configure() {
-    configure_build "$base_dir" "$qt_host" "$toolchain_file"
-}
-
-build() {
-    cmake --build "$base_dir/qtpi-build" --parallel 4
-    cmake --install "$base_dir/qtpi-build"
-    sync_build "$base_dir" "$username" "$ip"
-}
-
 main() {
     install
     sysroot
-    download_qt
-    configure
-    build
+    build_qt_host
+    build_qt_pi
 }
 
 parse_args "$@"

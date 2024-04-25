@@ -98,7 +98,7 @@ build-qt-static() {
     cmake --install "$src/build"
 }
 
-build-qt-shared() {
+download-qt-shared() {
     echo "Downloading Qt sources with shared linking"
     rm "$source_dir" -rf || true
     rm "$install_dir" -rf || true
@@ -111,7 +111,7 @@ build-qt-shared() {
 if [[ "$static" = true ]]; then
     build-qt-static
 elif [[ "$shared" = true ]]; then
-    build-qt-shared
+    download-qt-shared
 else
     echo "Unknown build type"
     echo "$usage"
