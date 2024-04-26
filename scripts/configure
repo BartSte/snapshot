@@ -75,6 +75,14 @@ while [[ $# -gt 0 ]]; do
             patch=false
             shift
             ;;
+        --qt-dir)
+            qt_dir="$2"
+            shift 2
+            ;;
+        --ffmpeg-dir)
+            ffmpeg_dir="$2"
+            shift 2
+            ;;
         --)
             shift
             break
