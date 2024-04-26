@@ -17,19 +17,20 @@ this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 packages=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        -r | --root)
-            install_dir="$2"
-            shift
-            shift
-            ;;
-        -h | --help)
-            echo "$usage"
-            exit 0
-            ;;
-        *)
-            packages="$packages $1"
-            shift
-            ;;
+    -r | --root)
+        install_dir="$2"
+        shift
+        shift
+        ;;
+    -h | --help)
+        echo "$usage"
+        exit 0
+        ;;
+    *)
+        packages="$packages $1"
+        shift
+        ;;
     esac
 done
+"$this_dir/download-installer"
 "$this_dir/qt-installer.run" --root "$install_dir" --accept-licenses --accept-obligations --default-answer --confirm-command install $packages

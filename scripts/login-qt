@@ -49,4 +49,5 @@ if [[ -z "${email:-}" ]]; then
 fi
 
 this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+"$this_dir"/helpers/download-installer
 "$this_dir"/helpers/qt-installer.run update --pw "$pw" --email "$email"
