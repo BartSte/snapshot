@@ -21,8 +21,7 @@ build to the Raspberry Pi.
 
 Options:
   -c, --cmd <command>           Only run a subset of the script. Valid commands
-                                are: install, sysroot, download_qt, configure,
-                                build.
+                                are: install, sysroot, build_qt_host, build_qt_pi 
   --base-dir <dir>              Base directory for the build (default: $base_dir)
   --qt-host <dir>               Qt host directory (default: $qt_host)
   --qt-hostsrc <dir>            Qt host source directory (default: $qt_host_source)
