@@ -161,37 +161,17 @@ _make_sysroot_rsync() {
 }
 
 build_qt_host() {
-    _dowload_qt_src
-    _configure_build_host
-    cmake --build "$base_dir/qt-hostbuild"
-    cmake --install "$base_dir/qt-hostbuild"
-}
-
-_dowload_qt_src() {
-    if _not_empty "$qt_host_source/6.6.1/Src"; then
-        log "Qt host directory already exists. Skipping download"
-    else
-        "$root/scripts/helpers/download-qt" --root "$qt_host_source" qt.qt6.661.src
+    if _not_empty "$qt_host"; then
+        log "Qt host directory is not empty. Skipping build"
+        return
     fi
+    # TODO: also build ffmpeg shared library
+    # "$this_dir"/build-ffmpeg --shared -s "$root/ffmpeg_sources" -i "$root/3rdparty/ffmpeg"
+    "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host"
 }
 
 _not_empty() {
     [ -d "$1" ] && [ -n "$(ls -A "$1")" ]
-}
-
-_configure_build_host() {
-    echo "Building Qt with shared linking"
-    export CC=gcc
-    export CXX=g++
-    src="$qt_host_source/6.6.1/Src"
-    "$src/configure" \
-        -release \
-        -prefix "$qt_host" \
-        -submodules qtbase,qtmultimedia,qtwayland \
-        -- \
-        -S "$src" \
-        -B "$qt_host_build" \
-        -Wdev
 }
 
 build_qt_pi() {

@@ -5,8 +5,10 @@ this_dir=$(dirname "$(realpath "${BASH_SOURCE:-$0}")")
 root="$(dirname "$this_dir")"
 static=true
 shared=false
+no_deps=false
 source_dir="$root/ffmpeg_sources"
 install_dir="$this_dir/../3rdparty/ffmpeg"
+cmd="main"
 
 usage="$(basename "$0") [-h] [-s, --source-dir] [-b, --install-dir] --
 Compiles ffmpeg from source.
@@ -17,41 +19,52 @@ where:
     -h, --help          show this help text
     --static            build static libraries (default: true)
     --shared            build shared libraries (default: false)
+    -n, --no-deps       do not (re)install dependencies
     -s, --source-dir    ffmpeg source directory (default: $source_dir)
-    -i, --install-dir   ffmpeg build directory (default: $install_dir)"
+    -i, --install-dir   ffmpeg build directory (default: $install_dir)
+    -c, --cmd           command to run (default: $cmd)"
 
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        -h | --help)
-            echo "$usage"
-            exit
-            ;;
-        --static)
-            static=true
-            shared=false
-            shift
-            ;;
-        --shared)
-            shared=true
-            static=false
-            shift
-            ;;
-        -s | --source-dir)
-            source_dir="$2"
-            shift
-            shift
-            ;;
-        -i | --install-dir)
-            install_dir="$2"
-            shift
-            shift
-            ;;
-        *)
-            echo "Unknown option: $key"
-            echo "$usage"
-            exit 1
-            ;;
+    -h | --help)
+        echo "$usage"
+        exit
+        ;;
+    --static)
+        static=true
+        shared=false
+        shift
+        ;;
+    --shared)
+        shared=true
+        static=false
+        shift
+        ;;
+    -s | --source-dir)
+        source_dir="$2"
+        shift
+        shift
+        ;;
+    -i | --install-dir)
+        install_dir="$2"
+        shift
+        shift
+        ;;
+    -n | --no-deps)
+        no_deps=true
+        shift
+        ;;
+    -c | --cmd)
+        cmd="$2"
+        shift
+        shift
+        ;;
+    *)
+        echo "Unknown option: $key"
+        echo "$usage"
+        exit 1
+        ;;
     esac
 done
 
@@ -60,6 +73,11 @@ bin_dir="$install_dir/bin"
 install_dependencies() {
     manager="$("$this_dir/helpers/get-package-manager")"
     "${this_dir}/helpers/${manager}/install-ffmpeg-deps"
+}
+
+install_shared_deps() {
+    manager="$("$this_dir/helpers/get-package-manager")"
+    "${this_dir}/helpers/${manager}/install-ffmpeg-shared-deps"
 }
 
 compile_nasm() {
@@ -84,11 +102,11 @@ compile_x264() {
 
 compile_x265() {
     cd "$source_dir" &&
-        wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/Release_3.5.tar.bz2 &&
+        wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/master.tar.bz2 &&
         tar xjvf x265.tar.bz2 &&
         cd multicoreware*/build/linux &&
-        PATH="$bin_dir:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DENABLE_SHARED=off ../../source &&
-        PATH="$bin_dir:$PATH" make &&
+        PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$install_dir" -DENABLE_SHARED=off ../../source &&
+        PATH="$HOME/bin:$PATH" make &&
         make install
 }
 
@@ -164,15 +182,25 @@ compile_libvmaf() {
     echo "Compiling libvmaf"
     cd "$source_dir" &&
         PATH="$bin_dir:$PATH" &&
-        wget https://github.com/Netflix/vmaf/archive/v2.3.1.tar.gz && tar xvf v2.3.1.tar.gz &&
-        mkdir -p vmaf-2.3.1/libvmaf/build &&
-        cd vmaf-2.3.1/libvmaf/build &&
+        wget https://github.com/Netflix/vmaf/archive/v3.0.0.tar.gz && tar xvf v3.0.0.tar.gz &&
+        mkdir -p vmaf-3.0.0/libvmaf/build &&
+        cd vmaf-3.0.0/libvmaf/build &&
         meson setup -Denable_tests=false -Denable_docs=false --buildtype=release --default-library=static .. --prefix "$install_dir" --bindir="$bin_dir" --libdir="$install_dir/lib" &&
         ninja &&
         ninja install
 }
 
 compile_ffmpeg() {
+    if [[ "$static" == true ]]; then
+        echo "Building ffmpeg static"
+        _compile_ffmpeg --pkg-config-flags="--static"
+    elif [[ "$shared" == true ]]; then
+        echo "Building ffmpeg shared"
+        _compile_ffmpeg --disable-static --enable-shared --pkg-config-flags="--shared"
+    fi
+}
+
+_compile_ffmpeg() {
     local file unpack_dir
     file="ffmpeg-snapshot.tar.bz2"
     unpack_dir="ffmpeg"
@@ -208,37 +236,42 @@ compile_ffmpeg() {
         hash -r
 }
 
-dir=$(pwd)
+main() {
+    dir=$(pwd)
 
-echo "Building ffmpeg"
-echo "Source directory: $source_dir"
-echo "Install directory: $install_dir"
-echo "Static: $static"
-echo "Shared: $shared"
+    echo "Building ffmpeg"
+    echo "Source directory: $source_dir"
+    echo "Install directory: $install_dir"
+    echo "Static: $static"
+    echo "Shared: $shared"
 
-echo "Clearing the source and install directories"
-rm -rf "$source_dir" || true
-rm -rf "$install_dir" || true
-mkdir -p "$source_dir" "$bin_dir"
+    if [[ "$no_deps" == false ]]; then
+        echo "Clearing the source and install directories"
+        rm -rf "$source_dir" || true
+        rm -rf "$install_dir" || true
+        mkdir -p "$source_dir" "$bin_dir"
 
-install_dependencies
-compile_nasm
-compile_x264
-compile_x265
-compile_libvpx
-compile_fdk-aac
-compile_libopus
-compile_libdav1d
-compile_libaom
-compile_libsvtav1
-compile_libvmaf
+        install_dependencies
+        if [[ "$static" == true ]]; then
+            compile_nasm
+            compile_x264
+            compile_x265
+            compile_libvpx
+            compile_fdk-aac
+            compile_libopus
+            compile_libdav1d
+        else
+            install_shared_deps
+        fi
 
-if [[ "$static" == true ]]; then
-    echo "Building ffmpeg static"
-    compile_ffmpeg --pkg-config-flags="--static"
-elif [[ "$shared" == true ]]; then
-    echo "Building ffmpeg shared"
-    compile_ffmpeg --disable-static --enable-shared --pkg-config-flags="--shared"
-fi
+        compile_libaom
+        compile_libsvtav1
+        compile_libvmaf
+    fi
 
-cd "$dir"
+    compile_ffmpeg
+
+    cd "$dir"
+}
+
+eval "$cmd"

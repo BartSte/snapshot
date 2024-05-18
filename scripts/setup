@@ -88,8 +88,12 @@ elif [[ "$shared" = true ]]; then
     "$root/scripts/build-qt" --shared -s "$root/Qt" -i "$root/3rdparty/Qt"
 
 elif [[ "$shared_build" = true ]]; then
+    #TODO: I need to be able to build qt shared libraries for cross-compilation.
+    # I need to build it from source to get the correct version and the
+    # libraries. However, building shared ffmpeg falis for some reason....
     echo "Building shared libraries for ffmpeg and qt"
     echo "Install ffmpeg using package manager"
+    "$root/scripts/build-ffmpeg" --shared -s "$root/ffmpeg_sources" -i "$root/3rdparty/ffmpeg"
     "$root/scripts/build-qt" --shared-build -s "$root/Qt" -i "$root/3rdparty/Qt"
 
 else

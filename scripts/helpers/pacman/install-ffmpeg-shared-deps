@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Installing deps instead of compiling from source"
+sudo pacman -S --noconfirm nasm x264 x265 numactl libvpx libfdk-aac opus dav1d --noconfirm
