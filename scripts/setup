@@ -12,40 +12,52 @@ release, static libraries are used, so you should test your changes with static
 linking in the end anyway.
 
 Options:
-    --help      Show this help message.
-    --shared    Install shared libraries. (default=false)
-    --static    Install static libraries (default=true)."
+    --help          Show this help message.
+    --static        Install static libraries by building them from source. This
+                    is the default option.
+    --shared        Install shared libraries by downloading precompiled
+                    libraries.
+    --shared-build  Install shared libraries by building them from source."
 
 shared=false
 static=true
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        --help)
-            echo "$usage"
-            exit
-            ;;
-        --shared)
-            echo "Shared libraries will be installed"
-            shared=true
-            static=false
-            shift
-            ;;
-        --static)
-            echo "Static libraries will be installed"
-            shared=false
-            static=true
-            shift
-            ;;
-        *)
-            echo "Unknown option: $key"
-            echo "$usage"
-            exit 1
-            ;;
+    --help)
+        echo "$usage"
+        exit
+        ;;
+    --shared)
+        echo "Shared libraries will be installed"
+        shared=true
+        static=false
+        shared_build=false
+        shift
+        ;;
+    --static)
+        echo "Static libraries will be installed"
+        shared=false
+        static=true
+        shared_build=false
+        shift
+        ;;
+    --shared-build)
+        echo "Shared libraries will be built and installed"
+        static=false
+        shared=false
+        shared_build=true
+        shift
+        ;;
+    *)
+        echo "Unknown option: $key"
+        echo "$usage"
+        exit 1
+        ;;
     esac
 done
 
-this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 root="$(dirname "$this_dir")"
 
 token="${QT_INSTALLER_JWT_TOKEN:-}"
@@ -69,15 +81,19 @@ if [[ "$static" = true ]]; then
     "$root/scripts/build-qt" --static -s "$root/Qt" -i "$root/3rdparty/Qt"
 
 elif [[ "$shared" = true ]]; then
-    echo "Installing shared libraries for ffmpeg and qt"
+    echo "Downloading precompiled shared libraries for ffmpeg and qt"
     echo "ffmpeg shared libraries are included in the Qt shared release"
     rm -rf "$root/3rdparty/ffmpeg" || true
     rm -rf "$root/ffmpeg_sources" || true
     "$root/scripts/build-qt" --shared -s "$root/Qt" -i "$root/3rdparty/Qt"
+
+elif [[ "$shared_build" = true ]]; then
+    echo "Building shared libraries for ffmpeg and qt"
+    echo "Install ffmpeg using package manager"
+    "$root/scripts/build-qt" --shared-build -s "$root/Qt" -i "$root/3rdparty/Qt"
 
 else
     echo "Unknown build type"
     echo "$usage"
     exit 1
 fi
-
