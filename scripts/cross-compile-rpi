@@ -59,6 +59,14 @@ parse_args() {
             qt_host=$2
             shift
             ;;
+        --qt-hostsrc)
+            qt_host_source=$2
+            shift
+            ;;
+        --qt-hostbuild)
+            qt_host_build=$2
+            shift
+            ;;
         -t | --toolchain-file)
             toolchain_file=$2
             shift
@@ -165,8 +173,7 @@ build_qt_host() {
         log "Qt host directory is not empty. Skipping build"
         return
     fi
-    # TODO: also build ffmpeg shared library
-    # "$this_dir"/build-ffmpeg --shared -s "$root/ffmpeg_sources" -i "$root/3rdparty/ffmpeg"
+    "$this_dir"/build-ffmpeg --shared
     "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host"
 }
 
