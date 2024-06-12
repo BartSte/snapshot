@@ -201,7 +201,6 @@ _configure_build_pi() {
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
     "$qt_host_source/6.6.1/Src/configure" \
         -release \
-        -opengl es2 \
         -nomake examples \
         -nomake tests \
         -no-gstreamer \
