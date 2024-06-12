@@ -8,6 +8,7 @@ shared=false
 use_pch=-no-pch
 source_dir="$root/Qt"
 install_dir="$root/3rdparty/Qt"
+ffmpeg_dir="$root/3rdparty/ffmpeg"
 usage="Usage: build-qt [--static] [--shared]
 
 Build Qt with static or shared linking.
@@ -59,6 +60,15 @@ while [[ $# -gt 0 ]]; do
         shift
         shift
         ;;
+    --ffmpeg-dir)
+        ffmpeg_dir="$2"
+        shift
+        shift
+        ;;
+    -h | --help)
+        echo "$usage"
+        exit 0
+        ;;
     *)
         echo "Unknown option: $key"
         echo "$usage"
@@ -80,9 +90,14 @@ done
 ##############################################################################
 build-qt() {
     echo "Downloading Qt sources"
-    rm "$source_dir" -rf || true
-    mkdir "$source_dir"
-    "$root/scripts/helpers/download-qt" --root "$source_dir" qt.qt6.661.src
+
+    # if $source_dir exists and is not empty, do not download
+    if [ -d "$source_dir" ] && [ "$(ls -A "$source_dir")" ]; then
+        echo "$source_dir is not empty. Skipping download."
+    else
+        mkdir -p "$source_dir"
+        "$root/scripts/helpers/download-qt" --root "$source_dir" qt.qt6.661.src
+    fi
 
     local build_type
     if [[ "$1" = "--shared" ]]; then
@@ -93,9 +108,7 @@ build-qt() {
         build_type="-static"
     fi
 
-    rm "$install_dir" -rf || true
-    mkdir "$install_dir"
-
+    mkdir -p "$install_dir"
     export CC=gcc
     export CXX=g++
     src="$source_dir/6.6.1/Src"
@@ -110,7 +123,7 @@ build-qt() {
         -S "$src" \
         -B "$src/build" \
         -Wdev \
-        -DFFMPEG_DIR="$root/3rdparty/ffmpeg"
+        -DFFMPEG_DIR="$ffmpeg_dir"
 
     cmake --build "$src/build"
     cmake --install "$src/build"
