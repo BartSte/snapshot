@@ -196,7 +196,7 @@ compile_ffmpeg() {
         _compile_ffmpeg --pkg-config-flags="--static"
     elif [[ "$shared" == true ]]; then
         echo "Building ffmpeg shared"
-        _compile_ffmpeg --disable-static --enable-shared --pkg-config-flags="--shared"
+        _compile_ffmpeg --disable-static --enable-shared
     fi
 }
 
