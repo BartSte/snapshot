@@ -236,4 +236,4 @@ main() {
 
 parse_args "$@"
 make_dirs "$base_dir"
-$cmd
+eval "$cmd"
