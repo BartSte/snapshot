@@ -547,7 +547,13 @@ very useful when you encounter issues with hardware acceleration:
 - [Nouveau](https://wiki.archlinux.org/title/Nouveau)
 - [AMD](https://wiki.archlinux.org/title/AMDGPU)
 
-
 ## TODO
+
 - [ ] Test the cross compile script on ubuntu as the docs describe a debian
-  based os is needed.
+      based os is needed.
+  - [x] Build with shared qt libs
+  - [ ] When building with shared qt libs, the QtMultimedia backend is not
+        found. I think I need to connect ffmpeg to qt or something. I think need
+        a recent version of ffmpeg, so I should build it from source. However,
+        building shared ffmpeg fails on ubuntu as gnutls is not found by
+        pkg-config. 
