@@ -18,6 +18,7 @@ Options:
     --shared            Download precompiled share libraries (default=false)
     --shared-build      Build Qt with shared linking (default=false)
     --use-pch           Use precompiled headers (default=false)
+    --ffmpeg-dir        Path to ffmpeg (default=$ffmpeg_dir)
     -s, --source-dir    Qt source directory (default=$source_dir)
     -i, --install-dir   Qt build directory (default=$install_dir)"
 
