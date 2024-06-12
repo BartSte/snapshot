@@ -204,6 +204,7 @@ _configure_build_pi() {
         -opengl es2 \
         -nomake examples \
         -nomake tests \
+        -no-gstreamer \
         -submodules qtbase,qtmultimedia,qtwayland \
         -qt-host-path "$qt_host" \
         -extprefix "$base_dir"/qt-raspi \
