@@ -212,6 +212,8 @@ _configure_build_pi() {
         -device-option CROSS_COMPILE=aarch64-linux-gnu- \
         -- \
         -B "$base_dir"/qtpi-build \
+        -Wdev \
+        -DFFMPEG_DIR="$root/3rdparty/ffmpeg" \
         -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
         -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
     unset TARGET_SYSROOT
