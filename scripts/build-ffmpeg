@@ -202,6 +202,7 @@ compile_ffmpeg() {
 
 _compile_ffmpeg() {
     local file unpack_dir
+    export PKG_CONFIG_PATH=/usr/include/p11-kit-1:$PKG_CONFIG_PATH
     file="ffmpeg-snapshot.tar.bz2"
     unpack_dir="ffmpeg"
     cd "$source_dir" &&
