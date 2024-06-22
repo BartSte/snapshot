@@ -199,6 +199,12 @@ _configure_build_pi() {
     export CC=gcc
     export CXX=g++
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
+
+    export SYSROOT=$TARGET_SYSROOT
+    export LDFLAGS="--sysroot=$SYSROOT"
+    export CFLAGS="--sysroot=$SYSROOT"
+    export CPPFLAGS="--sysroot=$SYSROOT"
+
     CMAKE_INCLUDE_PATH=${CMAKE_INCLUDE_PATH:-}
     export CMAKE_INCLUDE_PATH=$root/rpi/rpi-sysroot/usr/lib/aarch64-linux-gnu/glib-2.0/include:$CMAKE_INCLUDE_PATH
     "$qt_host_source/6.6.1/Src/configure" \
@@ -217,7 +223,7 @@ _configure_build_pi() {
         -Wdev \
         -DFFMPEG_DIR="$root/3rdparty/ffmpeg" \
         -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
-        -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON 
+        -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
     unset TARGET_SYSROOT
 }
 
