@@ -551,9 +551,32 @@ very useful when you encounter issues with hardware acceleration:
 
 - [ ] Test the cross compile script on ubuntu as the docs describe a debian
       based os is needed.
-  - [x] Build with shared qt libs
-  - [ ] When building with shared qt libs, the QtMultimedia backend is not
-        found. I think I need to connect ffmpeg to qt or something. I think need
-        a recent version of ffmpeg, so I should build it from source. However,
-        building shared ffmpeg fails on ubuntu as gnutls is not found by
-        pkg-config. 
+
+  - On ubuntu 22, I get a glibc error:
+
+    ```shell
+    qtbase/bin/qmlls
+    : && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/barts/snapshot/scripts/../rpi/rpi-sysroot -I/home/barts/snapshot/scripts/../rpi/rpi-sysroot/usr/include -pipe -O2 -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed     -Wl,--enable-new-dtags -fPIE -pie qtdeclarative/tools/qmlls/CMakeFiles/qmlls.dir/qmlls_autogen/mocs_compilation.cpp.o qtdeclarative/tools/qmlls/CMakeFiles/qmlls.dir/qmllanguageservertool.cpp.o -o qtbase/bin/qmlls  -Wl,-rpath,/home/barts/snapshot/scripts/../rpi/rpi-sysroot:/home/barts/snapshot/rpi/qtpi-build/qtbase/lib:  qtbase/lib/libQt6QmlLS.a  qtbase/lib/libQt6QmlToolingSettings.a  qtbase/lib/libQt6LanguageServer.so.6.6.1  qtbase/lib/libQt6JsonRpc.so.6.6.1  qtbase/lib/libQt6QmlDom.a  qtbase/lib/libQt6QmlCompiler.so.6.6.1  qtbase/lib/libQt6Qml.so.6.6.1  qtbase/lib/libQt6Network.so.6.6.1  qtbase/lib/libQt6Core.so.6.6.1 && :
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_dlopen_mode@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_current_sigrtmin_private@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_dlclose@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libdl.so.2: undefined reference to `_dl_sym@GLIBC_PRIVATE'
+
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_longjmp@GLIBC_PRIVATE'
+
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_allocate_rtsig_private@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_thread_freeres@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_dlsym@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_current_sigrtmax_private@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libdl.so.2: undefined reference to `_dl_addr@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libdl.so.2: undefined reference to `_dl_vsym@GLIBC_PRIVATE'
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `__libc_pthread_init@GLIBC_PRIVATE'
+
+    /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: /home/barts/snapshot/scripts/../rpi/rpi-sysroot/lib/aarch64-linux-gnu/libpthread.so.0: undefined reference to `_dl_make_stack_executable@GLIBC_PRIVATE'
+    collect2: error: ld returned 1 exit status
+    ninja: build stopped: subcommand failed.
+    ```
+
+    - Ubuntu glibc version is 2.35 (needs update)
+    - Debian glibc version is 2.36
+    - Raspberry Pi OS glibc version is 2.31
