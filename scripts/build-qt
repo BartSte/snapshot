@@ -19,6 +19,7 @@ Options:
     --shared-build      Build Qt with shared linking (default=false)
     --use-pch           Use precompiled headers (default=false)
     --ffmpeg-dir        Path to ffmpeg (default=$ffmpeg_dir)
+    --submodules        List of submodules to build (default=qtbase,qtmultimedia,qtwayland)
     -s, --source-dir    Qt source directory (default=$source_dir)
     -i, --install-dir   Qt build directory (default=$install_dir)"
 
@@ -49,6 +50,11 @@ while [[ $# -gt 0 ]]; do
     --use-pch)
         echo "Qt will be built with precompiled headers"
         use_pch=-pch
+        shift
+        ;;
+    --submodules)
+        submodules="$2"
+        shift
         shift
         ;;
     -s | --source-dir)
@@ -117,7 +123,7 @@ build-qt() {
         $build_type \
         -release \
         -prefix "$install_dir" \
-        -submodules qtbase,qtmultimedia,qtwayland \
+        -submodules "$submodules" \
         "$use_pch" \
         -no-gstreamer \
         -- \

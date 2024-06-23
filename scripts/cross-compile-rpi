@@ -11,6 +11,8 @@ base_dir="$this_dir/../rpi"
 qt_host_source="$base_dir/qt-hostsrc"
 qt_host_build="$base_dir/qt-hostbuild"
 qt_host="$base_dir/qt-host"
+ffmpeg_hostsrc="$base_dir/ffmpeg-hostsrc"
+ffmpeg_host="$base_dir/ffmpeg-host"
 toolchain_file="$this_dir/../cmake/toolchain.cmake"
 verbose=false
 usage="Usage: cross-compile-rpi [OPTIONS] <username> <ip>
@@ -116,7 +118,7 @@ make_dirs() {
     base_dir=$1
 
     log "Creating directories structure in $base_dir"
-    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-raspi qtpi-build qt-host qt-hostbuild qt-hostsrc"
+    dirs="rpi-sysroot rpi-sysroot/usr rpi-sysroot/opt qt-raspi qtpi-build qt-host qt-hostbuild qt-hostsrc ffmpeg-hostsrc ffmpeg-host"
     for dir in $dirs; do
         mkdir -p "$base_dir"/"$dir"
     done
@@ -173,8 +175,10 @@ build_qt_host() {
         log "Qt host directory is not empty. Skipping build"
         return
     fi
-    "$this_dir"/build-ffmpeg --shared
-    "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host"
+    "$this_dir"/build-ffmpeg --shared -s "$ffmpeg_hostsrc" -i "$ffmpeg_host"
+
+    # qtwayland is excluded on the raspberry pi build for now
+    "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host" --ffmpeg-dir "$ffmpeg_host" --submodules qtbase,qtmultimedia
 }
 
 _not_empty() {
@@ -196,17 +200,11 @@ _configure_build_pi() {
 
     log "Configuring Qt build in $base_dir/qt-hostbuild"
 
-    export CC=gcc
-    export CXX=g++
+    export CC=aarch64-linux-gnu-gcc
+    export CXX=aarch64-linux-gnu-g++
     export TARGET_SYSROOT="$base_dir"/rpi-sysroot
+    export CMAKE_INCLUDE_PATH=$root/rpi/rpi-sysroot/usr/lib/aarch64-linux-gnu/glib-2.0/include
 
-    export SYSROOT=$TARGET_SYSROOT
-    export LDFLAGS="--sysroot=$SYSROOT"
-    export CFLAGS="--sysroot=$SYSROOT"
-    export CPPFLAGS="--sysroot=$SYSROOT"
-
-    CMAKE_INCLUDE_PATH=${CMAKE_INCLUDE_PATH:-}
-    export CMAKE_INCLUDE_PATH=$root/rpi/rpi-sysroot/usr/lib/aarch64-linux-gnu/glib-2.0/include:$CMAKE_INCLUDE_PATH
     "$qt_host_source/6.6.1/Src/configure" \
         -release \
         -nomake examples \
@@ -224,7 +222,6 @@ _configure_build_pi() {
         -DFFMPEG_DIR="$root/3rdparty/ffmpeg" \
         -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
         -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
-    unset TARGET_SYSROOT
 }
 
 _sync_build() {
