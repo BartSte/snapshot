@@ -21,7 +21,8 @@ Options:
     --ffmpeg-dir        Path to ffmpeg (default=$ffmpeg_dir)
     --submodules        List of submodules to build (default=qtbase,qtmultimedia,qtwayland)
     -s, --source-dir    Qt source directory (default=$source_dir)
-    -i, --install-dir   Qt build directory (default=$install_dir)"
+    -i, --install-dir   Qt build directory (default=$install_dir)
+    -b, --build-dir     Qt build directory (default=$source_dir/<version>/Src/build)"
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -64,6 +65,11 @@ while [[ $# -gt 0 ]]; do
         ;;
     -i | --install-dir)
         install_dir="$2"
+        shift
+        shift
+        ;;
+    -b | --build-dir)
+        build_dir="$2"
         shift
         shift
         ;;
@@ -119,6 +125,7 @@ build-qt() {
     export CC=gcc
     export CXX=g++
     src="$source_dir/6.6.1/Src"
+    build_dir=${build_dir:-"$src/build"}
     "$src/configure" \
         $build_type \
         -release \
@@ -128,7 +135,7 @@ build-qt() {
         -no-gstreamer \
         -- \
         -S "$src" \
-        -B "$src/build" \
+        -B "$build_dir" \
         -Wdev \
         -DFFMPEG_DIR="$ffmpeg_dir"
 
