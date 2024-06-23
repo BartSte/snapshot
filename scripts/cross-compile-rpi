@@ -210,7 +210,7 @@ _configure_build_pi() {
         -- \
         -B "$base_dir"/qtpi-build \
         -Wdev \
-        -DFFMPEG_DIR="$root/3rdparty/ffmpeg" \
+        -DFFMPEG_DIR="$ffmpeg_host" \
         -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" \
         -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
 }
