@@ -106,11 +106,6 @@ parse_args() {
         esac
         shift
     done
-    if [ -z "$username" ] || [ -z "$ip" ]; then
-        echo "Username and IP address are required"
-        echo "$usage"
-        exit 1
-    fi
 }
 
 make_dirs() {
@@ -133,17 +128,13 @@ install() {
 }
 
 sysroot() {
-    if _running_wsl; then
-        log "WSL detected. Assuming sysroot is created manually as rsync/scp does not work well with WSL"
+    if [ -z "$username" ] || [ -z "$ip" ]; then
+        log "No ip and/or paassword provided. Assuming sysroot is created manually."
         log "Running symlinks to fix symlinks in sysroot"
         sudo symlinks -rc "$base_dir"/rpi-sysroot
     else
         _make_sysroot_rsync "$base_dir" "$username" "$ip"
     fi
-}
-
-_running_wsl() {
-    grep -iq "microsoft" /proc/version
 }
 
 _make_sysroot_rsync() {
