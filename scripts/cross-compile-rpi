@@ -169,7 +169,7 @@ build_qt_host() {
     "$this_dir"/build-ffmpeg --shared -s "$ffmpeg_hostsrc" -i "$ffmpeg_host"
 
     # qtwayland is excluded on the raspberry pi build for now
-    "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host" --ffmpeg-dir "$ffmpeg_host" --submodules qtbase,qtmultimedia
+    "$this_dir"/build-qt --shared-build -s "$qt_host_source" -i "$qt_host" -b "$qt_host_build"--ffmpeg-dir "$ffmpeg_host" --submodules qtbase,qtmultimedia
 }
 
 _not_empty() {
@@ -188,8 +188,6 @@ _configure_build_pi() {
     base_dir=$1
     qt_host=$2
     toolchain_file=$3
-
-    log "Configuring Qt build in $base_dir/qt-hostbuild"
 
     export CC=aarch64-linux-gnu-gcc
     export CXX=aarch64-linux-gnu-g++
