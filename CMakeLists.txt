@@ -1,8 +1,9 @@
+cmake_minimum_required(VERSION 3.25)
+project(snapshot LANGUAGES CXX)
+
 include(${CMAKE_SOURCE_DIR}/cmake/Version.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/Install.cmake)
 
-cmake_minimum_required(VERSION 3.5)
-project(snapshot LANGUAGES CXX)
 set_git_tag_as_project_version()
 set(PROJECT_VERSION ${PROJECT_VERSION_TAG})
 
