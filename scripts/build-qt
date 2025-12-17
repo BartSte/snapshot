@@ -9,6 +9,8 @@ use_pch=-no-pch
 source_dir="$root/Qt"
 install_dir="$root/3rdparty/Qt"
 ffmpeg_dir="$root/3rdparty/ffmpeg"
+submodules=qtbase,qtmultimedia,qtwayland
+
 usage="Usage: build-qt [--static] [--shared]
 
 Build Qt with static or shared linking.
