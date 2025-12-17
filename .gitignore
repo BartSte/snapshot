@@ -12,8 +12,6 @@ ffmpeg_sources
 Qt
 config.opt*
 config.redo*
-rpi
-qt-installer.run
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
