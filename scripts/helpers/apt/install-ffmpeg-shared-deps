@@ -2,4 +2,9 @@
 set -euo pipefail
 
 echo "Installing deps instead of compiling from source"
-sudo apt install nasm libx264-dev libx265-dev libnuma-dev libvpx-dev libfdk-aac-dev libopus-dev libdav1d-dev -y
+sudo apt install nasm libx264-dev libx265-dev libnuma-dev libvpx-dev libfdk-aac-dev libopus-dev -y
+
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+if "$this_dir"/is_ubuntu 22.04; then
+    sudo apt install libdav1d-dev -y
+fi
