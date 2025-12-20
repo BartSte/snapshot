@@ -63,6 +63,8 @@ THE SOFTWARE.
 #  include <regex>
 #endif  // CXXOPTS_NO_REGEX
 
+#include <cstdint>  // For uint8_t
+
 // Nonstandard before C++17, which is coincidentally what we also need for <optional>
 #ifdef __has_include
 #  if __has_include(<optional>)

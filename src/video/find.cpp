@@ -75,7 +75,7 @@ QCameraDevice findCamera(const std::string &name,
  * @return The selected stream.
  */
 QUrl findStream(const std::string &url) {
-  for (const std::string &stream : STREAMS) {
+  for (const char* stream : STREAMS) {
     spdlog::debug("Compare potential stream {} to {}", stream, url);
     if (url.find(stream) != std::string::npos) {
       spdlog::info("Valid stream found: {}", url);
@@ -120,12 +120,12 @@ QCameraDevice getCameraDevice(const std::string &name) {
  **/
 std::vector<int> getColumnWidths(Table table) {
   std::vector<int> columnWidths;
-  for (int i = 0; i < table.at(0).size(); i++) {
+  for (std::size_t i = 0; i < table.at(0).size(); i++) {
     int columnWidth = 0;
-    for (int j = 0; j < table.size(); j++) {
+    for (std::size_t j = 0; j < table.size(); j++) {
       std::string cell = table.at(j).at(i);
-      if (cell.length() > columnWidth) {
-        columnWidth = cell.length();
+      if (cell.length() > static_cast<std::size_t>(columnWidth)) {
+        columnWidth = static_cast<int>(cell.length());
       }
     }
     columnWidths.push_back(columnWidth);
@@ -145,12 +145,12 @@ std::vector<int> getColumnWidths(Table table) {
 std::string tableToString(Table table, std::string separator = " | ") {
   std::string result = "";
   std::vector<int> columnWidths = getColumnWidths(table);
-  for (int i = 0; i < table.size(); i++) {
+  for (std::size_t i = 0; i < table.size(); i++) {
     std::vector<std::string> row = table.at(i);
-    for (int j = 0; j < row.size(); j++) {
+    for (std::size_t j = 0; j < row.size(); j++) {
       std::string cell = row.at(j);
       result += cell;
-      result += std::string(columnWidths.at(j) - cell.length(), ' ');
+      result += std::string(columnWidths.at(j) - static_cast<int>(cell.length()), ' ');
       result += separator;
     }
     result += "\n";

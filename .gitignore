@@ -87,3 +87,4 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+.aider*
