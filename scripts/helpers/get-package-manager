@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
 if command -v apt &>/dev/null; then
-    echo "apt"
+    if "${this_dir}"/apt_rpi/is_rpi; then
+        echo "apt_rpi"
+    else
+        echo "apt"
+    fi
 elif command -v pacman &>/dev/null; then
     echo "pacman"
 else

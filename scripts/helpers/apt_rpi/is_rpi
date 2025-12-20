@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+arch="$(uname -m)"
+case "$arch" in
+arm* | aarch64)
+    exit 0
+    ;;
+*)
+    exit 1
+    ;;
+esac

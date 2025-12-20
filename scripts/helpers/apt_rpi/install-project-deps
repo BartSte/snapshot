@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Update apt database"
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+echo "Installing build dependencies"
+sudo apt-get install -y clang ninja-build git cmake llvm pkg-config
